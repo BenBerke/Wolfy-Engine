@@ -1,16 +1,28 @@
-#include <iostream>
+#include <glad/glad.h>
+#include <SDL3/SDL_video.h>
 
-// TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
+#include "Headers/Engine/InputManager.h"
+#include "Headers/Engine/GameTime.h"
+#include "Headers/Renderer/Renderer.h"
+
+#define SCREEN_WIDTH 960
+#define SCREEN_HEIGHT 600
+
 int main() {
-    // TIP Press <shortcut actionId="RenameElement"/> when your caret is at the <b>lang</b> variable name to see how CLion can help you rename it.
-    auto lang = "C++";
-    std::cout << "Hello and welcome to " << lang << "!\n";
-
-    for (int i = 1; i <= 5; i++) {
-        // TIP Press <shortcut actionId="Debug"/> to start debugging your code. We have set one <icon src="AllIcons.Debugger.Db_set_breakpoint"/> breakpoint for you, but you can always add more by pressing <shortcut actionId="ToggleLineBreakpoint"/>.
-        std::cout << "i = " << i << std::endl;
+    Renderer::Initialize();
+    if (!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(SDL_GL_GetProcAddress))) {
+        SDL_Log("Failed to initialize GLAD");
+        return -1;
     }
+    glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
 
-    return 0;
-    // TIP See CLion help at <a href="https://www.jetbrains.com/help/clion/">jetbrains.com/help/clion/</a>. Also, you can try interactive lessons for CLion by selecting 'Help | Learn IDE Features' from the main menu.
+    bool running = true;
+    while (running) {
+        InputManager::BeginFrame();
+        GameTime::Update();
+
+        running = !InputManager::GetKeyDown(SDL_SCANCODE_ESCAPE);
+
+        Renderer::Update();
+    }
 }
