@@ -11,7 +11,9 @@ set(CMAKE_CXX_STANDARD 20)
 add_library(glad glad/src/glad.c
         Headers/Renderer/Shader.h
         Headers/Math/Vector3.h
-        Headers/Objects/Wall.h)
+        Headers/Objects/Wall.h
+        Headers/Objects/Player.h
+        src/Objects/Player.cpp)
 target_include_directories(glad PUBLIC glad/include)
 target_link_libraries(glad PUBLIC OpenGL::GL)
 

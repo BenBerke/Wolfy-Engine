@@ -4,11 +4,15 @@
 
 #include "Headers/Engine/InputManager.h"
 #include "Headers/Engine/GameTime.h"
+
 #include "Headers/Renderer/Renderer.h"
 #include "Headers/Renderer/Shader.h"
 
+#include "Headers/Objects/Player.h"
+
 #define SCREEN_WIDTH 1080
 #define SCREEN_HEIGHT 960
+
 
 int main() {
     if (!Renderer::Initialize()) {
@@ -23,7 +27,9 @@ int main() {
 
         running = !InputManager::GetKeyDown(SDL_SCANCODE_ESCAPE);
 
-        Renderer::Update();
+        if (InputManager::GetKeyDown(SDL_SCANCODE_1)) Player::position.x += 1;
+
+        Renderer::Update(Player::position, Player::angle);
 
         SDL_GL_SwapWindow(Renderer::window);
     }

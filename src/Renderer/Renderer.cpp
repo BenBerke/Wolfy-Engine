@@ -16,8 +16,11 @@
 constexpr Uint64 windowFlags = SDL_WINDOW_OPENGL;
 
 std::unique_ptr<Shader> shader;
+static unsigned int playerPosUniform;
+static unsigned int playerAngleUniform;
 
 namespace Renderer {
+    // region Initialization
     bool InitializeOpenGL() {
         if (!SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4)) {
             SDL_Log("SDL_GL_SetAttribute Major Error: %s\n", SDL_GetError());
@@ -99,16 +102,34 @@ namespace Renderer {
         glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, wallSSBO);
         glEnable(GL_PROGRAM_POINT_SIZE);
 
+        // -- UNIFORMS--
+        playerPosUniform = glGetUniformLocation(shader->ID, "playerPos");
+        if (playerPosUniform == -1) {
+            SDL_Log("Failed to get shader uniform location playerPos");
+            return false;
+        }
+
+        playerAngleUniform = glGetUniformLocation(shader->ID, "playerAngle");
+        if (playerAngleUniform == -1) {
+            SDL_Log("Failed to get shader uniform location playerAngle");
+            return false;
+        }
+
         //SDL_SetWindowRelativeMouseMode(window, true);
         return true;
     }
 
-    void Update() {
+    // endregion
+
+    void Update(const Vector2& playerPos, const float playerAngle) {
         glClearColor(.2f, .3f, .3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
         shader->use();
         glBindVertexArray(VAO);
+
+        glUniform2f(playerPosUniform, playerPos.x, playerPos.y);
+        glUniform1f(playerAngleUniform, playerAngle);
 
         glDrawArrays(GL_POINTS, 0, 3);
     }
