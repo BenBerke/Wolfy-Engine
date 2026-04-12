@@ -19,5 +19,6 @@ namespace Renderer {
 
     bool Initialize();
     void Update(const Vector2& playerPos, const float angle);
+    bool CreateMap();
     void Destroy();
 }

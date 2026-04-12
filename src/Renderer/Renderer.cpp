@@ -9,6 +9,7 @@
 #include <SDL3/SDL_init.h>
 
 #include "../../Headers/Objects/Wall.h"
+#include "../../Headers/Renderer/MapEditor.h"
 
 #define SCREEN_WIDTH 1080
 #define SCREEN_HEIGHT 960
@@ -16,8 +17,8 @@
 constexpr Uint64 windowFlags = SDL_WINDOW_OPENGL;
 
 std::unique_ptr<Shader> shader;
-static unsigned int playerPosUniform;
-static unsigned int playerAngleUniform;
+static GLint playerPosUniform;
+static GLint playerAngleUniform;
 
 namespace Renderer {
     // region Initialization
@@ -87,18 +88,21 @@ namespace Renderer {
         shader = std::make_unique<Shader>("../Shaders/vertex.vs.glsl", "../Shaders/frag.fs.glsl");
         if (shader->ID == 0) {
             SDL_Log("Shader creation failed");
-            return true;
+            return false;
         }
 
-        const Wall walls[] = {
-            { { -0.8f, -0.8f }, { -0.4f, -0.2f } },
-            { {  0.1f, -0.6f }, {  0.6f, -0.1f } },
-            { { -0.2f,  0.3f }, {  0.7f,  0.8f } }
-        };
 
+
+        //SDL_SetWindowRelativeMouseMode(window, true);
+        return true;
+    }
+
+    // endregion
+
+    bool CreateMap() {
         glGenBuffers(1, &wallSSBO);
         glBindBuffer(GL_SHADER_STORAGE_BUFFER, wallSSBO);
-        glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(walls), walls, GL_DYNAMIC_DRAW);
+        glBufferData(GL_SHADER_STORAGE_BUFFER, MapEditor::walls.size() * sizeof(Wall), MapEditor::walls.data(), GL_DYNAMIC_DRAW);
         glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, wallSSBO);
         glEnable(GL_PROGRAM_POINT_SIZE);
 
@@ -114,12 +118,8 @@ namespace Renderer {
             SDL_Log("Failed to get shader uniform location playerAngle");
             return false;
         }
-
-        //SDL_SetWindowRelativeMouseMode(window, true);
         return true;
     }
-
-    // endregion
 
     void Update(const Vector2& playerPos, const float playerAngle) {
         glClearColor(.2f, .3f, .3f, 1.0f);
@@ -131,7 +131,7 @@ namespace Renderer {
         glUniform2f(playerPosUniform, playerPos.x, playerPos.y);
         glUniform1f(playerAngleUniform, playerAngle);
 
-        glDrawArrays(GL_POINTS, 0, 3);
+        glDrawArrays(GL_POINTS, 0, static_cast<GLsizei>(MapEditor::walls.size()));
     }
 
     void Destroy() {

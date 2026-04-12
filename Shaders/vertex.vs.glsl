@@ -14,6 +14,6 @@ uniform float playerAngle;
 
 void main() {
     Wall w = walls[gl_VertexID];
-    gl_Position = vec4(w.start + playerPos.x, 0.0, 1.0);
+    gl_Position = vec4(w.start + playerPos, 0.0, 1.0f + playerAngle);
     gl_PointSize = 20.0;
 }

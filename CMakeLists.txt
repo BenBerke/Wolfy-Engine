@@ -13,7 +13,8 @@ add_library(glad glad/src/glad.c
         Headers/Math/Vector3.h
         Headers/Objects/Wall.h
         Headers/Objects/Player.h
-        src/Objects/Player.cpp)
+        src/Objects/Player.cpp
+        Headers/Renderer/MapEditor.h)
 target_include_directories(glad PUBLIC glad/include)
 target_link_libraries(glad PUBLIC OpenGL::GL)
 
@@ -24,7 +25,8 @@ add_executable(Wolfy_Engine main.cpp
         Headers/Engine/InputManager.h
         Headers/Math/Vector2.h
         src/Engine/GameTime.cpp
-        src/Engine/InputManager.cpp)
+        src/Engine/InputManager.cpp
+        src/Renderer/MapEditor.cpp)
 
 target_link_libraries(Wolfy_Engine PRIVATE
         SDL3::SDL3
