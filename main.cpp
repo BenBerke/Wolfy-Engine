@@ -1,9 +1,7 @@
-#include <filesystem>
-#include <glad/glad.h>
-#include <SDL3/SDL_video.h>
+#include <iostream>
 
-#include "Headers/Engine/InputManager.h"
 #include "Headers/Engine/GameTime.h"
+#include "Headers/Engine/InputManager.h"
 
 #include "Headers/Renderer/Renderer.h"
 #include "Headers/Renderer/Shader.h"
@@ -23,22 +21,22 @@ int main() {
     }
 
     const Wall walls[] = {
-        { { -0.8f, -0.8f }, { -0.4f, -0.2f } },
-        { {  0.1f, -0.6f }, {  0.6f, -0.1f } },
-        { { -0.2f,  0.3f }, {  0.7f,  0.8f } }
+        { { 0.0f, 100.0f }, { 100.0f, 100.0f }, {100.0f, 175.0f, 159.0f} },
+        { { 10.0f, 80.0f }, { 200.0f, 60.0f }, {100.0f, 15.0f, 159.0f} },
     };
 
     for (const Wall& wall : walls) MapEditor::AddWall(wall);
 
     if (!Renderer::CreateMap()) {
         SDL_Log("Failed to create map");
-        return 1;   
+        return 1;
     }
 
     bool running = true;
     while (running) {
         InputManager::BeginFrame();
         GameTime::Update();
+        Player::Update();
 
         running = !InputManager::GetKeyDown(SDL_SCANCODE_ESCAPE);
 

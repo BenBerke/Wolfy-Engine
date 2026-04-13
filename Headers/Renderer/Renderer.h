@@ -12,7 +12,6 @@
 
 namespace Renderer {
     inline SDL_Window* window;
-    inline SDL_Renderer* renderer;
     inline SDL_GLContext glContext;
 
     inline unsigned int VAO, VBO, EBO, wallSSBO;

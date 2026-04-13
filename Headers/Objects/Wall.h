@@ -6,9 +6,11 @@
 #define WOLFY_ENGINE_WALL_H
 
 #include "../Math/Vector2.h"
+#include "../Math/Vector4.h"
 
 struct Wall {
     Vector2 start, end;
+    Vector4 color;
 };
 
 #endif //WOLFY_ENGINE_WALL_H

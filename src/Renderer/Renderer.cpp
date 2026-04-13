@@ -91,9 +91,7 @@ namespace Renderer {
             return false;
         }
 
-
-
-        //SDL_SetWindowRelativeMouseMode(window, true);
+        SDL_SetWindowRelativeMouseMode(window, true);
         return true;
     }
 
@@ -131,7 +129,7 @@ namespace Renderer {
         glUniform2f(playerPosUniform, playerPos.x, playerPos.y);
         glUniform1f(playerAngleUniform, playerAngle);
 
-        glDrawArrays(GL_POINTS, 0, static_cast<GLsizei>(MapEditor::walls.size()));
+        glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, static_cast<GLsizei>(MapEditor::walls.size()));
     }
 
     void Destroy() {

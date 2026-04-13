@@ -1,5 +1,6 @@
 #pragma once
 #include <SDL3/SDL.h>
+#include <SDL3/SDL_scancode.h>
 #include "../Math/Vector2.h"
 
 namespace InputManager {

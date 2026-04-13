@@ -9,7 +9,12 @@
 
 namespace Player {
     inline Vector2 position = {0, 0};
+    inline Vector2 velocity = {0, 0};
     inline float angle = 0;
+
+    inline float speed = 15.0f;
+
+    void Update();
 }
 
 #endif //WOLFY_ENGINE_PLAYER_H
