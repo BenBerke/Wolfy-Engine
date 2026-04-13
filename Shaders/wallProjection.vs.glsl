@@ -93,6 +93,6 @@ void main() {
         vec2(rightX, topRightY)
     );
 
-    outWallColor = wall.color.xyzw / 255.0;
+    outWallColor.xyzw = wall.color.xyzw / 255.0;
     gl_Position = vec4(verts[gl_VertexID], 0.0, 1.0);
 }

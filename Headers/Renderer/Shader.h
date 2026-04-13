@@ -48,20 +48,20 @@ class Shader {
         char infoLog[512];
 
         vertex = glCreateShader(GL_VERTEX_SHADER);
-        glShaderSource(vertex, 1, &vShaderCode, NULL);
+        glShaderSource(vertex, 1, &vShaderCode, nullptr);
         glCompileShader(vertex);
         glGetShaderiv(vertex, GL_COMPILE_STATUS, &success);
         if (!success) {
-            glGetShaderInfoLog(vertex, 512, NULL, infoLog);
+            glGetShaderInfoLog(vertex, 512, nullptr, infoLog);
             SDL_Log("VERTEX ERROR: %s", infoLog);
         }
 
         fragment = glCreateShader(GL_FRAGMENT_SHADER);
-        glShaderSource(fragment, 1, &fShaderCode, NULL);
+        glShaderSource(fragment, 1, &fShaderCode, nullptr);
         glCompileShader(fragment);
         glGetShaderiv(fragment, GL_COMPILE_STATUS, &success);
         if (!success) {
-            glGetShaderInfoLog(fragment, 512, NULL, infoLog);
+            glGetShaderInfoLog(fragment, 512, nullptr, infoLog);
             SDL_Log("FRAGMENT ERROR: %s", infoLog);
         }
 
@@ -71,7 +71,7 @@ class Shader {
         glLinkProgram(ID);
         glGetProgramiv(ID, GL_LINK_STATUS, &success);
         if (!success) {
-            glGetProgramInfoLog(ID, 512, NULL, infoLog);
+            glGetProgramInfoLog(ID, 512, nullptr, infoLog);
             SDL_Log("PROGRAM ERROR: %s", infoLog);
         }
 
@@ -91,6 +91,7 @@ class Shader {
     void setFloat(const std::string &name, const float value) const {
         glUniform1f(glGetUniformLocation(ID, name.c_str()), value);
     }
+
 };
 
 #endif //WOLFY_ENGINE_SHADER_H

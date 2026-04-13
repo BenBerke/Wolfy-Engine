@@ -3,8 +3,11 @@
 //
 
 #include "../../Headers/Objects/Player.h"
+
 #include "../../Headers/Engine/InputManager.h"
 #include "../../Headers/Engine/GameTime.h"
+
+#include "../../Headers/Math/Vector/Vector2Math.h"
 
 #define FRICTION .8f
 #define TURN_SPEED 90.0f
@@ -32,7 +35,7 @@ namespace Player {
 
         if (input.x != 0.0f || input.y != 0.0f) {
             const Vector2 moveDir = right * input.x + forward * input.y;
-            velocity = moveDir.Normalized() * speed;
+            velocity = Vector2Math::Normalized(moveDir) * speed;
         } else {
             velocity *= FRICTION;
         }

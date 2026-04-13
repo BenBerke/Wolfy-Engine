@@ -8,9 +8,12 @@ find_package(OpenGL REQUIRED)
 find_package(SDL3 REQUIRED CONFIG COMPONENTS SDL3 Headers)
 find_package(SDL3_image REQUIRED CONFIG)
 find_package(SDL3_ttf REQUIRED CONFIG)
+find_package(Freetype REQUIRED)
 
 add_library(glad STATIC
         glad/src/glad.c
+        Headers/Math/Matrix/Matrix4.h
+        Headers/Math/Vector/Vector2Math.h
 )
 
 target_include_directories(glad PUBLIC
@@ -39,5 +42,6 @@ target_link_libraries(Wolfy_Engine PRIVATE
         SDL3::Headers
         $<IF:$<TARGET_EXISTS:SDL3_image::SDL3_image-shared>,SDL3_image::SDL3_image-shared,SDL3_image::SDL3_image-static>
         SDL3_ttf::SDL3_ttf
+        Freetype::Freetype
         glad
 )

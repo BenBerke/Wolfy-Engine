@@ -1,4 +1,4 @@
-#include <iostream>
+#include <format>
 
 #include "Headers/Engine/GameTime.h"
 #include "Headers/Engine/InputManager.h"
@@ -21,8 +21,8 @@ int main() {
     }
 
     const Wall walls[] = {
-        { { 0.0f, 100.0f }, { 100.0f, 100.0f }, {100.0f, 175.0f, 159.0f} },
-        { { 10.0f, 80.0f }, { 200.0f, 60.0f }, {100.0f, 15.0f, 159.0f} },
+        { { 0.0f, 100.0f }, { 100.0f, 100.0f }, {100.0f, 175.0f, 159.0f, 255.0f} },
+        { { 10.0f, 80.0f }, { 200.0f, 60.0f }, {100.0f, 15.0f, 159.0f, 255.0f} },
     };
 
     for (const Wall& wall : walls) MapEditor::AddWall(wall);
@@ -32,8 +32,14 @@ int main() {
         return 1;
     }
 
+    static float timer = 0;
+    static float timerHelper = 0;
+
+    static int fps = 0;
+
     bool running = true;
     while (running) {
+        timer = GameTime::time;
         InputManager::BeginFrame();
         GameTime::Update();
         Player::Update();
@@ -43,8 +49,14 @@ int main() {
         if (InputManager::GetKeyDown(SDL_SCANCODE_1)) Player::position.x += 1;
 
         Renderer::Update(Player::position, Player::angle);
+        Renderer::RenderTextRaw(std::format("FPS: {}", fps), 0, 0, 0.5f, Vector3{255, 255, 255});
 
         SDL_GL_SwapWindow(Renderer::window);
+
+        if (timer > timerHelper + 1.3f) {
+            fps = static_cast<int>(GameTime::GetFPS());
+            timerHelper = timer;
+        }
     }
 
     Renderer::Destroy();

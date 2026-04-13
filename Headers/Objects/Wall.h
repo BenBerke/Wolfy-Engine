@@ -5,8 +5,8 @@
 #ifndef WOLFY_ENGINE_WALL_H
 #define WOLFY_ENGINE_WALL_H
 
-#include "../Math/Vector2.h"
-#include "../Math/Vector4.h"
+#include "../Math/Vector/Vector2.h"
+#include "../Math/Vector/Vector4.h"
 
 struct Wall {
     Vector2 start, end;
