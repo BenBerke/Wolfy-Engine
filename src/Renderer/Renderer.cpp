@@ -282,6 +282,7 @@ namespace Renderer {
 
     void RenderText(const Shader &s, const std::string& text, float x, const float y, const float scale, const Vector3 color)
     {
+        glDisable(GL_DEPTH_TEST);
         glBindVertexArray(textVAO);
         glActiveTexture(GL_TEXTURE0);
         s.use();
@@ -386,8 +387,9 @@ namespace Renderer {
     // endregion
 
     void Update(const Vector2& playerPos, const float playerAngle) {
+        glEnable(GL_DEPTH_TEST);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glClearColor(.2f, .3f, .3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
 
         projectionShader->use();
         glBindVertexArray(VAO);
@@ -397,7 +399,8 @@ namespace Renderer {
 
         glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, static_cast<GLsizei>(MapEditor::walls.size()));
 
-        if (!DEBUG) return;
+        if (!InputManager::GetKey(SDL_SCANCODE_TAB)) return;
+        glDisable(GL_DEPTH_TEST);
 
         DrawDebugRect({0.0f, 0.0f}, DEBUG_PLAYER_HALF_SIZE, DEBUG_PLAYER_HALF_SIZE);
 
