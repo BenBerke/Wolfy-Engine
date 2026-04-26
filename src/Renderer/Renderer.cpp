@@ -63,13 +63,14 @@ namespace {
         Vector4 b;
         Vector4 c;
         Vector4 color; // r, g, b, a
+        Vector4 data; // x = textureIndex
     };
 
     struct GpuWall {
         Vector4 startEnd; // start.x, start.y, end.x, end.y
-        Vector4 color;    // r, g, b, a
-        Vector4 heights;  // floorHeight, ceilingHeight, unused, unused
-        Vector4 data;     // textureIndex, unused, unused, unused
+        Vector4 color; // r, g, b, a
+        Vector4 heights; // floorHeight, ceilingHeight, unused, unused
+        Vector4 data; // textureIndex, unused, unused, unused
     };
 
     std::vector<GpuWall> gpuWalls;
@@ -300,21 +301,24 @@ namespace {
                 output[0],
                 output[1],
                 output[2],
-                triangle.color
+                triangle.color,
+                triangle.data
             });
         } else if (output.size() == 4) {
             visibleFlatTriangles.push_back({
                 output[0],
                 output[1],
                 output[2],
-                triangle.color
+                triangle.color,
+                triangle.data
             });
 
             visibleFlatTriangles.push_back({
                 output[0],
                 output[2],
                 output[3],
-                triangle.color
+                triangle.color,
+                triangle.data
             });
         }
     }
@@ -366,6 +370,12 @@ namespace {
                 floorTriangle.b = {triangle.c.x, triangle.c.y, sector.floorHeight, 0.0f};
                 floorTriangle.c = {triangle.b.x, triangle.b.y, sector.floorHeight, 0.0f};
                 floorTriangle.color = floorColor;
+                floorTriangle.data = {
+                    static_cast<float>(sector.floorTextureIndex),
+                    0.0f,
+                    0.0f,
+                    0.0f
+                };
 
                 flatTriangles.push_back(floorTriangle);
 
@@ -375,6 +385,12 @@ namespace {
                 ceilingTriangle.b = {triangle.b.x, triangle.b.y, sector.ceilingHeight, 0.0f};
                 ceilingTriangle.c = {triangle.c.x, triangle.c.y, sector.ceilingHeight, 0.0f};
                 ceilingTriangle.color = ceilingColor;
+                ceilingTriangle.data = {
+                    static_cast<float>(sector.ceilingTextureIndex),
+                    0.0f,
+                    0.0f,
+                    0.0f
+                };
 
                 flatTriangles.push_back(ceilingTriangle);
             }
@@ -759,14 +775,16 @@ namespace Renderer {
         glUniform1f(playerAngleUniform, playerAngle);
         glUniform1f(playerHeightUniform, Player::currentEyeHeight);
 
-        // Rebuild floor/ceiling triangles after clipping them against the camera near plane.
-        // This fixes the stretching/weird movement when a flat triangle goes behind the player.
         BuildVisibleFlatTriangles(playerPos, playerAngle);
+
+        // Bind textures before drawing anything that samples textures.
+        TextureManager::BindAllTextures(0);
 
         // Draw floors and ceilings first
         glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, flatSSBO);
         glDepthFunc(GL_LESS);
         glUniform1i(renderModeUniform, RENDER_FLAT);
+
         glDrawArraysInstanced(
             GL_TRIANGLES,
             0,
@@ -775,10 +793,10 @@ namespace Renderer {
         );
 
         // Draw walls after
-        TextureManager::BindAllTextures(0);
         glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, wallSSBO);
         glDepthFunc(GL_LEQUAL);
         glUniform1i(renderModeUniform, RENDER_WALL);
+
         glDrawArraysInstanced(
             GL_TRIANGLE_STRIP,
             0,

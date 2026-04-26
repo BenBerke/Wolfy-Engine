@@ -15,8 +15,15 @@ struct Triangle {
 struct Sector {
     std::vector<Vector2> vertices;
     std::vector<Triangle> triangles;
-    float ceilingHeight, floorHeight;
-    Vector3 ceilingColor, floorColor;
+
+    float ceilingHeight;
+    float floorHeight;
+
+    Vector3 ceilingColor;
+    Vector3 floorColor;
+
+    int ceilingTextureIndex = -1;
+    int floorTextureIndex = -1;
 };
 
 #endif //WOLFY_ENGINE_SECTOR_H

@@ -15,10 +15,11 @@ struct Wall {
 };
 
 struct FlatTriangle {
-    vec4 a;      // x, y, height, unused
+    vec4 a;
     vec4 b;
     vec4 c;
     vec4 color;
+    vec4 data; // x = textureIndex
 };
 
 layout(std430, binding = 0) readonly buffer WallBuffer {
@@ -48,6 +49,9 @@ noperspective out float vFlatInvZ;
 
 flat out int vTextureIndex;
 flat out float fWallWorldHeight;
+
+noperspective out vec2 vFlatWorldOverZ;
+flat out int vFlatTextureIndex;
 
 uniform vec2 playerPos;
 uniform float playerAngle;
@@ -118,6 +122,7 @@ void outputDummyWallData() {
     fSEnd = 0.0;
     fZLeft = 1.0;
     fZRight = 1.0;
+
     fWallWorldHeight = 1.0;
     vTextureIndex = -1;
 }
@@ -141,9 +146,11 @@ void renderFlat() {
     vFlatInvZ = 1.0 / viewDepth;
 
     vWallColor = triangle.color / 255.0;
-    vTextureIndex = -1;
-    fWallWorldHeight = 1.0;
+
     outputDummyWallData();
+
+    vFlatWorldOverZ = point.xy * vFlatInvZ;
+    vFlatTextureIndex = int(triangle.data.x);
 
     vec2 ndc = projectToNdc(point.xy, point.z);
 
@@ -170,6 +177,8 @@ void renderWall() {
     Wall wall = walls[gl_InstanceID];
 
     vFlatInvZ = 1.0;
+    vFlatWorldOverZ = vec2(0.0);
+    vFlatTextureIndex = -1;
 
     vec2 wallStart = wall.startEnd.xy;
     vec2 wallEnd = wall.startEnd.zw;

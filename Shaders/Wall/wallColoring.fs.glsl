@@ -29,6 +29,9 @@ flat in float fZRight;
 
 noperspective in float vFlatInvZ;
 
+noperspective in vec2 vFlatWorldOverZ;
+flat in int vFlatTextureIndex;
+
 uniform int renderMode;
 
 out vec4 FragColor;
@@ -71,7 +74,18 @@ void main() {
         );
 
         gl_FragDepth = flatDepth01;
-        FragColor = vWallColor;
+
+        vec2 worldPos = vFlatWorldOverZ / vFlatInvZ;
+        vec2 flatUV = worldPos / tileSize;
+
+        if (vFlatTextureIndex >= 0 && vFlatTextureIndex < MAX_WALL_TEXTURES) {
+            vec4 texColor = SampleWallTexture(vFlatTextureIndex, flatUV);
+            FragColor = texColor * vWallColor;
+        }
+        else {
+            FragColor = vWallColor;
+        }
+
         return;
     }
 
