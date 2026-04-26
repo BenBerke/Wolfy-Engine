@@ -31,6 +31,7 @@ add_executable(Wolfy_Engine
         src/Engine/InputManager.cpp
         src/Objects/Player.cpp
         src/Renderer/MapEditor.cpp
+        Headers/Objects/Sector.h
 )
 
 target_include_directories(Wolfy_Engine PRIVATE

@@ -14,6 +14,8 @@
 #define SCREEN_HEIGHT 960
 
 
+#include "../../Headers/Objects/Sector.h"
+
 int main() {
     if (!Renderer::Initialize()) {
         SDL_Log("Failed to initialize Renderer: %s", SDL_GetError());
@@ -22,7 +24,8 @@ int main() {
 
     const Wall walls[] = {
         { { 0.0f, 70.0f }, { 100.0f, 100.0f }, {100.0f, 175.0f, 159.0f, 25.0f} },
-        { { 0.0f, 80.0f }, { 200.0f, 60.0f }, {10.0f, 1.0f, 159.0f, 255.0f} },
+        { { 3.0f, 80.0f }, { 200.0f, 60.0f }, {10.0f, 1.0f, 159.0f, 255.0f} },
+{ { 30.0f, 50.0f }, { 200.0f, 60.0f }, {200.0f, 15.0f, 159.0f, 255.0f} },
     };
 
     for (const Wall& wall : walls) MapEditor::AddWall(wall);
