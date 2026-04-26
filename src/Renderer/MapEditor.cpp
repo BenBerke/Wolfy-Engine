@@ -9,6 +9,7 @@
 #include "imgui.h"
 
 #include <algorithm>
+#include <string>
 #include <SDL3/SDL_init.h>
 #include <SDL3/SDL_log.h>
 
@@ -37,7 +38,19 @@ namespace {
     Vector2 lineStartWorld = {0.0f, 0.0f};
 
     std::vector<Vector2> sectorBeingCreated;
-    bool sectorSelectionMode = false;
+
+    bool editingSector = false;
+    int selectedSector = -1;
+    bool creatableSector = false;
+
+    enum Mode {
+        MODE_DOT,
+        MODE_SECTOR,
+        MODE_WALL,
+
+        MODE_COUNT
+    };
+    Mode currentMode = MODE_DOT;
 }
 
 bool SamePoint(const Vector2 &a, const Vector2 &b) {
@@ -442,7 +455,7 @@ namespace MapEditor {
             const float offset = static_cast<float>(i) / totalSectors;
             const SDL_FColor thisSectorColor = {std::fmod((hoveredSectorColor.r + offset),1.0f), std::fmod((hoveredSectorColor.g + offset),1.0f), std::fmod((hoveredSectorColor.b + offset),1.0f), hoveredSectorColor.a};
             const SDL_FColor sectorColor =
-                i == hoveredSectorIndex && sectorSelectionMode ? hoveredSectorColor : thisSectorColor;
+                i == hoveredSectorIndex && currentMode == MODE_SECTOR ? hoveredSectorColor : thisSectorColor;
 
             for (const Triangle& triangle : sectors[i].triangles) {
                 DrawFilledTriangle(triangle, sectorColor);
@@ -554,6 +567,26 @@ namespace MapEditor {
         }
     }
 
+    const char* GetModeName(const Mode mode) {
+        switch (mode) {
+            case MODE_DOT:
+                return "Dot Mode";
+
+            case MODE_WALL:
+                return "Wall Mode";
+
+            case MODE_SECTOR:
+                return "Sector Mode";
+
+            default:
+                return "Unknown Mode";
+        }
+    }
+
+    void MoveMode() {
+        currentMode = static_cast<Mode>((currentMode + 1) % MODE_COUNT);
+    }
+
     void Update() {
         SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
         SDL_RenderClear(renderer);
@@ -578,21 +611,22 @@ namespace MapEditor {
                 const Vector2 mouseWorld = ScreenToWorld(mouseScreen, cameraPos);
                 const Vector2 snappedWorld = SnapToGrid(mouseWorld);
 
-                if (sectorSelectionMode) {
+                if (currentMode == MODE_SECTOR) {
                     if (DotExistsAt(snappedWorld)) {
                         AddSectorSelectionPoint(snappedWorld);
+                        creatableSector = sectorBeingCreated.size() >= 3;
                     }
                     else {
                         for (int i = static_cast<int>(sectors.size()) - 1; i >= 0; --i) {
                             if (IsPointInsidePolygon(sectors[i].vertices, mouseWorld)) {
-                                SDL_Log("%d", sectors[i].floorHeight);
+                                editingSector = !editingSector;
+                                selectedSector = i;
                                 break;
                             }
                         }
                     }
                 }
-                else {
-                    // Outside sector mode, left click toggles dots.
+                else if (currentMode == MODE_DOT) {
                     bool dotAlreadyExists = false;
 
                     for (int i = 0; i < static_cast<int>(placedDots.size()); ++i) {
@@ -613,7 +647,8 @@ namespace MapEditor {
                         placedDots.push_back(snappedWorld);
                     }
                 }
-            } else if (InputManager::GetMouseButtonDown(SDL_BUTTON_RIGHT)) {
+            }
+            if (InputManager::GetMouseButtonDown(SDL_BUTTON_LEFT) && currentMode == MODE_WALL) {
                 const Vector2 mouseScreen = InputManager::GetMousePosition();
                 const Vector2 mouseWorld = ScreenToWorld(mouseScreen, cameraPos);
                 const Vector2 snappedWorld = SnapToGrid(mouseWorld);
@@ -624,7 +659,7 @@ namespace MapEditor {
                 }
             }
 
-            if (InputManager::GetMouseButton(SDL_BUTTON_RIGHT) && drawingLine) {
+            if (InputManager::GetMouseButton(SDL_BUTTON_LEFT) && drawingLine &&currentMode == MODE_WALL) {
                 const Vector2 mouseScreen = InputManager::GetMousePosition();
                 const Vector2 mouseWorld = ScreenToWorld(mouseScreen, cameraPos);
                 const Vector2 snappedWorld = SnapToGrid(mouseWorld);
@@ -636,7 +671,7 @@ namespace MapEditor {
                 DrawThickLine(renderer, startScreen, endScreen, 5.0f);
             }
 
-            if (InputManager::GetMouseButtonUp(SDL_BUTTON_RIGHT) && drawingLine) {
+            if (InputManager::GetMouseButtonUp(SDL_BUTTON_LEFT) && drawingLine && currentMode == MODE_WALL) {
                 const Vector2 mouseScreen = InputManager::GetMousePosition();
                 const Vector2 mouseWorld = ScreenToWorld(mouseScreen, cameraPos);
                 const Vector2 snappedWorld = SnapToGrid(mouseWorld);
@@ -653,23 +688,12 @@ namespace MapEditor {
         }
 
         if (!keyboardBlockedByImgui) {
-            if (InputManager::GetKeyDown(SDL_SCANCODE_E)) {
-                if (!sectorSelectionMode) {
-                    sectorSelectionMode = true;
-                    sectorBeingCreated.clear();
-                    SDL_Log("Sector selection mode ON");
-                }
-                else {
-                    sectorSelectionMode = false;
-                    FinishSectorSelection();
-                    SDL_Log("Sector selection mode OFF");
-                }
-            }
+            if (InputManager::GetKeyDown(SDL_SCANCODE_Q)) MoveMode();
         }
 
         DrawGridDots();
         DrawExistingSectors();
-        if (sectorSelectionMode) DrawSectorPreview();
+        if (currentMode == MODE_SECTOR) DrawSectorPreview();
 
 
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
@@ -695,22 +719,60 @@ namespace MapEditor {
 
         ImGui::Begin("Editor");
 
-        ImGui::Text("Wolfy Level Editor");
+        if (ImGui::Button("Mode")) {
+            const Mode previousMode = currentMode;
 
-        if (ImGui::Button("Sector Mode")) {
-            sectorSelectionMode = !sectorSelectionMode;
+            MoveMode();
 
-            if (sectorSelectionMode) {
-                sectorBeingCreated.clear();
-            } else {
+            if (previousMode == MODE_SECTOR) {
                 FinishSectorSelection();
+                creatableSector = false;
+            }
+
+            if (currentMode == MODE_SECTOR) {
+                sectorBeingCreated.clear();
+                creatableSector = false;
             }
         }
 
-        ImGui::Text("Dots: %d", static_cast<int>(placedDots.size()));
+        ImGui::Text("%s", GetModeName(currentMode));
+
+        ImGui::Text("\nDots: %d", static_cast<int>(placedDots.size()));
         ImGui::Text("Lines: %d", static_cast<int>(placedLines.size()));
         ImGui::Text("Sectors: %d", static_cast<int>(sectors.size()));
-        
+
+        if (editingSector && currentMode == MODE_SECTOR) {
+            ImGui::Begin("test", &editingSector);
+
+            float ceilHeight = sectors[selectedSector].ceilingHeight;
+            float floorHeight = sectors[selectedSector].floorHeight;
+
+            ImGui::InputFloat("Ceil Height ", &ceilHeight);
+            ImGui::InputFloat("Floor Height ", &floorHeight);
+
+            sectors[selectedSector].ceilingHeight = ceilHeight;
+            sectors[selectedSector].floorHeight = floorHeight;
+
+            if (ImGui::Button("Close")) editingSector = false;
+
+            ImGui::End();
+        }
+
+        if (creatableSector) {
+            if (ImGui::Button("Create Sector")) {
+                if (sectorBeingCreated.size() >= 3) {
+                    // If the sector is not already closed, close it by adding
+                    // the first point to the end.
+                    if (!SamePoint(sectorBeingCreated.front(), sectorBeingCreated.back())) {
+                        sectorBeingCreated.push_back(sectorBeingCreated.front());
+                    }
+
+                    FinishSectorSelection();
+
+                    creatableSector = false;
+                }
+            }
+        }
 
         ImGui::End();
 
