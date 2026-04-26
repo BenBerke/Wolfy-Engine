@@ -15,38 +15,58 @@ namespace {
 namespace InputManager {
 
     void BeginFrame() {
+        // First time setup
         if (!keyboardState) {
             SDL_PumpEvents();
+
             keyboardState = SDL_GetKeyboardState(nullptr);
+            std::copy_n(keyboardState, SDL_SCANCODE_COUNT, prevKeyboardState);
+
+            mouseState = SDL_GetMouseState(&mousePosition.x, &mousePosition.y);
+            prevMouseState = mouseState;
+
+            mouseDelta = {0.0f, 0.0f};
+
+            return;
         }
 
+        // Save previous frame input
         std::copy_n(keyboardState, SDL_SCANCODE_COUNT, prevKeyboardState);
+        prevMouseState = mouseState;
 
+        // Update current frame input
         SDL_PumpEvents();
 
         keyboardState = SDL_GetKeyboardState(nullptr);
+
+        Vector2 previousMousePosition = mousePosition;
+
         mouseState = SDL_GetMouseState(&mousePosition.x, &mousePosition.y);
-        SDL_GetRelativeMouseState(&mouseDelta.x, &mouseDelta.y);
+
+        mouseDelta = {
+            mousePosition.x - previousMousePosition.x,
+            mousePosition.y - previousMousePosition.y
+        };
     }
 
-    bool GetKeyDown(SDL_Scancode key) {
+    bool GetKeyDown(const SDL_Scancode key) {
         return keyboardState[key] && !prevKeyboardState[key];
     }
 
-    bool GetKey(SDL_Scancode key) {
+    bool GetKey(const SDL_Scancode key) {
         return keyboardState[key];
     }
 
-    bool GetKeyUp(SDL_Scancode key) {
+    bool GetKeyUp(const SDL_Scancode key) {
         return !keyboardState[key] && prevKeyboardState[key];
     }
 
-    bool GetMouseButtonDown(Uint32 button) {
+    bool GetMouseButtonDown(const Uint32 button) {
         return (mouseState & SDL_BUTTON_MASK(button)) &&
                !(prevMouseState & SDL_BUTTON_MASK(button));
     }
 
-    bool GetMouseButton(Uint32 button) {
+    bool GetMouseButton(const Uint32 button) {
         return (mouseState & SDL_BUTTON_MASK(button)) != 0;
     }
 

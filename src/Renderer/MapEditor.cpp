@@ -4,6 +4,7 @@
 
 #include "../../Headers/Renderer/MapEditor.h"
 #include "../../Headers/Math/Vector/Vector2Math.h"
+#include "../../Headers/Engine/InputManager.h"
 
 #include <algorithm>
 #include <SDL3/SDL_init.h>
@@ -14,9 +15,195 @@
 
 #define FONT_SIZE 24
 
-namespace MapEditor {
+#define GRID_SIZE 32.0f
 
-//region Triangulation
+namespace {
+    Vector2 cameraPos = {0, 0};
+    std::vector<Vector2> placedDots;
+
+    struct EditorLine {
+        Vector2 start;
+        Vector2 end;
+    };
+
+    std::vector<EditorLine> placedLines;
+
+    bool drawingLine = false;
+    Vector2 lineStartWorld = {0.0f, 0.0f};
+
+    std::vector<Vector2> sectorBeingCreated;
+    bool sectorSelectionMode = false;
+}
+
+bool SamePoint(const Vector2 &a, const Vector2 &b) {
+    return a.x == b.x && a.y == b.y;
+}
+
+bool DotExistsAt(const Vector2 &point) {
+    for (const Vector2 &placedDot: placedDots) {
+        if (SamePoint(placedDot, point)) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+bool IsDotConnectedToLine(const Vector2 &point) {
+    for (const EditorLine &line: placedLines) {
+        if (SamePoint(line.start, point) || SamePoint(line.end, point)) {
+            return true;
+        }
+    }
+
+    // Optional: also protect the dot while currently drawing a line from it
+    if (drawingLine && SamePoint(lineStartWorld, point)) {
+        return true;
+    }
+
+    return false;
+}
+
+void DrawThickLine(SDL_Renderer *renderer, Vector2 start, Vector2 end, float thickness) {
+    const float dx = end.x - start.x;
+    const float dy = end.y - start.y;
+
+    const float length = std::sqrt(dx * dx + dy * dy);
+    if (length <= 0.0001f) {
+        return;
+    }
+
+    const float normalX = -dy / length;
+    const float normalY = dx / length;
+
+    const int halfThickness = static_cast<int>(thickness * 0.5f);
+
+    for (int i = -halfThickness; i <= halfThickness; ++i) {
+        const float offsetX = normalX * static_cast<float>(i);
+        const float offsetY = normalY * static_cast<float>(i);
+
+        SDL_RenderLine(
+            renderer,
+            start.x + offsetX,
+            start.y + offsetY,
+            end.x + offsetX,
+            end.y + offsetY
+        );
+    }
+}
+
+bool HasLineBetween(const Vector2 &a, const Vector2 &b) {
+    for (const EditorLine &line: placedLines) {
+        const bool sameDirection = SamePoint(line.start, a) && SamePoint(line.end, b);
+        const bool oppositeDirection = SamePoint(line.start, b) && SamePoint(line.end, a);
+
+        if (sameDirection || oppositeDirection) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+std::vector<Vector2> GetSectorVerticesWithoutClosingDuplicate() {
+    std::vector<Vector2> result = sectorBeingCreated;
+
+    if (result.size() >= 2 && SamePoint(result.front(), result.back())) {
+        result.pop_back();
+    }
+
+    return result;
+}
+
+bool IsSectorClosed(const std::vector<Vector2> &vertices) {
+    if (vertices.size() < 3) {
+        return false;
+    }
+
+    // Case 1: user clicked the first point again at the end.
+    if (sectorBeingCreated.size() >= 4 &&
+        SamePoint(sectorBeingCreated.front(), sectorBeingCreated.back())) {
+        return true;
+    }
+
+    // Case 2: selected points are connected by existing editor lines.
+    for (int i = 0; i < static_cast<int>(vertices.size()); ++i) {
+        const Vector2 &a = vertices[i];
+        const Vector2 &b = vertices[(i + 1) % vertices.size()];
+
+        if (!HasLineBetween(a, b)) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+void AddSectorSelectionPoint(const Vector2 &point) {
+    // Allow clicking the first point again to close the shape.
+    if (sectorBeingCreated.size() >= 3 && SamePoint(point, sectorBeingCreated.front())) {
+        sectorBeingCreated.push_back(point);
+        return;
+    }
+
+    // Ignore duplicate points elsewhere.
+    for (const Vector2 &existingPoint: sectorBeingCreated) {
+        if (SamePoint(existingPoint, point)) {
+            return;
+        }
+    }
+
+    sectorBeingCreated.push_back(point);
+}
+
+Vector2 ScreenToWorld(const Vector2 &screenPos, const Vector2 &cameraPos) {
+    return {
+        screenPos.x - SCREEN_WIDTH * 0.5f + cameraPos.x,
+        SCREEN_HEIGHT * 0.5f - screenPos.y + cameraPos.y
+    };
+}
+
+Vector2 WorldToScreen(const Vector2 &worldPos, const Vector2 &cameraPos) {
+    return {
+        worldPos.x - cameraPos.x + SCREEN_WIDTH * 0.5f,
+        SCREEN_HEIGHT * 0.5f - (worldPos.y - cameraPos.y)
+    };
+}
+
+Vector2 SnapToGrid(const Vector2 &worldPos) {
+    return {
+        std::round(worldPos.x / GRID_SIZE) * GRID_SIZE,
+        std::round(worldPos.y / GRID_SIZE) * GRID_SIZE
+    };
+}
+
+bool IsPointInsidePolygon(const std::vector<Vector2>& polygon, const Vector2& point) {
+    bool inside = false;
+
+    for (int i = 0, j = static_cast<int>(polygon.size()) - 1;
+         i < static_cast<int>(polygon.size());
+         j = i++) {
+
+        const Vector2& a = polygon[i];
+        const Vector2& b = polygon[j];
+
+        const bool crossesY = (a.y > point.y) != (b.y > point.y);
+
+        if (crossesY) {
+            const float intersectX =
+                (b.x - a.x) * (point.y - a.y) / (b.y - a.y) + a.x;
+
+            if (point.x < intersectX) {
+                inside = !inside;
+            }
+        }
+         }
+
+    return inside;
+}
+
+namespace MapEditor {
+    //region Triangulation
     static constexpr float EPSILON = 0.00001f;
 
     // Cross product of the triangle/turn A -> B -> C
@@ -24,7 +211,7 @@ namespace MapEditor {
         return Vector2Math::Cross(b - a, c - a);
     }
 
-    float polygonArea(const std::vector<Vector2>& vertices) {
+    float polygonArea(const std::vector<Vector2> &vertices) {
         float area = 0.0f;
 
         for (int i = 0; i < vertices.size(); ++i) {
@@ -47,7 +234,7 @@ namespace MapEditor {
                cp3 >= -EPSILON;
     }
 
-    bool isEar(const std::vector<Vector2>& vertices, const int prev, const int curr, const int next) {
+    bool isEar(const std::vector<Vector2> &vertices, const int prev, const int curr, const int next) {
         const Vector2 a = vertices[prev];
         const Vector2 b = vertices[curr];
         const Vector2 c = vertices[next];
@@ -136,13 +323,156 @@ namespace MapEditor {
         sectors.push_back(sector);
     }
 
+    void CreateSector(
+    const std::vector<Vector2>& vertices,
+    float ceilHeight,
+    const float floorHeight,
+    Vector3 ceilColor,
+    const Vector3 floorColor,
+    const int ceilTextureIndex,
+    const int floorTextureIndex
+) {
+        Sector newSector = {
+            vertices,
+            {},
+            ceilHeight,
+            floorHeight,
+            ceilColor,
+            floorColor,
+            ceilTextureIndex,
+            floorTextureIndex
+        };
+
+        newSector.triangles = triangulate(newSector.vertices);
+
+        AddSector(newSector);
+    }
+
     void TriangulateSectors() {
-        for (Sector& sector : sectors) {
+        for (Sector &sector: sectors) {
             sector.triangles.clear();
 
             if (sector.vertices.size() < 3) continue;
             sector.triangles = triangulate(sector.vertices);
         }
+    }
+
+    void DrawFilledTriangle(const Triangle &triangle, SDL_FColor color) {
+        const Vector2 a = WorldToScreen(triangle.a, cameraPos);
+        const Vector2 b = WorldToScreen(triangle.b, cameraPos);
+        const Vector2 c = WorldToScreen(triangle.c, cameraPos);
+
+        SDL_Vertex vertices[3];
+
+        vertices[0].position = {a.x, a.y};
+        vertices[0].color = color;
+        vertices[0].tex_coord = {0.0f, 0.0f};
+
+        vertices[1].position = {b.x, b.y};
+        vertices[1].color = color;
+        vertices[1].tex_coord = {0.0f, 0.0f};
+
+        vertices[2].position = {c.x, c.y};
+        vertices[2].color = color;
+        vertices[2].tex_coord = {0.0f, 0.0f};
+
+        SDL_RenderGeometry(renderer, nullptr, vertices, 3, nullptr, 0);
+    }
+
+    void DrawSectorPreview() {
+        const std::vector<Vector2> previewVertices = GetSectorVerticesWithoutClosingDuplicate();
+
+        if (previewVertices.size() < 3) {
+            return;
+        }
+
+        const std::vector<Triangle> previewTriangles = triangulate(previewVertices);
+
+        SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+
+        const SDL_FColor redPreviewColor = {
+            1.0f,
+            0.0f,
+            0.0f,
+            0.30f
+        };
+
+        for (const Triangle &triangle: previewTriangles) {
+            DrawFilledTriangle(triangle, redPreviewColor);
+        }
+
+        SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_NONE);
+    }
+
+    void DrawExistingSectors() {
+        const Vector2 mouseScreen = InputManager::GetMousePosition();
+        const Vector2 mouseWorld = ScreenToWorld(mouseScreen, cameraPos);
+
+        int hoveredSectorIndex = -1;
+
+        for (int i = static_cast<int>(sectors.size()) - 1; i >= 0; --i) {
+            if (IsPointInsidePolygon(sectors[i].vertices, mouseWorld)) {
+                hoveredSectorIndex = i;
+                break;
+            }
+        }
+
+        SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+
+        const SDL_FColor normalSectorColor = {
+            0.0f,
+            0.3f,
+            1.0f,
+            0.25f
+        };
+
+        const SDL_FColor hoveredSectorColor = {
+            1.0f,
+            0.75f,
+            0.0f,
+            0.45f
+        };
+
+        for (int i = 0; i < static_cast<int>(sectors.size()); ++i) {
+            const SDL_FColor sectorColor =
+                i == hoveredSectorIndex ? hoveredSectorColor : normalSectorColor;
+
+            for (const Triangle& triangle : sectors[i].triangles) {
+                DrawFilledTriangle(triangle, sectorColor);
+            }
+        }
+
+        SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_NONE);
+    }
+
+    void FinishSectorSelection() {
+        const std::vector<Vector2> finalVertices = GetSectorVerticesWithoutClosingDuplicate();
+
+        if (finalVertices.size() < 3) {
+            SDL_Log("Sector cancelled: fewer than 3 points");
+            sectorBeingCreated.clear();
+            return;
+        }
+
+        if (!IsSectorClosed(finalVertices)) {
+            SDL_Log("Sector cancelled: shape is not closed");
+            sectorBeingCreated.clear();
+            return;
+        }
+
+        CreateSector(
+            finalVertices,
+            40.0f, // ceiling height
+            0.0f, // floor height
+            {255.0f, 255.0f, 255.0f}, // ceiling colour
+            {255.0f, 255.0f, 255.0f}, // floor colour
+            -1, // ceiling texture
+            -1 // floor texture
+        );
+
+        SDL_Log("Sector created with %d vertices", static_cast<int>(finalVertices.size()));
+
+        sectorBeingCreated.clear();
     }
 
     void Start() {
@@ -171,14 +501,168 @@ namespace MapEditor {
 
         textEngine = TTF_CreateRendererTextEngine(renderer);
     }
-   // static TTF_Text* controls = TTF_CreateText(textEngine, font, "Left / Right arrow to step backwards / forwards. Space to auto step", 0);
+
+    // static TTF_Text* controls = TTF_CreateText(textEngine, font, "Left / Right arrow to step backwards / forwards. Space to auto step", 0);
+
+    void DrawGridDots() {
+        constexpr float dotSize = 3.0f;
+
+        SDL_SetRenderDrawColor(renderer, 180, 180, 180, 255);
+
+        // Work out visible world area
+        const float leftWorld = cameraPos.x - SCREEN_WIDTH * 0.5f;
+        const float rightWorld = cameraPos.x + SCREEN_WIDTH * 0.5f;
+        const float bottomWorld = cameraPos.y - SCREEN_HEIGHT * 0.5f;
+        const float topWorld = cameraPos.y + SCREEN_HEIGHT * 0.5f;
+
+        // Snap the first dot to the grid
+        const float startX = std::floor(leftWorld / GRID_SIZE) * GRID_SIZE;
+        const float startY = std::floor(bottomWorld / GRID_SIZE) * GRID_SIZE;
+
+        for (float worldX = startX; worldX <= rightWorld; worldX += GRID_SIZE) {
+            for (float worldY = startY; worldY <= topWorld; worldY += GRID_SIZE) {
+                // Convert world position to screen position
+                const float screenX = (worldX - cameraPos.x) + SCREEN_WIDTH * 0.5f;
+                const float screenY = SCREEN_HEIGHT * 0.5f - (worldY - cameraPos.y);
+
+                SDL_FRect dotRect = {
+                    screenX - dotSize * 0.5f,
+                    screenY - dotSize * 0.5f,
+                    dotSize,
+                    dotSize
+                };
+
+                SDL_RenderFillRect(renderer, &dotRect);
+            }
+        }
+    }
 
     void Update() {
-        SDL_SetRenderDrawColor(renderer,255, 255, 255, 255);
+        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
         SDL_RenderClear(renderer);
 
-        SDL_SetRenderDrawColor(renderer,9, 1, 9, 255);
-       // TTF_DrawRendererText(controls, 15.0f, 50);
+        if (InputManager::GetMouseButton(SDL_BUTTON_MIDDLE)) {
+            const Vector2 mouseDelta = InputManager::GetMouseDelta();
+
+            cameraPos.x -= mouseDelta.x;
+            cameraPos.y += mouseDelta.y;
+        }
+        else if (InputManager::GetMouseButtonDown(SDL_BUTTON_LEFT)) {
+            const Vector2 mouseScreen = InputManager::GetMousePosition();
+            const Vector2 mouseWorld = ScreenToWorld(mouseScreen, cameraPos);
+            const Vector2 snappedWorld = SnapToGrid(mouseWorld);
+
+            if (sectorSelectionMode) {
+                if (DotExistsAt(snappedWorld)) {
+                    AddSectorSelectionPoint(snappedWorld);
+                }
+                else {
+                    for (int i = static_cast<int>(sectors.size()) - 1; i >= 0; --i) {
+                        if (IsPointInsidePolygon(sectors[i].vertices, mouseWorld)) {
+                            SDL_Log("%d", sectors[i].floorHeight);
+                            break;
+                        }
+                    }
+                }
+            }
+            else {
+                // Outside sector mode, left click toggles dots.
+                bool dotAlreadyExists = false;
+
+                for (int i = 0; i < static_cast<int>(placedDots.size()); ++i) {
+                    if (SamePoint(placedDots[i], snappedWorld)) {
+                        dotAlreadyExists = true;
+
+                        if (IsDotConnectedToLine(snappedWorld)) {
+                            SDL_Log("Cannot delete dot because it has a line connected to it");
+                            break;
+                        }
+
+                        placedDots.erase(placedDots.begin() + i);
+                        break;
+                    }
+                }
+
+                if (!dotAlreadyExists) {
+                    placedDots.push_back(snappedWorld);
+                }
+            }
+        } else if (InputManager::GetMouseButtonDown(SDL_BUTTON_RIGHT)) {
+            const Vector2 mouseScreen = InputManager::GetMousePosition();
+            const Vector2 mouseWorld = ScreenToWorld(mouseScreen, cameraPos);
+            const Vector2 snappedWorld = SnapToGrid(mouseWorld);
+
+            if (DotExistsAt(snappedWorld)) {
+                drawingLine = true;
+                lineStartWorld = snappedWorld;
+            }
+        }
+
+        if (InputManager::GetMouseButton(SDL_BUTTON_RIGHT) && drawingLine) {
+            const Vector2 mouseScreen = InputManager::GetMousePosition();
+            const Vector2 mouseWorld = ScreenToWorld(mouseScreen, cameraPos);
+            const Vector2 snappedWorld = SnapToGrid(mouseWorld);
+
+            const Vector2 startScreen = WorldToScreen(lineStartWorld, cameraPos);
+            const Vector2 endScreen = WorldToScreen(snappedWorld, cameraPos);
+
+            SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+            DrawThickLine(renderer, startScreen, endScreen, 5.0f);
+        }
+
+        if (InputManager::GetMouseButtonUp(SDL_BUTTON_RIGHT) && drawingLine) {
+            const Vector2 mouseScreen = InputManager::GetMousePosition();
+            const Vector2 mouseWorld = ScreenToWorld(mouseScreen, cameraPos);
+            const Vector2 snappedWorld = SnapToGrid(mouseWorld);
+
+            if (DotExistsAt(snappedWorld) && !SamePoint(lineStartWorld, snappedWorld)) {
+                placedLines.push_back({
+                    lineStartWorld,
+                    snappedWorld
+                });
+            }
+
+            drawingLine = false;
+        }
+
+        if (InputManager::GetKeyDown(SDL_SCANCODE_E)) {
+            if (!sectorSelectionMode) {
+                sectorSelectionMode = true;
+                sectorBeingCreated.clear();
+                SDL_Log("Sector selection mode ON");
+            }
+            else {
+                sectorSelectionMode = false;
+                FinishSectorSelection();
+                SDL_Log("Sector selection mode OFF");
+            }
+        }
+
+        DrawGridDots();
+        DrawExistingSectors();
+        if (sectorSelectionMode) DrawSectorPreview();
+
+
+        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+        for (const Vector2 &dotWorld: placedDots) {
+            Vector2 dotScreen = WorldToScreen(dotWorld, cameraPos);
+
+            SDL_FRect dotRect = {
+                dotScreen.x - 3.0f,
+                dotScreen.y - 3.0f,
+                6.0f,
+                6.0f
+            };
+            SDL_RenderFillRect(renderer, &dotRect);
+        }
+        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+        for (const EditorLine &line: placedLines) {
+            const Vector2 startScreen = WorldToScreen(line.start, cameraPos);
+            const Vector2 endScreen = WorldToScreen(line.end, cameraPos);
+
+            DrawThickLine(renderer, startScreen, endScreen, 5.0f);
+        }
+        // TTF_DrawRendererText(controls, 15.0f, 50);
 
         SDL_RenderPresent(renderer);
     }

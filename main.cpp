@@ -38,6 +38,7 @@ int main() {
     }
     MapEditor::Destroy();
 
+    return 0;
     if (!Renderer::Initialize()) {
         SDL_Log("Failed to initialize Renderer: %s", SDL_GetError());
         return 1;
