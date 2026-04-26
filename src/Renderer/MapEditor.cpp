@@ -13,7 +13,7 @@ namespace MapEditor {
     static constexpr float EPSILON = 0.00001f;
 
     // Cross product of the triangle/turn A -> B -> C
-    float crossAtPoint(Vector2 a, Vector2 b, Vector2 c) {
+    float crossAtPoint(const Vector2 a, const Vector2 b, const Vector2 c) {
         return Vector2Math::Cross(b - a, c - a);
     }
 

@@ -17,6 +17,8 @@
 
 #include "../../Headers/Math/Vector/Vector4.h"
 
+#include "../../Headers/Objects/Player.h"
+
 #define SCREEN_WIDTH 1080
 #define SCREEN_HEIGHT 960
 
@@ -42,8 +44,6 @@ static GLsizei flatTriangleCount = 0;
 
 constexpr int RENDER_WALL = 0;
 constexpr int RENDER_FLAT = 1;
-
-constexpr float PLAYER_HEIGHT = 16.0f;
 
 namespace {
     struct Character {
@@ -75,57 +75,110 @@ namespace {
         return index >= 0 && index < static_cast<int>(MapEditor::sectors.size());
     }
 
-    void GetWallHeights(const Wall &wall, float &floorHeight, float &ceilingHeight) {
-        // Prefer frontSector for now.
-        // Later, for portals, you can draw separate upper/lower wall pieces.
-        int sectorIndex = -1;
+    bool IsPortalWall(const Wall &wall) {
+        return IsValidSectorIndex(wall.frontSector) &&
+               IsValidSectorIndex(wall.backSector);
+    }
 
-        if (IsValidSectorIndex(wall.frontSector)) {
-            sectorIndex = wall.frontSector;
-        } else if (IsValidSectorIndex(wall.backSector)) {
-            sectorIndex = wall.backSector;
-        }
-
-        if (sectorIndex == -1) {
-            floorHeight = 0.0f;
-            ceilingHeight = 32.0f;
+    void PushGpuWallPiece(
+        const Wall &wall,
+        const float bottomHeight,
+        const float topHeight,
+        const Vector4 &color
+    ) {
+        if (topHeight <= bottomHeight + 0.0001f) {
             return;
         }
 
-        const Sector &sector = MapEditor::sectors[sectorIndex];
+        GpuWall gpuWall;
 
-        floorHeight = sector.floorHeight;
-        ceilingHeight = sector.ceilingHeight;
+        gpuWall.startEnd = {
+            wall.start.x,
+            wall.start.y,
+            wall.end.x,
+            wall.end.y
+        };
+
+        gpuWall.color = color;
+
+        gpuWall.heights = {
+            bottomHeight,
+            topHeight,
+            0.0f,
+            0.0f
+        };
+
+        gpuWalls.push_back(gpuWall);
     }
 
     void BuildGpuWallsFromMap() {
         gpuWalls.clear();
 
         for (const Wall &wall: MapEditor::walls) {
-            float floorHeight = 0.0f;
-            float ceilingHeight = 32.0f;
+            // -----------------------------------------------------
+            // Portal wall:
+            // draw only the height differences between the sectors.
+            // -----------------------------------------------------
+            if (IsPortalWall(wall)) {
+                const Sector &front = MapEditor::sectors[wall.frontSector];
+                const Sector &back = MapEditor::sectors[wall.backSector];
 
-            GetWallHeights(wall, floorHeight, ceilingHeight);
+                // Lower wall piece, for floor height differences.
+                const float lowerBottom = std::min(front.floorHeight, back.floorHeight);
+                const float lowerTop = std::max(front.floorHeight, back.floorHeight);
 
-            GpuWall gpuWall;
+                PushGpuWallPiece(
+                    wall,
+                    lowerBottom,
+                    lowerTop,
+                    wall.color
+                );
 
-            gpuWall.startEnd = {
-                wall.start.x,
-                wall.start.y,
-                wall.end.x,
-                wall.end.y
-            };
+                // Upper wall piece, for ceiling height differences.
+                const float upperBottom = std::min(front.ceilingHeight, back.ceilingHeight);
+                const float upperTop = std::max(front.ceilingHeight, back.ceilingHeight);
 
-            gpuWall.color = wall.color;
+                PushGpuWallPiece(
+                    wall,
+                    upperBottom,
+                    upperTop,
+                    wall.color
+                );
 
-            gpuWall.heights = {
-                floorHeight,
-                ceilingHeight,
-                0.0f,
-                0.0f
-            };
+                continue;
+            }
 
-            gpuWalls.push_back(gpuWall);
+            // -----------------------------------------------------
+            // Solid wall:
+            // draw from sector floor to sector ceiling.
+            // -----------------------------------------------------
+            int sectorIndex = -1;
+
+            if (IsValidSectorIndex(wall.frontSector)) {
+                sectorIndex = wall.frontSector;
+            } else if (IsValidSectorIndex(wall.backSector)) {
+                sectorIndex = wall.backSector;
+            }
+
+            if (sectorIndex == -1) {
+                PushGpuWallPiece(
+                    wall,
+                    0.0f,
+                    32.0f,
+                    wall.color
+                );
+
+                continue;
+            }
+
+            const Sector &sector = MapEditor::sectors[sectorIndex];
+
+            PushGpuWallPiece(
+                wall,
+                sector.floorHeight,
+                sector.ceilingHeight,
+                wall.color
+            );
         }
 
         gpuWallCount = static_cast<GLsizei>(gpuWalls.size());
@@ -280,7 +333,7 @@ namespace {
         flatTriangles.clear();
         visibleFlatTriangles.clear();
 
-        for (const Sector& sector : MapEditor::sectors) {
+        for (const Sector &sector: MapEditor::sectors) {
             const Vector4 floorColor = {
                 sector.floorColor.x,
                 sector.floorColor.y,
@@ -295,7 +348,7 @@ namespace {
                 255.0f
             };
 
-            for (const Triangle& triangle : sector.triangles) {
+            for (const Triangle &triangle: sector.triangles) {
                 GpuFlatTriangle floorTriangle;
 
                 floorTriangle.a = {triangle.a.x, triangle.a.y, sector.floorHeight, 0.0f};
@@ -679,7 +732,7 @@ namespace Renderer {
 
         glUniform2f(playerPosUniform, playerPos.x, playerPos.y);
         glUniform1f(playerAngleUniform, playerAngle);
-        glUniform1f(playerHeightUniform, PLAYER_HEIGHT);
+        glUniform1f(playerHeightUniform, Player::currentEyeHeight);
 
         // Rebuild floor/ceiling triangles after clipping them against the camera near plane.
         // This fixes the stretching/weird movement when a flat triangle goes behind the player.

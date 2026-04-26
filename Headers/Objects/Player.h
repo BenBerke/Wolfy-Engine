@@ -5,6 +5,10 @@
 #ifndef WOLFY_ENGINE_PLAYER_H
 #define WOLFY_ENGINE_PLAYER_H
 
+#include <vector>
+
+#include "Wall.h"
+#include "Sector.h"
 #include "../Math/Vector/Vector2.h"
 
 namespace Player {
@@ -13,8 +17,18 @@ namespace Player {
     inline float angle = 0;
 
     inline float speed = 45.0f;
+    inline float runningSpeed = 90.0f;
+    inline float size = 1.0f;
+    inline float eyeHeight = 12.0f;
+    inline float stepSize = 8.0f;
 
-    void Update();
+    inline int currentSector;
+    inline float currentSpeed;
+    inline float currentEyeHeight;
+
+
+    int FindCurrentSector(const std::vector<Sector>& sectors);
+    void Update(const std::vector<Wall>& walls, const std::vector<Sector>& sectors);
 }
 
 #endif //WOLFY_ENGINE_PLAYER_H
