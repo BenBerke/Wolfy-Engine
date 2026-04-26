@@ -33,7 +33,7 @@ int main() {
     if (editorMode) MapEditor::Start();
     while (editorMode) {
         InputManager::BeginFrame();
-        editorMode = !InputManager::GetKeyDown(SDL_SCANCODE_ESCAPE);
+        editorMode = !(InputManager::GetKeyDown(SDL_SCANCODE_ESCAPE) || InputManager::QuitRequested());
         MapEditor::Update();
     }
     MapEditor::Destroy();
@@ -82,7 +82,7 @@ int main() {
         Player::Update(MapEditor::walls, MapEditor::sectors);
 
 
-        running = !InputManager::GetKeyDown(SDL_SCANCODE_ESCAPE);
+        running = !InputManager::GetKeyDown(SDL_SCANCODE_ESCAPE) || InputManager::QuitRequested();
 
         if (InputManager::GetKeyDown(SDL_SCANCODE_1)) Player::position.x += 1;
 

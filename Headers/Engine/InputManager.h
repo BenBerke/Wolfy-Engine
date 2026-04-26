@@ -6,6 +6,8 @@
 namespace InputManager {
     void BeginFrame();
 
+    bool QuitRequested();
+
     bool GetKeyDown(SDL_Scancode key);
     bool GetKey(SDL_Scancode key);
     bool GetKeyUp(SDL_Scancode key);

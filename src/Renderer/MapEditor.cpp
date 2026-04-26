@@ -6,9 +6,14 @@
 #include "../../Headers/Math/Vector/Vector2Math.h"
 #include "../../Headers/Engine/InputManager.h"
 
+#include "imgui.h"
+
 #include <algorithm>
 #include <SDL3/SDL_init.h>
 #include <SDL3/SDL_log.h>
+
+#include "imgui_impl_sdl3.h"
+#include "imgui_impl_sdlrenderer3.h"
 
 #define SCREEN_WIDTH 1680
 #define SCREEN_HEIGHT 960
@@ -318,7 +323,6 @@ namespace MapEditor {
     void AddWall(const Wall &wall) {
         walls.push_back(wall);
     }
-
     void AddSector(const Sector &sector) {
         sectors.push_back(sector);
     }
@@ -357,7 +361,7 @@ namespace MapEditor {
         }
     }
 
-    void DrawFilledTriangle(const Triangle &triangle, SDL_FColor color) {
+    void DrawFilledTriangle(const Triangle &triangle, const SDL_FColor color) {
         const Vector2 a = WorldToScreen(triangle.a, cameraPos);
         const Vector2 b = WorldToScreen(triangle.b, cameraPos);
         const Vector2 c = WorldToScreen(triangle.c, cameraPos);
@@ -433,9 +437,12 @@ namespace MapEditor {
             0.45f
         };
 
-        for (int i = 0; i < static_cast<int>(sectors.size()); ++i) {
+        const int totalSectors = static_cast<int>(sectors.size());
+        for (int i = 0; i < totalSectors; ++i) {
+            const float offset = static_cast<float>(i) / totalSectors;
+            const SDL_FColor thisSectorColor = {std::fmod((hoveredSectorColor.r + offset),1.0f), std::fmod((hoveredSectorColor.g + offset),1.0f), std::fmod((hoveredSectorColor.b + offset),1.0f), hoveredSectorColor.a};
             const SDL_FColor sectorColor =
-                i == hoveredSectorIndex ? hoveredSectorColor : normalSectorColor;
+                i == hoveredSectorIndex && sectorSelectionMode ? hoveredSectorColor : thisSectorColor;
 
             for (const Triangle& triangle : sectors[i].triangles) {
                 DrawFilledTriangle(triangle, sectorColor);
@@ -500,6 +507,16 @@ namespace MapEditor {
         }
 
         textEngine = TTF_CreateRendererTextEngine(renderer);
+
+        IMGUI_CHECKVERSION();
+        ImGui::CreateContext();
+        ImGuiIO& io = ImGui::GetIO(); (void)io;
+        io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+
+        ImGui::StyleColorsDark();
+
+        ImGui_ImplSDL3_InitForSDLRenderer(window, renderer);
+        ImGui_ImplSDLRenderer3_Init(renderer);
     }
 
     // static TTF_Text* controls = TTF_CreateText(textEngine, font, "Left / Right arrow to step backwards / forwards. Space to auto step", 0);
@@ -541,100 +558,112 @@ namespace MapEditor {
         SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
         SDL_RenderClear(renderer);
 
-        if (InputManager::GetMouseButton(SDL_BUTTON_MIDDLE)) {
-            const Vector2 mouseDelta = InputManager::GetMouseDelta();
+        ImGui_ImplSDLRenderer3_NewFrame();
+        ImGui_ImplSDL3_NewFrame();
+        ImGui::NewFrame();
 
-            cameraPos.x -= mouseDelta.x;
-            cameraPos.y += mouseDelta.y;
-        }
-        else if (InputManager::GetMouseButtonDown(SDL_BUTTON_LEFT)) {
-            const Vector2 mouseScreen = InputManager::GetMousePosition();
-            const Vector2 mouseWorld = ScreenToWorld(mouseScreen, cameraPos);
-            const Vector2 snappedWorld = SnapToGrid(mouseWorld);
+        const ImGuiIO& io = ImGui::GetIO();
+        const bool mouseBlockedByImGui = io.WantCaptureMouse;
+        const bool keyboardBlockedByImgui = io.WantCaptureKeyboard;
 
-            if (sectorSelectionMode) {
-                if (DotExistsAt(snappedWorld)) {
-                    AddSectorSelectionPoint(snappedWorld);
+        if (!mouseBlockedByImGui) {
+            if (InputManager::GetMouseButton(SDL_BUTTON_MIDDLE)) {
+                const Vector2 mouseDelta = InputManager::GetMouseDelta();
+
+                cameraPos.x -= mouseDelta.x;
+                cameraPos.y += mouseDelta.y;
+            }
+            else if (InputManager::GetMouseButtonDown(SDL_BUTTON_LEFT)) {
+                const Vector2 mouseScreen = InputManager::GetMousePosition();
+                const Vector2 mouseWorld = ScreenToWorld(mouseScreen, cameraPos);
+                const Vector2 snappedWorld = SnapToGrid(mouseWorld);
+
+                if (sectorSelectionMode) {
+                    if (DotExistsAt(snappedWorld)) {
+                        AddSectorSelectionPoint(snappedWorld);
+                    }
+                    else {
+                        for (int i = static_cast<int>(sectors.size()) - 1; i >= 0; --i) {
+                            if (IsPointInsidePolygon(sectors[i].vertices, mouseWorld)) {
+                                SDL_Log("%d", sectors[i].floorHeight);
+                                break;
+                            }
+                        }
+                    }
                 }
                 else {
-                    for (int i = static_cast<int>(sectors.size()) - 1; i >= 0; --i) {
-                        if (IsPointInsidePolygon(sectors[i].vertices, mouseWorld)) {
-                            SDL_Log("%d", sectors[i].floorHeight);
+                    // Outside sector mode, left click toggles dots.
+                    bool dotAlreadyExists = false;
+
+                    for (int i = 0; i < static_cast<int>(placedDots.size()); ++i) {
+                        if (SamePoint(placedDots[i], snappedWorld)) {
+                            dotAlreadyExists = true;
+
+                            if (IsDotConnectedToLine(snappedWorld)) {
+                                SDL_Log("Cannot delete dot because it has a line connected to it");
+                                break;
+                            }
+
+                            placedDots.erase(placedDots.begin() + i);
                             break;
                         }
                     }
-                }
-            }
-            else {
-                // Outside sector mode, left click toggles dots.
-                bool dotAlreadyExists = false;
 
-                for (int i = 0; i < static_cast<int>(placedDots.size()); ++i) {
-                    if (SamePoint(placedDots[i], snappedWorld)) {
-                        dotAlreadyExists = true;
-
-                        if (IsDotConnectedToLine(snappedWorld)) {
-                            SDL_Log("Cannot delete dot because it has a line connected to it");
-                            break;
-                        }
-
-                        placedDots.erase(placedDots.begin() + i);
-                        break;
+                    if (!dotAlreadyExists) {
+                        placedDots.push_back(snappedWorld);
                     }
                 }
+            } else if (InputManager::GetMouseButtonDown(SDL_BUTTON_RIGHT)) {
+                const Vector2 mouseScreen = InputManager::GetMousePosition();
+                const Vector2 mouseWorld = ScreenToWorld(mouseScreen, cameraPos);
+                const Vector2 snappedWorld = SnapToGrid(mouseWorld);
 
-                if (!dotAlreadyExists) {
-                    placedDots.push_back(snappedWorld);
+                if (DotExistsAt(snappedWorld)) {
+                    drawingLine = true;
+                    lineStartWorld = snappedWorld;
                 }
             }
-        } else if (InputManager::GetMouseButtonDown(SDL_BUTTON_RIGHT)) {
-            const Vector2 mouseScreen = InputManager::GetMousePosition();
-            const Vector2 mouseWorld = ScreenToWorld(mouseScreen, cameraPos);
-            const Vector2 snappedWorld = SnapToGrid(mouseWorld);
 
-            if (DotExistsAt(snappedWorld)) {
-                drawingLine = true;
-                lineStartWorld = snappedWorld;
+            if (InputManager::GetMouseButton(SDL_BUTTON_RIGHT) && drawingLine) {
+                const Vector2 mouseScreen = InputManager::GetMousePosition();
+                const Vector2 mouseWorld = ScreenToWorld(mouseScreen, cameraPos);
+                const Vector2 snappedWorld = SnapToGrid(mouseWorld);
+
+                const Vector2 startScreen = WorldToScreen(lineStartWorld, cameraPos);
+                const Vector2 endScreen = WorldToScreen(snappedWorld, cameraPos);
+
+                SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+                DrawThickLine(renderer, startScreen, endScreen, 5.0f);
+            }
+
+            if (InputManager::GetMouseButtonUp(SDL_BUTTON_RIGHT) && drawingLine) {
+                const Vector2 mouseScreen = InputManager::GetMousePosition();
+                const Vector2 mouseWorld = ScreenToWorld(mouseScreen, cameraPos);
+                const Vector2 snappedWorld = SnapToGrid(mouseWorld);
+
+                if (DotExistsAt(snappedWorld) && !SamePoint(lineStartWorld, snappedWorld)) {
+                    placedLines.push_back({
+                        lineStartWorld,
+                        snappedWorld
+                    });
+                }
+
+                drawingLine = false;
             }
         }
 
-        if (InputManager::GetMouseButton(SDL_BUTTON_RIGHT) && drawingLine) {
-            const Vector2 mouseScreen = InputManager::GetMousePosition();
-            const Vector2 mouseWorld = ScreenToWorld(mouseScreen, cameraPos);
-            const Vector2 snappedWorld = SnapToGrid(mouseWorld);
-
-            const Vector2 startScreen = WorldToScreen(lineStartWorld, cameraPos);
-            const Vector2 endScreen = WorldToScreen(snappedWorld, cameraPos);
-
-            SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-            DrawThickLine(renderer, startScreen, endScreen, 5.0f);
-        }
-
-        if (InputManager::GetMouseButtonUp(SDL_BUTTON_RIGHT) && drawingLine) {
-            const Vector2 mouseScreen = InputManager::GetMousePosition();
-            const Vector2 mouseWorld = ScreenToWorld(mouseScreen, cameraPos);
-            const Vector2 snappedWorld = SnapToGrid(mouseWorld);
-
-            if (DotExistsAt(snappedWorld) && !SamePoint(lineStartWorld, snappedWorld)) {
-                placedLines.push_back({
-                    lineStartWorld,
-                    snappedWorld
-                });
-            }
-
-            drawingLine = false;
-        }
-
-        if (InputManager::GetKeyDown(SDL_SCANCODE_E)) {
-            if (!sectorSelectionMode) {
-                sectorSelectionMode = true;
-                sectorBeingCreated.clear();
-                SDL_Log("Sector selection mode ON");
-            }
-            else {
-                sectorSelectionMode = false;
-                FinishSectorSelection();
-                SDL_Log("Sector selection mode OFF");
+        if (!keyboardBlockedByImgui) {
+            if (InputManager::GetKeyDown(SDL_SCANCODE_E)) {
+                if (!sectorSelectionMode) {
+                    sectorSelectionMode = true;
+                    sectorBeingCreated.clear();
+                    SDL_Log("Sector selection mode ON");
+                }
+                else {
+                    sectorSelectionMode = false;
+                    FinishSectorSelection();
+                    SDL_Log("Sector selection mode OFF");
+                }
             }
         }
 
@@ -664,10 +693,36 @@ namespace MapEditor {
         }
         // TTF_DrawRendererText(controls, 15.0f, 50);
 
+        ImGui::Begin("Editor");
+
+        ImGui::Text("Wolfy Level Editor");
+
+        if (ImGui::Button("Sector Mode")) {
+            sectorSelectionMode = !sectorSelectionMode;
+
+            if (sectorSelectionMode) {
+                sectorBeingCreated.clear();
+            } else {
+                FinishSectorSelection();
+            }
+        }
+
+        ImGui::Text("Dots: %d", static_cast<int>(placedDots.size()));
+        ImGui::Text("Lines: %d", static_cast<int>(placedLines.size()));
+        ImGui::Text("Sectors: %d", static_cast<int>(sectors.size()));
+        
+
+        ImGui::End();
+
+        ImGui::Render();
+        ImGui_ImplSDLRenderer3_RenderDrawData(ImGui::GetDrawData(), renderer);
         SDL_RenderPresent(renderer);
     }
 
     void Destroy() {
+        ImGui_ImplSDLRenderer3_Shutdown();
+        ImGui_ImplSDL3_Shutdown();
+        ImGui::DestroyContext();
         TTF_CloseFont(font);
         TTF_Quit();
         SDL_DestroyRenderer(renderer);
