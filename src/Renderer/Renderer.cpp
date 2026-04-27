@@ -21,6 +21,7 @@
 #include "../../Headers/Objects/Player.hpp"
 
 #include "../../Headers/Renderer/TextureManager.hpp"
+#include "Headers/Engine/GameTime.hpp"
 
 #define SCREEN_WIDTH 1680
 #define SCREEN_HEIGHT 960
@@ -47,6 +48,9 @@ static GLsizei flatTriangleCount = 0;
 
 constexpr int RENDER_WALL = 0;
 constexpr int RENDER_FLAT = 1;
+constexpr int RENDER_SPRITE = 2;
+
+Vector2 testSpritePosition = {100.0f, 100.0f};
 
 namespace {
     struct Character {
@@ -75,6 +79,28 @@ namespace {
 
     std::vector<GpuWall> gpuWalls;
     static GLsizei gpuWallCount = 0;
+
+    struct GpuSprite {
+        Vector4 positionSize;
+        // x = world x
+        // y = world y
+        // z = bottom height
+        // w = sprite height
+
+        Vector4 color;
+        // r, g, b, a
+
+        Vector4 data;
+        // x = sprite width
+        // y = texture index
+        // z = unused
+        // w = unused
+    };
+
+    static GLuint spriteSSBO = 0;
+    static GLsizei spriteCount = 0;
+
+    std::vector<GpuSprite> gpuSprites;
 
     bool IsValidSectorIndex(const int index) {
         return index >= 0 && index < static_cast<int>(MapEditor::sectors.size());
@@ -194,6 +220,48 @@ namespace {
         }
 
         gpuWallCount = static_cast<GLsizei>(gpuWalls.size());
+    }
+
+    void BuildGpuSprites() {
+        gpuSprites.clear();
+
+        GpuSprite testSprite;
+
+        testSprite.positionSize = {
+            static_cast<float>(testSpritePosition.x),
+            static_cast<float>(testSpritePosition.y),
+            0.0f,    // bottom height
+            64.0f    // sprite height
+        };
+
+        testSprite.color = {
+            255.0f,
+            255.0f,
+            255.0f,
+            255.0f
+        };
+
+        testSprite.data = {
+            32.0f, // sprite width
+            4.0f,  // texture index: humanTexture is probably 4
+            0.0f,
+            0.0f
+        };
+
+        gpuSprites.push_back(testSprite);
+
+        spriteCount = static_cast<GLsizei>(gpuSprites.size());
+
+        glBindBuffer(GL_SHADER_STORAGE_BUFFER, spriteSSBO);
+
+        glBufferData(
+            GL_SHADER_STORAGE_BUFFER,
+            gpuSprites.size() * sizeof(GpuSprite),
+            gpuSprites.data(),
+            GL_DYNAMIC_DRAW
+        );
+
+        glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, spriteSSBO);
     }
 
     std::vector<GpuFlatTriangle> flatTriangles;
@@ -695,6 +763,16 @@ namespace Renderer {
             }
         }
 
+        glGenBuffers(1, &spriteSSBO);
+        glBindBuffer(GL_SHADER_STORAGE_BUFFER, spriteSSBO);
+        glBufferData(
+            GL_SHADER_STORAGE_BUFFER,
+            0,
+            nullptr,
+            GL_DYNAMIC_DRAW
+        );
+        glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, spriteSSBO);
+
         playerPosUniform = glGetUniformLocation(projectionShader->ID, "playerPos");
         if (playerPosUniform == -1) {
             SDL_Log("Failed to get shader uniform location playerPos");
@@ -804,9 +882,34 @@ namespace Renderer {
             gpuWallCount
         );
 
-        if (!InputManager::GetKey(SDL_SCANCODE_TAB)) {
-            return;
-        }
+        // Draw sprites after walls
+        BuildGpuSprites();
+
+        glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, spriteSSBO);
+        glDepthFunc(GL_LEQUAL);
+        glUniform1i(renderModeUniform, RENDER_SPRITE);
+
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+        // For cut-out sprites like people/trees, keep depth writing on.
+        // Transparent pixels are discarded in the fragment shader.
+        glDepthMask(GL_TRUE);
+
+        glDrawArraysInstanced(
+            GL_TRIANGLE_STRIP,
+            0,
+            4,
+            spriteCount
+        );
+
+        float speed = Player::speed / 2;
+        if (testSpritePosition.x < playerPos.x) testSpritePosition.x += speed * GameTime::deltaTime;
+        if (testSpritePosition.x > playerPos.x) testSpritePosition.x -= speed * GameTime::deltaTime;
+        if (testSpritePosition.y < playerPos.y) testSpritePosition.y += speed * GameTime::deltaTime;
+        if (testSpritePosition.y > playerPos.y) testSpritePosition.y -= speed * GameTime::deltaTime;
+
+        if (!InputManager::GetKey(SDL_SCANCODE_TAB)) return;
 
         glDisable(GL_DEPTH_TEST);
 
@@ -850,7 +953,7 @@ namespace Renderer {
             SDL_DestroyWindow(window);
             window = nullptr;
         }
-
+        glDeleteBuffers(1, &spriteSSBO);
         SDL_Quit();
     }
 }

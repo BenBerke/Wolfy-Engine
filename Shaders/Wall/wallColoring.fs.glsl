@@ -4,6 +4,7 @@
 
 #define RENDER_WALL 0
 #define RENDER_FLAT 1
+#define RENDER_SPRITE 2
 
 #define MAX_WALL_TEXTURES 8
 
@@ -31,6 +32,11 @@ noperspective in float vFlatInvZ;
 
 noperspective in vec2 vFlatWorldOverZ;
 flat in int vFlatTextureIndex;
+
+noperspective in vec2 vSpriteUV;
+flat in int vSpriteTextureIndex;
+flat in float fSpriteViewDepth;
+flat in vec4 vSpriteColor;
 
 uniform int renderMode;
 
@@ -64,7 +70,25 @@ vec4 SampleWallTexture(int textureIndex, vec2 uv) {
 }
 
 void main() {
-    if (renderMode == RENDER_FLAT) {
+    if (renderMode == RENDER_SPRITE) {
+        float spriteDepth01 = clamp(
+        (fSpriteViewDepth - nearPlane) / (farPlane - nearPlane),
+        0.0,
+        1.0
+        );
+
+        gl_FragDepth = spriteDepth01;
+
+        vec4 texColor = SampleWallTexture(vSpriteTextureIndex, vSpriteUV);
+
+        if (texColor.a < 0.1) {
+            discard;
+        }
+
+        FragColor = texColor * vSpriteColor;
+        return;
+    }
+    else if (renderMode == RENDER_FLAT) {
         float flatViewDepth = 1.0 / vFlatInvZ;
 
         float flatDepth01 = clamp(

@@ -16,6 +16,8 @@
 #include "imgui_impl_sdlrenderer3.h"
 
 #include <nlohmann/json.hpp>
+
+#include "Headers/Renderer/TextureManager.hpp"
 using json = nlohmann::json;
 
 #include <fstream>
@@ -830,6 +832,7 @@ namespace MapEditor {
 
         if (!keyboardBlockedByImgui) {
             if (InputManager::GetKeyDown(SDL_SCANCODE_Q)) MoveMode();
+            if (InputManager::GetKeyDown(SDL_SCANCODE_ESCAPE)) quit = true; // FORCE QUIT
         }
 
         DrawGridDots();
@@ -979,10 +982,7 @@ namespace MapEditor {
                     wallJson["end"][0].get<float>(),
                     wallJson["end"][1].get<float>(),
                 };
-                Wall wall {
-                    start, end,
-                    {0, 0, 0, 255},
-                };
+                Wall wall(start, end,{255.0f, 255.0f, 255.0f, 255.0f}, -1, -1,0);
 
                 walls.push_back(wall);
                 placedLines.push_back({start,end});

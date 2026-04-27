@@ -6,6 +6,7 @@
 
 #define RENDER_WALL 0
 #define RENDER_FLAT 1
+#define RENDER_SPRITE 2
 
 struct Wall {
     vec4 startEnd;
@@ -22,12 +23,30 @@ struct FlatTriangle {
     vec4 data; // x = textureIndex
 };
 
+struct Sprite {
+    vec4 positionSize;
+// x = world x
+// y = world y
+// z = bottom height
+// w = sprite height
+
+    vec4 color;
+
+    vec4 data;
+// x = width
+// y = textureIndex
+};
+
 layout(std430, binding = 0) readonly buffer WallBuffer {
     Wall walls[];
 };
 
 layout(std430, binding = 1) readonly buffer FlatTriangleBuffer {
     FlatTriangle flatTriangles[];
+};
+
+layout(std430, binding = 2) readonly buffer SpriteBuffer {
+    Sprite sprites[];
 };
 
 flat out vec4 vWallColor;
@@ -52,6 +71,11 @@ flat out float fWallWorldHeight;
 
 noperspective out vec2 vFlatWorldOverZ;
 flat out int vFlatTextureIndex;
+
+noperspective out vec2 vSpriteUV;
+flat out int vSpriteTextureIndex;
+flat out float fSpriteViewDepth;
+flat out vec4 vSpriteColor;
 
 uniform vec2 playerPos;
 uniform float playerAngle;
@@ -173,6 +197,85 @@ float projectScreenY(float height, float viewDepth) {
     return horizonY - (verticalOffset / viewDepth) * focalLength;
 }
 
+void renderSprite() {
+    Sprite sprite = sprites[gl_InstanceID];
+
+    vec2 spriteWorldPos = sprite.positionSize.xy;
+
+    float bottomHeight = sprite.positionSize.z;
+    float spriteHeight = sprite.positionSize.w;
+
+    float spriteWidth = sprite.data.x;
+    int textureIndex = int(sprite.data.y);
+
+    float playerAngleInRad = degToRad(playerAngle);
+
+    vec2 relative = spriteWorldPos - playerPos;
+    vec2 centerView = rotate(relative, playerAngleInRad);
+
+    if (centerView.y <= nearPlane) {
+        gl_Position = vec4(2.0, 2.0, 0.0, 1.0);
+        return;
+    }
+
+    float halfWidth = spriteWidth * 0.5;
+
+    float side;
+    float heightT;
+    vec2 uv;
+
+    if (gl_VertexID == 0) {
+        // bottom left
+        side = -1.0;
+        heightT = 0.0;
+        uv = vec2(0.0, 1.0);
+    }
+    else if (gl_VertexID == 1) {
+        // top left
+        side = -1.0;
+        heightT = 1.0;
+        uv = vec2(0.0, 0.0);
+    }
+    else if (gl_VertexID == 2) {
+        // bottom right
+        side = 1.0;
+        heightT = 0.0;
+        uv = vec2(1.0, 1.0);
+    }
+    else {
+        // top right
+        side = 1.0;
+        heightT = 1.0;
+        uv = vec2(1.0, 0.0);
+    }
+
+    vec2 viewPoint = vec2(
+    centerView.x + side * halfWidth,
+    centerView.y
+    );
+
+    float screenX = projectScreenX(viewPoint);
+
+    float worldHeight = bottomHeight + heightT * spriteHeight;
+    float screenY = projectScreenY(worldHeight, centerView.y);
+
+    float ndcX = (screenX / SCREEN_WIDTH) * 2.0 - 1.0;
+    float ndcY = 1.0 - (screenY / SCREEN_HEIGHT) * 2.0;
+
+    vSpriteUV = uv;
+    vSpriteTextureIndex = textureIndex;
+    fSpriteViewDepth = centerView.y;
+    vSpriteColor = sprite.color / 255.0;
+
+    outputDummyWallData();
+
+    vFlatInvZ = 1.0;
+    vFlatWorldOverZ = vec2(0.0);
+    vFlatTextureIndex = -1;
+
+    gl_Position = vec4(ndcX, ndcY, 0.0, 1.0);
+}
+
 void renderWall() {
     Wall wall = walls[gl_InstanceID];
 
@@ -263,6 +366,9 @@ void renderWall() {
 void main() {
     if (renderMode == RENDER_FLAT) {
         renderFlat();
+    }
+    else if (renderMode == RENDER_SPRITE) {
+        renderSprite();
     }
     else {
         renderWall();

@@ -39,6 +39,7 @@ int main() {
     const int whiteTexture = TextureManager::CreateTexture("../Assets/Textures/white.png");
     const int floorTexture = TextureManager::CreateTexture("../Assets/Textures/floor.png");
     const int humanTexture = TextureManager::CreateTexture("../Assets/Textures/human.png");
+
     if (brickTexture == -1 || woodTexture == -1 || whiteTexture == -1) {
         SDL_Log("Failed to load one or more textures");
         return 1;
@@ -70,7 +71,7 @@ int main() {
         GameTime::Update();
         Player::Update(MapEditor::walls, MapEditor::sectors);
 
-        running = !InputManager::GetKeyDown(SDL_SCANCODE_ESCAPE) || InputManager::QuitRequested();
+        running = !InputManager::GetKeyDown(SDL_SCANCODE_ESCAPE) && !InputManager::QuitRequested();
 
         if (InputManager::GetKeyDown(SDL_SCANCODE_1)) Player::position.x += 1;
 
