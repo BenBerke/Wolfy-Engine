@@ -80,11 +80,12 @@ flat out vec4 vSpriteColor;
 uniform vec2 playerPos;
 uniform float playerAngle;
 uniform float playerHeight;
+uniform float playerCamZ;
 uniform int renderMode;
 
 const float FOV = 90.0;
 const float halfFov = FOV * 0.5;
-const float horizonY = SCREEN_HEIGHT * 0.5;
+float horizonY = SCREEN_HEIGHT * playerCamZ;
 const float wallHeight = 32.0;
 const float nearPlane = 0.1;
 

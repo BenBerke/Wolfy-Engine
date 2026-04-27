@@ -59,6 +59,7 @@ namespace RendererInternal {
     extern GLint playerPosUniform;
     extern GLint playerAngleUniform;
     extern GLint playerHeightUniform;
+    extern GLint playerCamZUniform;
     extern GLint renderModeUniform;
 
     extern FT_Library ft;

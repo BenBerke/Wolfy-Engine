@@ -24,6 +24,7 @@ namespace RendererInternal {
     GLint playerPosUniform = -1;
     GLint playerAngleUniform = -1;
     GLint playerHeightUniform = -1;
+    GLint playerCamZUniform = -1;
     GLint renderModeUniform = -1;
 
     FT_Library ft = nullptr;

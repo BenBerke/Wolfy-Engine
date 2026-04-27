@@ -321,6 +321,12 @@ namespace Renderer {
             return false;
         }
 
+        playerCamZUniform = glGetUniformLocation(projectionShader->ID, "playerCamZ");
+        if (playerCamZUniform == -1) {
+            SDL_Log("Failed to get shader uniform location playerCamZ");
+            return false;
+        }
+
         renderModeUniform = glGetUniformLocation(projectionShader->ID, "renderMode");
         if (renderModeUniform == -1) {
             SDL_Log("Failed to get shader uniform location renderMode");

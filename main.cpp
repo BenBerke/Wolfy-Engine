@@ -24,7 +24,7 @@ int main() {
     }
     MapEditor::Destroy();
 
-    MapEditor::LoadLevel("../Assets/Levels/test_level.json");
+    MapEditor::LoadLevel("test_level");
 
     if (!Renderer::Initialize()) {
         SDL_Log("Failed to initialize Renderer: %s", SDL_GetError());

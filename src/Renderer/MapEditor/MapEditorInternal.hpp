@@ -35,6 +35,14 @@ namespace MapEditorInternal {
         Vector2 position;
     };
 
+    enum Action {
+        ACTION_CREATE_SECTOR,
+        ACTION_CREATE_WALL,
+        ACTION_CREATE_CORNER,
+    };
+
+    extern std::vector<Action> actions;
+
     extern SDL_Window* window;
     extern SDL_Renderer* renderer;
     extern TTF_Font* font;

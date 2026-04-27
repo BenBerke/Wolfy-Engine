@@ -28,6 +28,7 @@ namespace Renderer {
         glUniform2f(playerPosUniform, playerPos.x, playerPos.y);
         glUniform1f(playerAngleUniform, playerAngle);
         glUniform1f(playerHeightUniform, Player::currentEyeHeight);
+        glUniform1f(playerCamZUniform, Player::camZ);
 
         BuildVisibleFlatTriangles(playerPos, playerAngle);
 

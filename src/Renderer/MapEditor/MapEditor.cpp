@@ -56,6 +56,12 @@ namespace MapEditor {
 
         ImGui_ImplSDL3_InitForSDLRenderer(window, renderer);
         ImGui_ImplSDLRenderer3_Init(renderer);
+
+        const std::string levelPath = "test_level";
+
+        if (!LoadLevel(levelPath)) {
+            SDL_Log("No existing test_scene.json loaded. Starting with an empty editor.");
+        }
     }
 
     void Update() {

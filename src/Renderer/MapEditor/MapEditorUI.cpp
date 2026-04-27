@@ -92,6 +92,8 @@ namespace MapEditorInternal {
                 editingSector = false;
             }
 
+            ImGui::Text("ID: %d", selectedSector);
+
             ImGui::End();
         }
 
@@ -124,6 +126,8 @@ namespace MapEditorInternal {
                 editingWall = false;
             }
 
+            ImGui::Text("ID: %d", selectedWall);
+
             ImGui::End();
         }
 
@@ -135,6 +139,7 @@ namespace MapEditorInternal {
                     }
 
                     FinishSectorSelection();
+                    actions.push_back(ACTION_CREATE_SECTOR);
 
                     creatableSector = false;
                 }

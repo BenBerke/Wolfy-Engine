@@ -137,6 +137,9 @@ namespace Player {
         if (InputManager::GetKey(SDL_SCANCODE_Q)) angle -= TURN_SPEED * GameTime::deltaTime;
         if (InputManager::GetKey(SDL_SCANCODE_E)) angle += TURN_SPEED * GameTime::deltaTime;
 
+        if (InputManager::GetKey(SDL_SCANCODE_Z)) camZ += 2.0f * GameTime::deltaTime;
+        if (InputManager::GetKey(SDL_SCANCODE_X)) camZ -= 2.0f * GameTime::deltaTime;
+
         if (InputManager::GetKey(SDL_SCANCODE_LSHIFT)) currentSpeed = runningSpeed;
         else currentSpeed = speed;
 

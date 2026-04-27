@@ -3,9 +3,6 @@
 #include "Headers/Engine/InputManager.hpp"
 
 namespace MapEditorInternal {
-    extern bool editingWall;
-    extern int selectedWall;
-
     void HandleEditorInput(const bool mouseBlockedByImGui, const bool keyboardBlockedByImgui) {
         if (!mouseBlockedByImGui) {
             if (InputManager::GetMouseButton(SDL_BUTTON_MIDDLE)) {
@@ -52,6 +49,7 @@ namespace MapEditorInternal {
 
                     if (!cornerAlreadyExists) {
                         placedCorners.push_back(snappedWorld);
+                        actions.push_back(ACTION_CREATE_CORNER);
                     }
                 }
                 else if (currentMode == MODE_OBJECT) {
@@ -120,6 +118,7 @@ namespace MapEditorInternal {
                     );
 
                     MapEditor::walls.push_back(newWall);
+                    actions.push_back(ACTION_CREATE_WALL);
                 }
 
                 drawingLine = false;
@@ -130,10 +129,30 @@ namespace MapEditorInternal {
             if (InputManager::GetKeyDown(SDL_SCANCODE_Q)) {
                 MoveMode();
             }
-
             if (InputManager::GetKeyDown(SDL_SCANCODE_ESCAPE)) {
                 quit = true;
             }
+        }
+        else {
+            if (InputManager::GetKeyDown(SDL_SCANCODE_Q)) {
+                MoveMode();
+            }
+        }
+        if (InputManager::GetDoubleKeyDown(SDL_SCANCODE_LCTRL, SDL_SCANCODE_Z)) {
+            if (actions.empty()) return;
+            switch (actions.back()) {
+                case ACTION_CREATE_CORNER:
+                    placedCorners.pop_back();
+                    break;
+                case ACTION_CREATE_WALL:
+                    MapEditor::walls.pop_back();
+                    break;
+                case ACTION_CREATE_SECTOR:
+                    MapEditor::sectors.pop_back();
+                    break;
+                default: break;
+            }
+            actions.pop_back();
         }
     }
 }

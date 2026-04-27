@@ -35,5 +35,7 @@ namespace MapEditorInternal {
 
     std::vector<std::array<char, 256>> textureInputs;
 
+    std::vector<Action> actions;
+
     bool quit = false;
 }

@@ -93,8 +93,10 @@ namespace MapEditorInternal {
 }
 
 namespace MapEditor {
-    bool LoadLevel(const std::string& level) {
+    bool LoadLevel(const std::string& _level) {
         using namespace MapEditorInternal;
+
+        const std::string level = "../Assets/Levels/" + _level + ".json";
 
         walls.clear();
         sectors.clear();
