@@ -14,7 +14,7 @@
 #define SCREEN_HEIGHT 960
 
 int main() {
-    bool editorMode = false;
+    bool editorMode = true;
 
     if (editorMode) MapEditor::Start();
     while (editorMode) {
@@ -22,7 +22,7 @@ int main() {
         editorMode = !(MapEditor::QuitRequested());
         MapEditor::Update();
     }
-    //MapEditor::Destroy();
+    MapEditor::Destroy();
 
     MapEditor::LoadLevel("../Assets/Levels/test_level.json");
 
@@ -55,6 +55,8 @@ int main() {
         return 1;
     }
     // endregion
+
+    InputManager::SetRelativeMouseMode(Renderer::window, true);
 
     static float timer = 0;
     static float timerHelper = 0;

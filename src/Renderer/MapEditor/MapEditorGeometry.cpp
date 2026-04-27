@@ -21,8 +21,8 @@ namespace MapEditorInternal {
     }
 
     bool IsCornerConnectedToLine(const Vector2& point) {
-        for (const EditorLine& line : placedLines) {
-            if (SamePoint(line.start, point) || SamePoint(line.end, point)) {
+        for (const Wall& wall : MapEditor::walls) {
+            if (SamePoint(wall.start, point) || SamePoint(wall.end, point)) {
                 return true;
             }
         }
@@ -35,9 +35,9 @@ namespace MapEditorInternal {
     }
 
     bool HasLineBetween(const Vector2& a, const Vector2& b) {
-        for (const EditorLine& line : placedLines) {
-            const bool sameDirection = SamePoint(line.start, a) && SamePoint(line.end, b);
-            const bool oppositeDirection = SamePoint(line.start, b) && SamePoint(line.end, a);
+        for (const Wall& wall : MapEditor::walls) {
+            const bool sameDirection = SamePoint(wall.start, a) && SamePoint(wall.end, b);
+            const bool oppositeDirection = SamePoint(wall.start, b) && SamePoint(wall.end, a);
 
             if (sameDirection || oppositeDirection) {
                 return true;
@@ -168,6 +168,54 @@ namespace MapEditorInternal {
         SDL_Log("Sector created with %d vertices", static_cast<int>(finalVertices.size()));
 
         sectorBeingCreated.clear();
+    }
+
+    float DistancePointToSegmentSq(const Vector2& point, const Vector2& a, const Vector2& b) {
+        const Vector2 ab = b - a;
+        const Vector2 ap = point - a;
+
+        const float abLengthSq = Vector2Math::Dot(ab, ab);
+
+        if (abLengthSq <= 0.00001f) {
+            const Vector2 diff = point - a;
+            return Vector2Math::Dot(diff, diff);
+        }
+
+        float t = Vector2Math::Dot(ap, ab) / abLengthSq;
+        t = std::clamp(t, 0.0f, 1.0f);
+
+        const Vector2 closestPoint = {
+            a.x + ab.x * t,
+            a.y + ab.y * t
+        };
+
+        const Vector2 diff = point - closestPoint;
+        return Vector2Math::Dot(diff, diff);
+    }
+
+    int GetWallAtPoint(const Vector2& worldPoint) {
+        constexpr float clickRadius = 12.0f;
+        constexpr float clickRadiusSq = clickRadius * clickRadius;
+
+        int closestWallIndex = -1;
+        float closestDistanceSq = clickRadiusSq;
+
+        for (int i = 0; i < static_cast<int>(MapEditor::walls.size()); ++i) {
+            const Wall& wall = MapEditor::walls[i];
+
+            const float distanceSq = DistancePointToSegmentSq(
+                worldPoint,
+                wall.start,
+                wall.end
+            );
+
+            if (distanceSq < closestDistanceSq) {
+                closestDistanceSq = distanceSq;
+                closestWallIndex = i;
+            }
+        }
+
+        return closestWallIndex;
     }
 }
 

@@ -3,6 +3,9 @@
 #include "Headers/Engine/InputManager.hpp"
 
 namespace MapEditorInternal {
+    extern bool editingWall;
+    extern int selectedWall;
+
     void HandleEditorInput(const bool mouseBlockedByImGui, const bool keyboardBlockedByImgui) {
         if (!mouseBlockedByImGui) {
             if (InputManager::GetMouseButton(SDL_BUTTON_MIDDLE)) {
@@ -74,9 +77,18 @@ namespace MapEditorInternal {
                 const Vector2 mouseWorld = ScreenToWorld(mouseScreen, cameraPos);
                 const Vector2 snappedWorld = SnapToGrid(mouseWorld);
 
-                if (CornerExistsAt(snappedWorld)) {
+                bool clickedOnCorder = CornerExistsAt(snappedWorld);
+
+                if (clickedOnCorder) {
                     drawingLine = true;
                     lineStartWorld = snappedWorld;
+                }
+
+                const int clickedWall = GetWallAtPoint(mouseWorld);
+
+                if (clickedWall != -1 && !clickedOnCorder) {
+                    selectedWall = clickedWall;
+                    editingWall = true;
                 }
             }
 
@@ -98,11 +110,6 @@ namespace MapEditorInternal {
                 const Vector2 snappedWorld = SnapToGrid(mouseWorld);
 
                 if (CornerExistsAt(snappedWorld) && !SamePoint(lineStartWorld, snappedWorld)) {
-                    placedLines.push_back({
-                        lineStartWorld,
-                        snappedWorld
-                    });
-
                     const Wall newWall(
                         lineStartWorld,
                         snappedWorld,

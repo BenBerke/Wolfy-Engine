@@ -18,4 +18,5 @@ namespace InputManager {
 
     Vector2 GetMousePosition();
     Vector2 GetMouseDelta();
+    void SetRelativeMouseMode(SDL_Window* window, bool enabled);
 }

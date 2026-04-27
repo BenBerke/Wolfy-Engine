@@ -73,7 +73,8 @@ namespace Renderer {
             spriteCount
         );
 
-        const float speed = Player::speed / 2.0f;
+        //const float speed = Player::speed / 2.0f;
+        constexpr float speed = 0.0f;
 
         if (testSpritePosition.x < playerPos.x) {
             testSpritePosition.x += speed * GameTime::deltaTime;

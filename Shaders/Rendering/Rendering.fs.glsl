@@ -43,7 +43,7 @@ uniform int renderMode;
 out vec4 FragColor;
 
 const float nearPlane = 0.1;
-const float farPlane = 1000.0;
+const float farPlane = 10000.0;
 const float tileSize = 32.0;
 
 vec4 SampleWallTexture(int textureIndex, vec2 uv) {
@@ -91,13 +91,10 @@ void main() {
     else if (renderMode == RENDER_FLAT) {
         float flatViewDepth = 1.0 / vFlatInvZ;
 
-        float flatDepth01 = clamp(
-        (flatViewDepth - nearPlane) / (farPlane - nearPlane),
-        0.0,
-        1.0
-        );
+        float flatDepth01 = (flatViewDepth - nearPlane) / (farPlane - nearPlane);
+        flatDepth01 = clamp(flatDepth01, 0.0, 0.99999);
 
-        gl_FragDepth = flatDepth01;
+        gl_FragDepth = flatDepth01;;
 
         vec2 worldPos = vFlatWorldOverZ / vFlatInvZ;
         vec2 flatUV = worldPos / tileSize;

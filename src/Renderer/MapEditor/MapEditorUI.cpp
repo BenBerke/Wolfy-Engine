@@ -54,10 +54,10 @@ namespace MapEditorInternal {
         ImGui::Text("%s", GetModeName(currentMode));
 
         ImGui::Text("\nDots: %d", static_cast<int>(placedCorners.size()));
-        ImGui::Text("Lines: %d", static_cast<int>(placedLines.size()));
+        ImGui::Text("Lines: %d", static_cast<int>(MapEditor::walls.size()));
         ImGui::Text("Sectors: %d", static_cast<int>(MapEditor::sectors.size()));
 
-        if (editingSector && currentMode == MODE_SECTOR && selectedSector >= 0) {
+        if (editingSector && currentMode == MODE_SECTOR && selectedSector != -1) {
             ImGui::Begin("Sector", &editingSector);
 
             float ceilHeight = MapEditor::sectors[selectedSector].ceilingHeight;
@@ -66,18 +66,62 @@ namespace MapEditorInternal {
             int floorTexture = MapEditor::sectors[selectedSector].floorTextureIndex;
             int ceilTexture = MapEditor::sectors[selectedSector].ceilingTextureIndex;
 
+            Vector3 ceilColor = MapEditor::sectors[selectedSector].ceilingColor;
+            Vector3 floorColor = MapEditor::sectors[selectedSector].floorColor;
+
             ImGui::InputFloat("Ceil Height", &ceilHeight);
             ImGui::InputFloat("Floor Height", &floorHeight);
             ImGui::InputInt("Floor Texture Index", &floorTexture);
             ImGui::InputInt("Ceiling Texture Index", &ceilTexture);
+            ImGui::InputFloat3("Ceiling Color", &ceilColor.x);
+            ImGui::InputFloat3("Floor Color", &floorColor.x);
 
             MapEditor::sectors[selectedSector].ceilingHeight = ceilHeight;
             MapEditor::sectors[selectedSector].floorHeight = floorHeight;
             MapEditor::sectors[selectedSector].floorTextureIndex = floorTexture;
             MapEditor::sectors[selectedSector].ceilingTextureIndex = ceilTexture;
+            MapEditor::sectors[selectedSector].ceilingColor = ceilColor;
+            MapEditor::sectors[selectedSector].floorColor = floorColor;
+
+            if (ImGui::Button("Delete")) {
+                MapEditor::sectors.erase(MapEditor::sectors.begin() + selectedSector);
+                editingSector = false;
+            }
 
             if (ImGui::Button("Close")) {
                 editingSector = false;
+            }
+
+            ImGui::End();
+        }
+
+        if (editingWall && currentMode == MODE_WALL && selectedWall != -1) {
+            ImGui::Begin("Wall", &editingSector);
+
+            Vector4 color = MapEditor::walls[selectedWall].color;
+
+            int frontSector = MapEditor::walls[selectedWall].frontSector;
+            int backSector = MapEditor::walls[selectedWall].backSector;
+            int textureIndex = MapEditor::walls[selectedWall].textureIndex;
+
+            ImGui::InputInt("Front Sector", &frontSector);
+            ImGui::InputInt("Back Sector", &backSector);
+            ImGui::InputInt("Texture Index", &textureIndex);
+
+            ImGui::InputFloat4("Wall Color", &color.x);
+
+            MapEditor::walls[selectedWall].color = color;
+            MapEditor::walls[selectedWall].textureIndex = textureIndex;
+            MapEditor::walls[selectedWall].frontSector = frontSector;
+            MapEditor::walls[selectedWall].backSector = backSector;
+
+            if (ImGui::Button("Delete")) {
+                MapEditor::walls.erase(MapEditor::walls.begin() + selectedWall);
+                editingWall = false;
+            }
+
+            if (ImGui::Button("Close")) {
+                editingWall = false;
             }
 
             ImGui::End();

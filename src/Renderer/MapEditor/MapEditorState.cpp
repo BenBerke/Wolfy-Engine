@@ -14,7 +14,6 @@ namespace MapEditorInternal {
 
     Vector2 cameraPos = {0.0f, 0.0f};
     std::vector<Vector2> placedCorners;
-    std::vector<EditorLine> placedLines;
 
     bool drawingLine = false;
     Vector2 lineStartWorld = {0.0f, 0.0f};
@@ -24,6 +23,9 @@ namespace MapEditorInternal {
     bool editingSector = false;
     int selectedSector = -1;
     bool creatableSector = false;
+
+    bool editingWall = false;
+    int selectedWall = -1;
 
     Mode currentMode = MODE_DOT;
 

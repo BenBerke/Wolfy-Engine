@@ -15,11 +15,6 @@ namespace MapEditorInternal {
     constexpr int FONT_SIZE = 24;
     constexpr float GRID_SIZE = 32.0f;
 
-    struct EditorLine {
-        Vector2 start;
-        Vector2 end;
-    };
-
     enum Mode {
         MODE_DOT,
         MODE_SECTOR,
@@ -47,7 +42,6 @@ namespace MapEditorInternal {
 
     extern Vector2 cameraPos;
     extern std::vector<Vector2> placedCorners;
-    extern std::vector<EditorLine> placedLines;
 
     extern bool drawingLine;
     extern Vector2 lineStartWorld;
@@ -57,6 +51,9 @@ namespace MapEditorInternal {
     extern bool editingSector;
     extern int selectedSector;
     extern bool creatableSector;
+
+    extern bool editingWall;
+    extern int selectedWall;
 
     extern Mode currentMode;
 
@@ -100,4 +97,7 @@ namespace MapEditorInternal {
     bool SaveAndQuit();
 
     extern std::vector<std::array<char, 256>> textureInputs;
+
+    float DistancePointToSegmentSq(const Vector2& point, const Vector2& a, const Vector2& b);
+    int GetWallAtPoint(const Vector2& worldPoint);
 }

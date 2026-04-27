@@ -77,8 +77,8 @@ namespace Renderer {
         }
 
         projectionShader = std::make_unique<Shader>(
-            "../Shaders/Wall/wallProjection.vs.glsl",
-            "../Shaders/Wall/wallColoring.fs.glsl"
+            "../Shaders/Rendering/Rendering.vs.glsl",
+            "../Shaders/Rendering/Rendering.fs.glsl"
         );
 
         if (projectionShader->ID == 0) {

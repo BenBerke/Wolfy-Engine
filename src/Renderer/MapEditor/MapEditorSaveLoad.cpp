@@ -99,7 +99,6 @@ namespace MapEditor {
         walls.clear();
         sectors.clear();
         objects.clear();
-        placedLines.clear();
         placedCorners.clear();
         textureInputs.clear();
 
@@ -182,7 +181,6 @@ namespace MapEditor {
                 );
 
                 walls.push_back(wall);
-                placedLines.push_back({start, end});
 
                 if (!CornerExistsAt(start)) {
                     placedCorners.push_back(start);

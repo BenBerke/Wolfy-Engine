@@ -147,9 +147,9 @@ namespace MapEditorInternal {
     void DrawWalls() {
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 
-        for (const EditorLine& line : placedLines) {
-            const Vector2 startScreen = WorldToScreen(line.start, cameraPos);
-            const Vector2 endScreen = WorldToScreen(line.end, cameraPos);
+        for (const Wall& wall : MapEditor::walls) {
+            const Vector2 startScreen = WorldToScreen(wall.start, cameraPos);
+            const Vector2 endScreen = WorldToScreen(wall.end, cameraPos);
 
             DrawThickLine(renderer, startScreen, endScreen, 5.0f);
         }

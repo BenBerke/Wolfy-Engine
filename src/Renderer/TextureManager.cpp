@@ -10,7 +10,8 @@ namespace {
 
 namespace TextureManager {
 
-    int CreateTexture(const std::string& path) {
+    int CreateTexture(const std::string& _path) {
+        const std::string path = "../Assets/Textures/" + _path + ".png";
         SDL_Surface* loadedSurface = IMG_Load(path.c_str());
 
         if (loadedSurface == nullptr) {
@@ -46,13 +47,46 @@ namespace TextureManager {
             convertedSurface->pixels
         );
 
+        // glGenerateMipmap(GL_TEXTURE_2D);
+        //
+        // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        //
+        // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
+        // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        //----
+        // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        //
+        // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        //----
         glGenerateMipmap(GL_TEXTURE_2D);
 
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
+        // Smooth between mipmap levels.
+        // This reduces far-away shimmering.
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+
+        // Keep close-up texture sharp-ish.
+        // Use GL_LINEAR if you want smoother close-up textures.
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+        // Negative bias means: use higher-detail mip levels for longer.
+        // This stops mipmaps becoming blurry too quickly.
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_LOD_BIAS, -0.25f);
+        //---
+        // glGenerateMipmap(GL_TEXTURE_2D);
+        //
+        // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        //
+        // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
+        // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        //
+        // glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_LOD_BIAS, -0.25f);
 
         Texture texture;
         texture.id = textureID;

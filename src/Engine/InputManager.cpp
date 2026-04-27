@@ -18,6 +18,8 @@ namespace {
     Vector2 mousePosition{};
     Vector2 mouseDelta{};
 
+    bool relativeMouseMode = false;
+
     bool quitRequested = false;
 }
 
@@ -57,10 +59,23 @@ namespace InputManager {
         keyboardState = SDL_GetKeyboardState(nullptr);
         mouseState = SDL_GetMouseState(&mousePosition.x, &mousePosition.y);
 
-        mouseDelta = {
-            mousePosition.x - previousMousePosition.x,
-            mousePosition.y - previousMousePosition.y
-        };
+        if (relativeMouseMode) {
+            float dx = 0.0f;
+            float dy = 0.0f;
+
+            mouseState = SDL_GetRelativeMouseState(&dx, &dy);
+
+            mouseDelta = {
+                dx,
+                dy
+            };
+        }
+        else {
+            mouseDelta = {
+                mousePosition.x - previousMousePosition.x,
+                mousePosition.y - previousMousePosition.y
+            };
+        }
     }
 
     bool QuitRequested() {
@@ -99,5 +114,17 @@ namespace InputManager {
 
     Vector2 GetMouseDelta() {
         return mouseDelta;
+    }
+
+    void SetRelativeMouseMode(SDL_Window* window, const bool enabled) {
+        relativeMouseMode = enabled;
+
+        SDL_SetWindowRelativeMouseMode(window, enabled);
+
+        float dx = 0.0f;
+        float dy = 0.0f;
+        SDL_GetRelativeMouseState(&dx, &dy);
+
+        mouseDelta = {0.0f, 0.0f};
     }
 }
