@@ -114,17 +114,44 @@ namespace {
 
         return Player::currentSector;
     }
+
+    float PolygonAreaAbs(const std::vector<Vector2>& polygon) {
+        float area = 0.0f;
+
+        for (int i = 0; i < static_cast<int>(polygon.size()); ++i) {
+            const int next = (i + 1) % static_cast<int>(polygon.size());
+
+            area += polygon[i].x * polygon[next].y;
+            area -= polygon[next].x * polygon[i].y;
+        }
+
+        return std::abs(area) * 0.5f;
+    }
 }
 
 namespace Player {
     int FindCurrentSector(const std::vector<Sector>& sectors) {
-        for (int i = 0; i < sectors.size(); ++i) {
-            if (IsPointInPolygon(sectors[i].vertices, position)) {
-                currentSector = i;
-                return currentSector;
+        int bestSector = -1;
+        float bestArea = std::numeric_limits<float>::max();
+
+        for (int i = 0; i < static_cast<int>(sectors.size()); ++i) {
+            if (!IsPointInPolygon(sectors[i].vertices, position)) {
+                continue;
+            }
+
+            const float area = PolygonAreaAbs(sectors[i].vertices);
+
+            if (area < bestArea) {
+                bestArea = area;
+                bestSector = i;
             }
         }
-        return -1;
+
+        if (bestSector != -1) {
+            currentSector = bestSector;
+        }
+
+        return bestSector;
     }
 
     void Update(const std::vector<Wall>& walls, const std::vector<Sector>& sectors) {
@@ -143,11 +170,16 @@ namespace Player {
         if (InputManager::GetKey(SDL_SCANCODE_LSHIFT)) currentSpeed = runningSpeed;
         else currentSpeed = speed;
 
+        if (InputManager::GetKeyDown(SDL_SCANCODE_V)) noClip = !noClip;
+
         angle += InputManager::GetMouseDelta().x * SENSITIVITY;
+
+        //Check each sector every frame, might cause lag
+        currentSector = FindCurrentSector(sectors);
 
         constexpr float smoothingSpeed = 8.0f;
 
-        const float targetWorldEyeHeight = sectors[currentSector].floorHeight + eyeHeight;
+        const float targetWorldEyeHeight = currentSector < sectors.size() ? sectors[currentSector].floorHeight + eyeHeight : eyeHeight;
         currentEyeHeight += (targetWorldEyeHeight - currentEyeHeight) * smoothingSpeed * GameTime::deltaTime;
 
         const float angleInRad = angle * M_PI / 180.0f;
@@ -210,6 +242,7 @@ namespace Player {
                 }
 
                 const float penetration = size - dist;
+                if (!noClip)
                 position += normal * penetration;
 
                 const float intoWall = Vector2Math::Dot(normal, velocity);

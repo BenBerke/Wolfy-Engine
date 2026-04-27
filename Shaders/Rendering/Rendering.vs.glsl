@@ -83,11 +83,11 @@ uniform float playerHeight;
 uniform float playerCamZ;
 uniform int renderMode;
 
-const float FOV = 90.0;
-const float halfFov = FOV * 0.5;
+const float FOV =  90.0;
+const float halfFov = FOV * .5;
 float horizonY = SCREEN_HEIGHT * playerCamZ;
 const float wallHeight = 32.0;
-const float nearPlane = 0.1;
+const float nearPlane = .1;
 
 float degToRad(float angle) {
     return angle * (PI / 180.0);

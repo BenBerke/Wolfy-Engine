@@ -75,7 +75,9 @@ int main() {
         if (InputManager::GetKeyDown(SDL_SCANCODE_1)) Player::position.x += 1;
 
         Renderer::Update(Player::position, Player::angle);
-        Renderer::RenderTextRaw("FPS: " + std::to_string(fps), 0, 0, 0.5f, Vector3{255, 255, 255});
+        Renderer::RenderTextRaw("FPS:" + std::to_string(fps), 0, 0, 0.5f, Vector3{255, 255, 255});
+        Renderer::RenderTextRaw("NoClip:" + std::to_string(Player::noClip), 100, 0, 0.5f, Vector3{255, 255, 255});
+        Renderer::RenderTextRaw("CS:" + std::to_string(Player::currentSector), 200, 0, 0.5f, Vector3{255, 255, 255});
 
         SDL_GL_SwapWindow(Renderer::window);
 

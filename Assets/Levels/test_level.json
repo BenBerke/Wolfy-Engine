@@ -3,8 +3,8 @@
         {
             "id": 0,
             "position": [
-                -79.0,
-                167.0
+                -111.0,
+                60.0
             ],
             "type": 0
         }
@@ -48,7 +48,7 @@
                 }
             ],
             "floorHeight": 0.0,
-            "floorTextureIndex": 1,
+            "floorTextureIndex": 2,
             "id": 0
         },
         {
@@ -658,7 +658,7 @@
         },
         {
             "ceilingHeight": 40.0,
-            "ceilingTextureIndex": -1,
+            "ceilingTextureIndex": 0,
             "corners": [
                 {
                     "x": -416.0,
@@ -674,13 +674,35 @@
                 }
             ],
             "floorHeight": 0.0,
-            "floorTextureIndex": -1,
+            "floorTextureIndex": 0,
             "id": 22
+        },
+        {
+            "ceilingHeight": 40.0,
+            "ceilingTextureIndex": 0,
+            "corners": [
+                {
+                    "x": -32.0,
+                    "y": 0.0
+                },
+                {
+                    "x": 64.0,
+                    "y": 96.0
+                },
+                {
+                    "x": 32.0,
+                    "y": -64.0
+                }
+            ],
+            "floorHeight": 5.0,
+            "floorTextureIndex": 1,
+            "id": 23
         }
     ],
     "textures": [
         "wall",
-        "wood"
+        "wood",
+        "floor"
     ],
     "walls": [
         {
@@ -1958,7 +1980,7 @@
             "textureIndex": 0
         },
         {
-            "backSector": -1,
+            "backSector": 22,
             "end": [
                 -288.0,
                 320.0
@@ -1977,7 +1999,7 @@
                 -352.0,
                 160.0
             ],
-            "frontSector": -1,
+            "frontSector": 22,
             "id": 92,
             "start": [
                 -288.0,
@@ -1991,11 +2013,53 @@
                 -416.0,
                 288.0
             ],
-            "frontSector": -1,
+            "frontSector": 22,
             "id": 93,
             "start": [
                 -352.0,
                 160.0
+            ],
+            "textureIndex": 0
+        },
+        {
+            "backSector": 0,
+            "end": [
+                64.0,
+                96.0
+            ],
+            "frontSector": 23,
+            "id": 94,
+            "start": [
+                -32.0,
+                0.0
+            ],
+            "textureIndex": 0
+        },
+        {
+            "backSector": 0,
+            "end": [
+                32.0,
+                -64.0
+            ],
+            "frontSector": 23,
+            "id": 95,
+            "start": [
+                64.0,
+                96.0
+            ],
+            "textureIndex": 0
+        },
+        {
+            "backSector": 0,
+            "end": [
+                -32.0,
+                -0.0
+            ],
+            "frontSector": 23,
+            "id": 96,
+            "start": [
+                32.0,
+                -64.0
             ],
             "textureIndex": 0
         }

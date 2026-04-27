@@ -27,6 +27,8 @@ namespace Player {
     inline float currentSpeed;
     inline float currentEyeHeight;
 
+    inline bool noClip;
+
 
     int FindCurrentSector(const std::vector<Sector>& sectors);
     void Update(const std::vector<Wall>& walls, const std::vector<Sector>& sectors);
