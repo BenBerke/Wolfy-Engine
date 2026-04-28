@@ -21,6 +21,7 @@ namespace Player {
     inline float size = 1.0f;
     inline float eyeHeight = 12.0f;
     inline float stepSize = 8.0f;
+
     inline float camZ = 0.5;
 
     inline int currentSector;
@@ -32,6 +33,7 @@ namespace Player {
 
     int FindCurrentSector(const std::vector<Sector>& sectors);
     void Update(const std::vector<Wall>& walls, const std::vector<Sector>& sectors);
+    void Start(const std::vector<Sector>& sectors);
 }
 
 #endif //WOLFY_ENGINE_PLAYER_H

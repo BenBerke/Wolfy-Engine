@@ -9,31 +9,16 @@
 #include "Headers/Renderer/TextureManager.hpp"
 
 namespace MapEditorInternal {
-    const char* GetModeName(const Mode mode) {
-        switch (mode) {
-            case MODE_DOT:
-                return "Dot Mode";
-
-            case MODE_WALL:
-                return "Wall Mode";
-
-            case MODE_SECTOR:
-                return "Sector Mode";
-
-            case MODE_OBJECT:
-                return "Object Mode";
-
-            default:
-                return "Unknown Mode";
-        }
-    }
-
     void MoveMode() {
         currentMode = static_cast<Mode>((currentMode + 1) % MODE_COUNT);
     }
 
     void DrawEditorUI() {
         ImGui::Begin("Editor");
+
+        auto PutSpace = [](const int amount) {
+            for (int i = 0; i < amount; i++) ImGui::Spacing();
+        };
 
         if (ImGui::Button("Mode")) {
             const Mode previousMode = currentMode;
@@ -51,11 +36,32 @@ namespace MapEditorInternal {
             }
         }
 
+        auto GetModeName = [](const int mode) {
+            switch (mode) {
+                case MODE_DOT:
+                    return "Dot Mode";
+
+                case MODE_WALL:
+                    return "Wall Mode";
+
+                case MODE_SECTOR:
+                    return "Sector Mode";
+
+                case MODE_OBJECT:
+                    return "Object Mode";
+
+                default:
+                    return "Unknown Mode";
+            }
+        };
+
         ImGui::Text("%s", GetModeName(currentMode));
 
         ImGui::Text("\nDots: %d", static_cast<int>(placedCorners.size()));
         ImGui::Text("Lines: %d", static_cast<int>(MapEditor::walls.size()));
         ImGui::Text("Sectors: %d", static_cast<int>(MapEditor::sectors.size()));
+
+        //region EDITING
 
         if (editingSector && currentMode == MODE_SECTOR && selectedSector != -1) {
             ImGui::Begin("Sector", &editingSector);
@@ -131,6 +137,45 @@ namespace MapEditorInternal {
             ImGui::End();
         }
 
+        auto GetObjectName = [](const int enumType) {
+            switch (enumType) {
+                case OBJ_PLAYER_SPAWN:
+                    return "Player Spawn";
+                break;
+                case OBJ_SPRITE:
+                    return "Sprite";
+                    break;
+                default: return "Unknown"; break;
+            }
+        };
+
+        if (editingObject && currentMode == MODE_OBJECT && selectedObject != -1) {
+            ImGui::Begin("Object", &editingSector);
+
+            Vector2 position = MapEditor::objects[selectedObject].position;
+            int textureIndex = MapEditor::objects[selectedObject].textureIndex;
+
+            ImGui::Text("ID:%d", MapEditor::objects[selectedObject].id);
+            ImGui::Text("Type:%s", GetObjectName(MapEditor::objects[selectedObject].type));
+            ImGui::InputFloat2("Position", &position.x);
+            ImGui::InputInt("Texture Index", &textureIndex);
+
+            MapEditor::objects[selectedObject].position = position;
+            MapEditor::objects[selectedObject].textureIndex = textureIndex;
+
+            if (MapEditor::objects[selectedObject].type != OBJ_PLAYER_SPAWN && ImGui::Button("Delete")) {
+                MapEditor::objects.erase(MapEditor::objects.begin() + selectedObject);
+                editingObject = false;
+            }
+
+            if (ImGui::Button("Close")) {
+                editingObject = false;
+            }
+
+            ImGui::End();
+        }
+        //endregion
+
         if (creatableSector) {
             if (ImGui::Button("Create Sector")) {
                 if (sectorBeingCreated.size() >= 3) {
@@ -159,10 +204,39 @@ namespace MapEditorInternal {
             ImGui::PopID();
         }
 
+        if (currentMode == MODE_OBJECT) {
+            ImGui::Text("Object Details");
+            PutSpace(3);
+            const char* items[OBJ_COUNT] = {"Player Spawn", "Sprite"};
+            static int item_current = 0;
+            if (ImGui::BeginCombo("Select Type", items[item_current])) {
+                for (int n = 0; n < IM_ARRAYSIZE(items); n++) {
+                    const bool is_selected = (item_current == n);
+                    if (ImGui::Selectable(items[n], is_selected)) {
+                        item_current = n;
+                        currentObjectTypeToPlace = static_cast<ObjectType>(item_current);
+                        currentObjectTypeToPlace = static_cast<ObjectType>(n);
+                    };
+                    if (is_selected)
+                        ImGui::SetItemDefaultFocus();
+                }
+                ImGui::EndCombo();
+            }
+
+            if (ImGui::Button("Close")) {
+                editingObject = false;
+            }
+        }
+
         if (ImGui::Button("Save & Play")) {
             if (SaveAndQuit()) {
                 quit = true;
             }
+        }
+        PutSpace(3);
+
+        if (ImGui::Button("Shutdown")) {
+            quit = true;
         }
 
         ImGui::End();

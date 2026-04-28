@@ -35,6 +35,21 @@ namespace Vector2Math {
         return a.x * b.y - a.y * b.x;
     }
 
+    inline float Distance(const Vector2& a, const Vector2& b) {
+        const float lineA = a.x - b.x;
+        const float lineB = a.y - b.y;
+        const float lineCSqr = lineA * lineA + lineB * lineB;
+        const float lineC = std::sqrt(lineCSqr);
+        return std::sqrt(lineC);
+    }
+
+    inline float DistanceSquared(const Vector2& a, const Vector2& b) {
+        const float lineA = a.x - b.x;
+        const float lineB = a.y - b.y;
+        const float lineCSqr = lineA * lineA + lineB * lineB;
+        return lineCSqr;
+    }
+
 }
 
 #endif // WOLFY_ENGINE_VECTOR2MATH_H

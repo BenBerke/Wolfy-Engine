@@ -1,5 +1,5 @@
 #include "../../Headers/Renderer/Renderer/Renderer.hpp"
-#include "../../Headers/Renderer/Renderer/RendererInternal.hpp"
+#include "RendererInternal.hpp"
 
 namespace RendererInternal {
     void DrawDebugLine(const Vector2 start, const Vector2 end) {

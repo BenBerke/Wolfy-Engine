@@ -156,13 +156,13 @@ namespace MapEditorInternal {
     }
 
     void DrawObjects() {
-        for (const Object& object : objects) {
+        for (const Object& object : MapEditor::objects) {
             const Vector2 objectScreen = WorldToScreen(object.position, cameraPos);
 
             Vector3 color = {0, 0, 0};
 
             switch (object.type) {
-                case PLAYER:
+                case OBJ_PLAYER_SPAWN:
                     color = {255, 0, 0};
                     break;
 

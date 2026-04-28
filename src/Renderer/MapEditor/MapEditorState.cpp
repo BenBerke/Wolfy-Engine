@@ -3,6 +3,7 @@
 namespace MapEditor {
     std::vector<Wall> walls;
     std::vector<Sector> sectors;
+    std::vector<Object> objects;
     Vector2 playerStartPos = {0.0f, 0.0f};
 }
 
@@ -27,10 +28,14 @@ namespace MapEditorInternal {
     bool editingWall = false;
     int selectedWall = -1;
 
+    bool editingObject = false;
+    int selectedObject = -1;
+
+    float objectSize = 10.0f;
+
     Mode currentMode = MODE_DOT;
 
-    std::vector<Object> objects;
-    ObjectType currentObjectToPlace = PLAYER;
+    ObjectType currentObjectTypeToPlace = OBJ_PLAYER_SPAWN;
     bool playerPlaced = false;
 
     std::vector<std::array<char, 256>> textureInputs;

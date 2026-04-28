@@ -1,5 +1,5 @@
 #include "../../Headers/Renderer/Renderer/Renderer.hpp"
-#include "../../Headers/Renderer/Renderer/RendererInternal.hpp"
+#include "RendererInternal.hpp"
 
 #include "Headers/Math/Matrix/Matrix4.hpp"
 

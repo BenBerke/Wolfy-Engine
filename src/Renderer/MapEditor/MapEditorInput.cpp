@@ -31,6 +31,21 @@ namespace MapEditorInternal {
                         }
                     }
                 }
+                else if (currentMode == MODE_WALL) {
+                    const bool clickedOnCorder = CornerExistsAt(snappedWorld);
+
+                    if (clickedOnCorder) {
+                        drawingLine = true;
+                        lineStartWorld = snappedWorld;
+                    }
+
+                    const int clickedWall = GetWallAtPoint(mouseWorld);
+
+                    if (clickedWall != -1 && !clickedOnCorder) {
+                        selectedWall = clickedWall;
+                        editingWall = true;
+                    }
+                }
                 else if (currentMode == MODE_DOT) {
                     bool cornerAlreadyExists = false;
 
@@ -53,43 +68,38 @@ namespace MapEditorInternal {
                     }
                 }
                 else if (currentMode == MODE_OBJECT) {
-                    if (currentObjectToPlace == PLAYER) {
-                        if (playerPlaced) {
-                            for (Object& object : objects) {
-                                if (object.type == PLAYER) {
-                                    object.position = mouseWorld;
-                                }
-                            }
-                        }
-                        else {
-                            Object player = {PLAYER, mouseWorld};
-                            playerPlaced = true;
-                            objects.push_back(player);
+                    bool objectFound = false;
+                    for (int i = 0; i < static_cast<int>(MapEditor::objects.size()); ++i) {
+                        if (WithinRadius(mouseWorld, MapEditor::objects[i].position, objectSize)) {
+                            objectFound = true;
+                            editingObject = !editingObject;
+                            selectedObject = i;
                         }
                     }
+                    if (!objectFound) {
+                        Object newObject;
+                        if (currentObjectTypeToPlace == OBJ_PLAYER_SPAWN) {
+                            if (playerPlaced) {
+                                for (Object& object : MapEditor::objects) {
+                                    if (object.type == OBJ_PLAYER_SPAWN) {
+                                        object.position = mouseWorld;
+                                    }
+                                }
+                            }
+                            else {
+                                newObject.position = mouseWorld;
+                                newObject.type = OBJ_PLAYER_SPAWN;
+                            }
+                        }
+                        else if (currentObjectTypeToPlace == OBJ_SPRITE) {
+                            newObject.type = currentObjectTypeToPlace;
+                            newObject.position = mouseWorld;
+                        }
+                        MapEditor::objects.push_back(newObject);
+                    }
+
                 }
             }
-
-            if (InputManager::GetMouseButtonDown(SDL_BUTTON_LEFT) && currentMode == MODE_WALL) {
-                const Vector2 mouseScreen = InputManager::GetMousePosition();
-                const Vector2 mouseWorld = ScreenToWorld(mouseScreen, cameraPos);
-                const Vector2 snappedWorld = SnapToGrid(mouseWorld);
-
-                bool clickedOnCorder = CornerExistsAt(snappedWorld);
-
-                if (clickedOnCorder) {
-                    drawingLine = true;
-                    lineStartWorld = snappedWorld;
-                }
-
-                const int clickedWall = GetWallAtPoint(mouseWorld);
-
-                if (clickedWall != -1 && !clickedOnCorder) {
-                    selectedWall = clickedWall;
-                    editingWall = true;
-                }
-            }
-
             if (InputManager::GetMouseButton(SDL_BUTTON_LEFT) && drawingLine && currentMode == MODE_WALL) {
                 const Vector2 mouseScreen = InputManager::GetMousePosition();
                 const Vector2 mouseWorld = ScreenToWorld(mouseScreen, cameraPos);
@@ -125,12 +135,13 @@ namespace MapEditorInternal {
             }
         }
 
+        if (InputManager::GetKeyDown(SDL_SCANCODE_ESCAPE)) {
+            quit = true;
+        }
+
         if (!keyboardBlockedByImgui) {
             if (InputManager::GetKeyDown(SDL_SCANCODE_Q)) {
                 MoveMode();
-            }
-            if (InputManager::GetKeyDown(SDL_SCANCODE_ESCAPE)) {
-                quit = true;
             }
         }
         else {

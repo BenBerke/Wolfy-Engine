@@ -28,11 +28,11 @@ namespace MapEditorInternal {
             levelData["textures"].push_back(pathInput.data());
         }
 
-        for (int i = 0; i < static_cast<int>(objects.size()); i++) {
+        for (int i = 0; i < static_cast<int>(MapEditor::objects.size()); i++) {
             json jsonObj = {
                 {"id", i},
-                {"type", static_cast<int>(objects[i].type)},
-                {"position", {objects[i].position.x, objects[i].position.y}},
+                {"type", static_cast<int>(MapEditor::objects[i].type)},
+                {"position", {MapEditor::objects[i].position.x, MapEditor::objects[i].position.y}},
             };
 
             levelData["objects"].push_back(jsonObj);
@@ -141,7 +141,10 @@ namespace MapEditor {
             for (const json& objectJson : levelData["objects"]) {
                 Object object;
 
+                object.id = objectJson.value("id", -1);
                 object.type = static_cast<ObjectType>(objectJson.value("type", 0));
+
+                if (playerPlaced && object.type == OBJ_PLAYER_SPAWN) continue;
 
                 object.position = {
                     objectJson["position"][0].get<float>(),
@@ -150,10 +153,15 @@ namespace MapEditor {
 
                 objects.push_back(object);
 
-                if (object.type == PLAYER) {
+                if (object.type == OBJ_PLAYER_SPAWN) {
                     playerPlaced = true;
                     playerStartPos = object.position;
                 }
+            }
+            if (!playerPlaced) {
+                Object player = {-1, OBJ_PLAYER_SPAWN, {0, 0}};
+                objects.push_back(player);
+                playerPlaced = true;
             }
         }
 

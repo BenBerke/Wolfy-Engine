@@ -15,7 +15,7 @@ option(WOLFY_USE_IMGUI "Enable Dear ImGui editor UI" ON)
 
 add_library(glad STATIC
         glad/src/glad.c
-        Headers/Renderer/Renderer/RendererInternal.hpp
+        src/Renderer/Renderer/RendererInternal.hpp
 )
 
 target_include_directories(glad PUBLIC
@@ -51,6 +51,7 @@ add_executable(Wolfy_Engine
         src/Renderer/Renderer/RendererDebug.cpp
         src/Renderer/Renderer/RendererUpdate.cpp
         src/Renderer/Renderer/RendererDestroy.cpp
+        Headers/Objects/Object.h
 )
 
 target_precompile_headers(Wolfy_Engine PRIVATE

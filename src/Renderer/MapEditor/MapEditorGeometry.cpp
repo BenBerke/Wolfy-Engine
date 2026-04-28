@@ -10,6 +10,10 @@ namespace MapEditorInternal {
         return a.x == b.x && a.y == b.y;
     }
 
+    bool WithinRadius(const Vector2& a, const Vector2& b, const float radius) {
+        return Vector2Math::DistanceSquared(a, b) < radius * radius;
+    }
+
     bool CornerExistsAt(const Vector2& point) {
         for (const Vector2& placedCorner : placedCorners) {
             if (SamePoint(placedCorner, point)) {

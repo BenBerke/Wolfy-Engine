@@ -1,5 +1,5 @@
 #include "../../Headers/Renderer/Renderer/Renderer.hpp"
-#include "../../Headers/Renderer/Renderer/RendererInternal.hpp"
+#include "RendererInternal.hpp"
 
 #include "Headers/Engine/InputManager.hpp"
 #include "Headers/Engine/GameTime.hpp"
@@ -73,25 +73,6 @@ namespace Renderer {
             4,
             spriteCount
         );
-
-        //const float speed = Player::speed / 2.0f;
-        constexpr float speed = 0.0f;
-
-        if (testSpritePosition.x < playerPos.x) {
-            testSpritePosition.x += speed * GameTime::deltaTime;
-        }
-
-        if (testSpritePosition.x > playerPos.x) {
-            testSpritePosition.x -= speed * GameTime::deltaTime;
-        }
-
-        if (testSpritePosition.y < playerPos.y) {
-            testSpritePosition.y += speed * GameTime::deltaTime;
-        }
-
-        if (testSpritePosition.y > playerPos.y) {
-            testSpritePosition.y -= speed * GameTime::deltaTime;
-        }
 
         if (!InputManager::GetKey(SDL_SCANCODE_TAB)) {
             return;

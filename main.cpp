@@ -25,6 +25,7 @@ int main() {
     MapEditor::Destroy();
 
     MapEditor::LoadLevel("test_level");
+    Player::Start(MapEditor::sectors);
 
     if (!Renderer::Initialize()) {
         SDL_Log("Failed to initialize Renderer: %s", SDL_GetError());

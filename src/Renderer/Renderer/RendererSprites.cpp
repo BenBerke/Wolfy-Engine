@@ -1,33 +1,42 @@
-#include "../../Headers/Renderer/Renderer/RendererInternal.hpp"
+#include "RendererInternal.hpp"
+#include "Headers/Renderer/MapEditor.hpp"
 
 namespace RendererInternal {
     void BuildGpuSprites() {
         gpuSprites.clear();
 
-        GpuSprite testSprite;
+        for (const Object& object : MapEditor::objects) {
+            if (object.type == OBJ_PLAYER_SPAWN) {
+                continue;
+            }
 
-        testSprite.positionSize = {
-            testSpritePosition.x,
-            testSpritePosition.y,
-            0.0f,
-            64.0f
-        };
+            if (object.type == OBJ_SPRITE) {
+                GpuSprite sprite;
 
-        testSprite.color = {
-            255.0f,
-            255.0f,
-            255.0f,
-            255.0f
-        };
+                sprite.positionSize = {
+                    object.position.x,
+                    object.position.y,
+                    0.0f,   // bottom height
+                    64.0f   // sprite height
+                };
 
-        testSprite.data = {
-            32.0f,
-            4.0f,
-            0.0f,
-            0.0f
-        };
+                sprite.color = {
+                    255.0f,
+                    255.0f,
+                    255.0f,
+                    255.0f
+                };
 
-        gpuSprites.push_back(testSprite);
+                sprite.data = {
+                    32.0f, // sprite width
+                    2.0f,  // texture index for now
+                    0.0f,
+                    0.0f
+                };
+
+                gpuSprites.push_back(sprite);
+            }
+        }
 
         spriteCount = static_cast<GLsizei>(gpuSprites.size());
 

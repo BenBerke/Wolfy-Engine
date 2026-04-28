@@ -1,5 +1,5 @@
 #include "../../../Headers/Renderer/Renderer/Renderer.hpp"
-#include "../../../Headers/Renderer/Renderer/RendererInternal.hpp"
+#include "RendererInternal.hpp"
 
 namespace Renderer {
     SDL_Window* window = nullptr;
@@ -45,6 +45,4 @@ namespace RendererInternal {
     std::vector<GpuFlatTriangle> visibleFlatTriangles;
 
     std::vector<GpuSprite> gpuSprites;
-
-    Vector2 testSpritePosition = {100.0f, 100.0f};
 }

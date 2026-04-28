@@ -154,6 +154,12 @@ namespace Player {
         return bestSector;
     }
 
+    void Start(const std::vector<Sector>& sectors) {
+        currentSector = FindCurrentSector(sectors);
+        currentEyeHeight = currentSector < sectors.size() ? sectors[currentSector].floorHeight + eyeHeight : eyeHeight;
+
+    }
+
     void Update(const std::vector<Wall>& walls, const std::vector<Sector>& sectors) {
         Vector2 input = {0.0f, 0.0f};
         if (InputManager::GetKey(SDL_SCANCODE_W)) input.y += 1.0f;
@@ -177,7 +183,7 @@ namespace Player {
         //Check each sector every frame, might cause lag
         currentSector = FindCurrentSector(sectors);
 
-        constexpr float smoothingSpeed = 8.0f;
+        constexpr float smoothingSpeed = 10.0f;
 
         const float targetWorldEyeHeight = currentSector < sectors.size() ? sectors[currentSector].floorHeight + eyeHeight : eyeHeight;
         currentEyeHeight += (targetWorldEyeHeight - currentEyeHeight) * smoothingSpeed * GameTime::deltaTime;

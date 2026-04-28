@@ -24,21 +24,11 @@ namespace MapEditorInternal {
         MODE_COUNT
     };
 
-    enum ObjectType {
-        PLAYER,
-
-        OBJECT_COUNT,
-    };
-
-    struct Object {
-        ObjectType type;
-        Vector2 position;
-    };
-
     enum Action {
         ACTION_CREATE_SECTOR,
         ACTION_CREATE_WALL,
         ACTION_CREATE_CORNER,
+        ACTION_CREATE_OBJECT,
     };
 
     extern std::vector<Action> actions;
@@ -63,15 +53,21 @@ namespace MapEditorInternal {
     extern bool editingWall;
     extern int selectedWall;
 
+    extern bool editingObject;
+    extern int selectedObject;
+
+    extern float objectSize;
+
     extern Mode currentMode;
 
-    extern std::vector<Object> objects;
-    extern ObjectType currentObjectToPlace;
+    extern ObjectType currentObjectTypeToPlace;
     extern bool playerPlaced;
+
 
     extern bool quit;
 
     bool SamePoint(const Vector2& a, const Vector2& b);
+    bool WithinRadius(const Vector2& a, const Vector2& b, const float radius);
     bool CornerExistsAt(const Vector2& point);
     bool IsCornerConnectedToLine(const Vector2& point);
     bool HasLineBetween(const Vector2& a, const Vector2& b);
@@ -99,7 +95,6 @@ namespace MapEditorInternal {
     void HandleEditorInput(bool mouseBlockedByImGui, bool keyboardBlockedByImgui);
     void DrawEditorUI();
 
-    const char* GetModeName(Mode mode);
     void MoveMode();
 
     bool SaveAndQuit();

@@ -1,4 +1,4 @@
-#include "../../Headers/Renderer/Renderer/RendererInternal.hpp"
+#include "RendererInternal.hpp"
 
 #include <cmath>
 

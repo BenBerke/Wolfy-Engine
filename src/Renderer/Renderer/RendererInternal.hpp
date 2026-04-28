@@ -81,8 +81,6 @@ namespace RendererInternal {
 
     extern std::vector<GpuSprite> gpuSprites;
 
-    extern Vector2 testSpritePosition;
-
     float DegToRad(float degrees);
     Vector2 RotatePoint(const Vector2& p, float angleRad);
     Vector2 WorldToDebugNdc(const Vector2& worldPoint, const Vector2& playerPos);
