@@ -7,6 +7,7 @@
 #define RENDER_WALL 0
 #define RENDER_FLAT 1
 #define RENDER_SPRITE 2
+#define RENDER_DECAL 3
 
 struct Wall {
     vec4 startEnd;
@@ -37,6 +38,20 @@ struct Sprite {
 // y = textureIndex
 };
 
+struct Decal {
+    vec4 startEnd;
+    vec4 color;
+    vec4 heights;
+    vec4 data;
+};
+
+struct Sector {
+    vec4 heights;
+    vec4 floorColor;
+    vec4 ceilingColor;
+    vec4 textureData;
+};
+
 layout(std430, binding = 0) readonly buffer WallBuffer {
     Wall walls[];
 };
@@ -47,6 +62,14 @@ layout(std430, binding = 1) readonly buffer FlatTriangleBuffer {
 
 layout(std430, binding = 2) readonly buffer SpriteBuffer {
     Sprite sprites[];
+};
+
+layout(std430, binding = 3) readonly buffer DecalBuffer {
+    Decal decals[];
+};
+
+layout(std430, binding = 4) readonly buffer SectorBuffer {
+    Sector sectors[];
 };
 
 flat out vec4 vWallColor;
@@ -167,15 +190,30 @@ void renderFlat() {
         point = triangle.c;
     }
 
+    int sectorIndex = int(triangle.data.x);
+    int flatType = int(triangle.data.y);
+
+    Sector sector = sectors[sectorIndex];
+
+    if (flatType == 1) {
+        // Ceiling
+        point.z = sector.heights.y;
+        vWallColor = sector.ceilingColor / 255.0;
+        vFlatTextureIndex = int(sector.textureData.y);
+    }
+    else {
+        // Floor
+        point.z = sector.heights.x;
+        vWallColor = sector.floorColor / 255.0;
+        vFlatTextureIndex = int(sector.textureData.x);
+    }
+
     float viewDepth = getViewDepth(point.xy);
     vFlatInvZ = 1.0 / viewDepth;
-
-    vWallColor = triangle.color / 255.0;
 
     outputDummyWallData();
 
     vFlatWorldOverZ = point.xy * vFlatInvZ;
-    vFlatTextureIndex = int(triangle.data.x);
 
     vec2 ndc = projectToNdc(point.xy, point.z);
 
@@ -364,12 +402,102 @@ void renderWall() {
     gl_Position = vec4(verts[gl_VertexID], 0.0, 1.0);
 }
 
+void renderDecal() {
+    Decal decal = decals[gl_InstanceID];
+
+    vFlatInvZ = 1.0;
+    vFlatWorldOverZ = vec2(0.0);
+    vFlatTextureIndex = -1;
+
+    vec2 wallStart = decal.startEnd.xy;
+    vec2 wallEnd = decal.startEnd.zw;
+
+    float floorHeight = decal.heights.x;
+    float ceilingHeight = decal.heights.y;
+
+    vTextureIndex = int(decal.data.x);
+    fWallWorldHeight = ceilingHeight - floorHeight;
+
+    float playerAngleInRad = degToRad(playerAngle);
+
+    vec2 relativeStart = wallStart - playerPos;
+    vec2 relativeEnd = wallEnd - playerPos;
+
+    vec2 viewStart = rotate(relativeStart, playerAngleInRad);
+    vec2 viewEnd = rotate(relativeEnd, playerAngleInRad);
+
+    float wallLength = length(wallEnd - wallStart);
+    float sStart = 0.0;
+    float sEnd = wallLength;
+
+    if (viewStart.y <= nearPlane && viewEnd.y <= nearPlane) {
+        gl_Position = vec4(2.0, 2.0, 0.0, 1.0);
+        return;
+    }
+
+    if (viewStart.y <= nearPlane) {
+        float t = (nearPlane - viewStart.y) / (viewEnd.y - viewStart.y);
+        viewStart = mix(viewStart, viewEnd, t);
+        sStart = mix(sStart, sEnd, t);
+    }
+
+    if (viewEnd.y <= nearPlane) {
+        float t = (nearPlane - viewEnd.y) / (viewStart.y - viewEnd.y);
+        viewEnd = mix(viewEnd, viewStart, t);
+        sEnd = mix(sEnd, sStart, t);
+    }
+
+    float screenXStart = projectScreenX(viewStart);
+    float screenXEnd = projectScreenX(viewEnd);
+
+    float topYStart = projectScreenY(ceilingHeight, viewStart.y);
+    float topYEnd = projectScreenY(ceilingHeight, viewEnd.y);
+
+    float bottomYStart = projectScreenY(floorHeight, viewStart.y);
+    float bottomYEnd = projectScreenY(floorHeight, viewEnd.y);
+
+    float leftX = (screenXStart / SCREEN_WIDTH) * 2.0 - 1.0;
+    float rightX = (screenXEnd / SCREEN_WIDTH) * 2.0 - 1.0;
+
+    float topLeftY = 1.0 - (topYStart / SCREEN_HEIGHT) * 2.0;
+    float bottomLeftY = 1.0 - (bottomYStart / SCREEN_HEIGHT) * 2.0;
+    float topRightY = 1.0 - (topYEnd / SCREEN_HEIGHT) * 2.0;
+    float bottomRightY = 1.0 - (bottomYEnd / SCREEN_HEIGHT) * 2.0;
+
+    vec2 verts[4] = vec2[4](
+    vec2(leftX, bottomLeftY),
+    vec2(leftX, topLeftY),
+    vec2(rightX, bottomRightY),
+    vec2(rightX, topRightY)
+    );
+
+    vWallColor = decal.color / 255.0;
+
+    fScreenXStart = screenXStart;
+    fScreenXEnd = screenXEnd;
+
+    fTopYStart = topYStart;
+    fTopYEnd = topYEnd;
+    fBottomYStart = bottomYStart;
+    fBottomYEnd = bottomYEnd;
+
+    fSStart = sStart;
+    fSEnd = sEnd;
+    fZLeft = viewStart.y;
+    fZRight = viewEnd.y;
+
+    gl_Position = vec4(verts[gl_VertexID], 0.0, 1.0);
+}
+
 void main() {
     if (renderMode == RENDER_FLAT) {
         renderFlat();
     }
     else if (renderMode == RENDER_SPRITE) {
         renderSprite();
+    }
+    else if (renderMode == RENDER_DECAL) {
+        renderDecal();
     }
     else {
         renderWall();

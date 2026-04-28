@@ -9,6 +9,7 @@
 enum ObjectType {
     OBJ_PLAYER_SPAWN,
     OBJ_SPRITE,
+    OBJ_DECAL,
 
     OBJ_COUNT,
 };
@@ -18,6 +19,9 @@ struct Object {
     ObjectType type;
     Vector2 position;
     int textureIndex;
+
+    // For decals
+    int wallIndex = -1;
 };
 
 #endif //WOLFY_ENGINE_OBJECT_H

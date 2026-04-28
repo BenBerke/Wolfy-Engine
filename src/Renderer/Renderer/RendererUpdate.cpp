@@ -30,7 +30,12 @@ namespace Renderer {
         glUniform1f(playerHeightUniform, Player::currentEyeHeight);
         glUniform1f(playerCamZUniform, Player::camZ);
 
+        if (InputManager::GetKey(SDL_SCANCODE_G)) MapEditor::sectors[3].floorHeight += 1.0f;
+        if (InputManager::GetKey(SDL_SCANCODE_H)) MapEditor::sectors[3].floorHeight -= 1.0f;
+
         BuildVisibleFlatTriangles(playerPos, playerAngle);
+        BuildGpuSectors();
+        UploadGpuWallsFromMap();
 
         TextureManager::BindAllTextures(0);
 
@@ -72,6 +77,23 @@ namespace Renderer {
             0,
             4,
             spriteCount
+        );
+
+        BuildGpuDecals();
+
+        glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, decalSSBO);
+        glDepthFunc(GL_LEQUAL);
+        glUniform1i(renderModeUniform, RENDER_DECAL);
+
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glDepthMask(GL_TRUE);
+
+        glDrawArraysInstanced(
+            GL_TRIANGLE_STRIP,
+            0,
+            4,
+            decalCount
         );
 
         if (!InputManager::GetKey(SDL_SCANCODE_TAB)) {

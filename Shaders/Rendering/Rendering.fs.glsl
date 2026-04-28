@@ -5,6 +5,7 @@
 #define RENDER_WALL 0
 #define RENDER_FLAT 1
 #define RENDER_SPRITE 2
+#define RENDER_DECAL 3
 
 #define MAX_WALL_TEXTURES 8
 
@@ -112,6 +113,54 @@ void main() {
             FragColor = vWallColor;
         }
 
+        return;
+    }
+    else if (renderMode == RENDER_DECAL) {
+        float x = gl_FragCoord.x;
+
+        float denominator = fScreenXEnd - fScreenXStart;
+
+        if (abs(denominator) < 0.00001) {
+            discard;
+        }
+
+        float across = (x - fScreenXStart) / denominator;
+        across = clamp(across, 0.0, 1.0);
+
+        float invZ = mix(1.0 / fZLeft, 1.0 / fZRight, across);
+        float decalViewDepth = 1.0 / invZ;
+
+        float decalDepth01 = clamp(
+        (decalViewDepth - nearPlane) / (farPlane - nearPlane),
+        0.0,
+        1.0
+        );
+
+        // Pull the decal slightly forward to avoid z-fighting with the wall.
+        gl_FragDepth = max(decalDepth01 - 0.00002, 0.0);
+
+        float topY = mix(fTopYStart, fTopYEnd, across);
+        float bottomY = mix(fBottomYStart, fBottomYEnd, across);
+
+        float heightDenominator = bottomY - topY;
+
+        if (abs(heightDenominator) < 0.00001) {
+            discard;
+        }
+
+        float fragYTopOrigin = SCREEN_HEIGHT - gl_FragCoord.y;
+        float v = (fragYTopOrigin - topY) / heightDenominator;
+        v = clamp(v, 0.0, 1.0);
+
+        vec2 uv = vec2(across, v);
+
+        vec4 texColor = SampleWallTexture(vTextureIndex, uv);
+
+        if (texColor.a < 0.1) {
+            discard;
+        }
+
+        FragColor = texColor * vWallColor;
         return;
     }
 

@@ -183,7 +183,7 @@ namespace Player {
         //Check each sector every frame, might cause lag
         currentSector = FindCurrentSector(sectors);
 
-        constexpr float smoothingSpeed = 10.0f;
+        constexpr float smoothingSpeed = 100.0f;
 
         const float targetWorldEyeHeight = currentSector < sectors.size() ? sectors[currentSector].floorHeight + eyeHeight : eyeHeight;
         currentEyeHeight += (targetWorldEyeHeight - currentEyeHeight) * smoothingSpeed * GameTime::deltaTime;

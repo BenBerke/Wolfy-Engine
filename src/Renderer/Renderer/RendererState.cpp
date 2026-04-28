@@ -36,6 +36,12 @@ namespace RendererInternal {
     GLuint spriteSSBO = 0;
     GLsizei spriteCount = 0;
 
+    GLuint decalSSBO = 0;
+    GLsizei decalCount = 0;
+
+    GLuint sectorSSBO = 0;
+    std::vector<GpuSector> gpuSectors;
+
     std::map<char, Character> Characters;
 
     std::vector<GpuWall> gpuWalls;
@@ -45,4 +51,6 @@ namespace RendererInternal {
     std::vector<GpuFlatTriangle> visibleFlatTriangles;
 
     std::vector<GpuSprite> gpuSprites;
+
+    std::vector<GpuDecal> gpuDecals;
 }

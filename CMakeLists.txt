@@ -52,6 +52,8 @@ add_executable(Wolfy_Engine
         src/Renderer/Renderer/RendererUpdate.cpp
         src/Renderer/Renderer/RendererDestroy.cpp
         Headers/Objects/Object.h
+        src/Renderer/Renderer/RendererDecals.cpp
+        src/Renderer/Renderer/RendererSectors.cpp
 )
 
 target_precompile_headers(Wolfy_Engine PRIVATE

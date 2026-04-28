@@ -1327,7 +1327,8 @@
         "floor",
         "water",
         "stone",
-        "metal"
+        "metal",
+        "eye"
     ],
     "walls": [
         {

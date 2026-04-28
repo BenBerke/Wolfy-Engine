@@ -104,6 +104,21 @@ namespace RendererInternal {
         gpuWallCount = static_cast<GLsizei>(gpuWalls.size());
     }
 
+    void UploadGpuWallsFromMap() {
+        BuildGpuWallsFromMap();
+
+        glBindBuffer(GL_SHADER_STORAGE_BUFFER, Renderer::wallSSBO);
+
+        glBufferData(
+            GL_SHADER_STORAGE_BUFFER,
+            gpuWalls.size() * sizeof(GpuWall),
+            gpuWalls.empty() ? nullptr : gpuWalls.data(),
+            GL_DYNAMIC_DRAW
+        );
+
+        glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, Renderer::wallSSBO);
+    }
+
     static void ClipFlatTriangleAgainstNearPlane(
         const GpuFlatTriangle& triangle,
         const Vector2& playerPos,
@@ -198,31 +213,21 @@ namespace RendererInternal {
         flatTriangles.clear();
         visibleFlatTriangles.clear();
 
-        for (const Sector& sector : MapEditor::sectors) {
-            const Vector4 floorColor = {
-                sector.floorColor.x,
-                sector.floorColor.y,
-                sector.floorColor.z,
-                255.0f
-            };
-
-            const Vector4 ceilingColor = {
-                sector.ceilingColor.x,
-                sector.ceilingColor.y,
-                sector.ceilingColor.z,
-                255.0f
-            };
+        for (int sectorIndex = 0; sectorIndex < static_cast<int>(MapEditor::sectors.size()); ++sectorIndex) {
+            const Sector& sector = MapEditor::sectors[sectorIndex];
 
             for (const Triangle& triangle : sector.triangles) {
                 GpuFlatTriangle floorTriangle;
 
-                floorTriangle.a = {triangle.a.x, triangle.a.y, sector.floorHeight, 0.0f};
-                floorTriangle.b = {triangle.c.x, triangle.c.y, sector.floorHeight, 0.0f};
-                floorTriangle.c = {triangle.b.x, triangle.b.y, sector.floorHeight, 0.0f};
-                floorTriangle.color = floorColor;
+                floorTriangle.a = {triangle.a.x, triangle.a.y, 0.0f, 0.0f};
+                floorTriangle.b = {triangle.c.x, triangle.c.y, 0.0f, 0.0f};
+                floorTriangle.c = {triangle.b.x, triangle.b.y, 0.0f, 0.0f};
+
+                floorTriangle.color = {255.0f, 255.0f, 255.0f, 255.0f};
+
                 floorTriangle.data = {
-                    static_cast<float>(sector.floorTextureIndex),
-                    0.0f,
+                    static_cast<float>(sectorIndex),
+                    0.0f, // floor
                     0.0f,
                     0.0f
                 };
@@ -231,13 +236,15 @@ namespace RendererInternal {
 
                 GpuFlatTriangle ceilingTriangle;
 
-                ceilingTriangle.a = {triangle.a.x, triangle.a.y, sector.ceilingHeight, 0.0f};
-                ceilingTriangle.b = {triangle.b.x, triangle.b.y, sector.ceilingHeight, 0.0f};
-                ceilingTriangle.c = {triangle.c.x, triangle.c.y, sector.ceilingHeight, 0.0f};
-                ceilingTriangle.color = ceilingColor;
+                ceilingTriangle.a = {triangle.a.x, triangle.a.y, 0.0f, 0.0f};
+                ceilingTriangle.b = {triangle.b.x, triangle.b.y, 0.0f, 0.0f};
+                ceilingTriangle.c = {triangle.c.x, triangle.c.y, 0.0f, 0.0f};
+
+                ceilingTriangle.color = {255.0f, 255.0f, 255.0f, 255.0f};
+
                 ceilingTriangle.data = {
-                    static_cast<float>(sector.ceilingTextureIndex),
-                    0.0f,
+                    static_cast<float>(sectorIndex),
+                    1.0f, // ceiling
                     0.0f,
                     0.0f
                 };
@@ -285,6 +292,16 @@ namespace Renderer {
         glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, spriteSSBO);
 
         glEnable(GL_PROGRAM_POINT_SIZE);
+
+        glGenBuffers(1, &decalSSBO);
+        glBindBuffer(GL_SHADER_STORAGE_BUFFER, decalSSBO);
+        glBufferData(GL_SHADER_STORAGE_BUFFER, 0, nullptr, GL_DYNAMIC_DRAW);
+        glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, decalSSBO);
+
+        glGenBuffers(1, &sectorSSBO);
+        glBindBuffer(GL_SHADER_STORAGE_BUFFER, sectorSSBO);
+        glBufferData(GL_SHADER_STORAGE_BUFFER, 0, nullptr, GL_DYNAMIC_DRAW);
+        glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 4, sectorSSBO);
 
         projectionShader->use();
 
