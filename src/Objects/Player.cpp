@@ -186,21 +186,53 @@ namespace Player {
 
         //Check each sector every frame, might cause lag
         currentSector = FindCurrentSector(sectors);
-        float sectorCeilHeight = sectors[currentSector].ceilingHeight;
-        float sectorFloorHeight = sectors[currentSector].floorHeight;
 
-        float targetWorldEyeHeight = eyeHeight;
-
-        if (sectorCeilHeight < currentEyeHeight) {
-            targetWorldEyeHeight = sectorCeilHeight + eyeHeight;
-            currentFloor = 1;
-        }
-        else {
-            targetWorldEyeHeight = currentSector < sectors.size() ? sectors[currentSector].floorHeight + eyeHeight : eyeHeight;
+        if (currentSector < 0 || currentSector >= static_cast<int>(sectors.size())) {
             currentFloor = 0;
+            return;
         }
 
+        const Sector& sector = sectors[currentSector];
+
+        const float sectorFloorHeight = sector.floorHeight;
+        const float sectorCeilHeight = sector.ceilingHeight;
+        const float sectorHeight = sectorCeilHeight - sectorFloorHeight;
+
+        if (sectorHeight <= 0.0001f) {
+            currentFloor = 0;
+            return;
+        }
+
+        const int floorCount = sector.floorCount;
+
+        // Work out which floor the player's feet are on.
+        // currentEyeHeight is world-space eye height,
+        // so subtract eyeHeight to estimate world-space foot height.
+        const float worldFootHeight = currentEyeHeight - eyeHeight;
+
+        int calculatedFloor = static_cast<int>(
+            std::floor((worldFootHeight - sectorFloorHeight) / sectorHeight)
+        );
+
+        calculatedFloor = std::clamp(calculatedFloor, 0, floorCount - 1);
+
+        currentFloor = calculatedFloor;
+
+        // Now update the actual eye height for this floor.
+        // DO NOT change eyeHeight. eyeHeight is just the local offset above the floor.
+        const float targetWorldEyeHeight =
+            sectorFloorHeight + static_cast<float>(currentFloor) * sectorHeight + eyeHeight;
+
+        // Direct snap:
         currentEyeHeight = targetWorldEyeHeight;
+
+        // Or smooth version:
+        // constexpr float smoothingSpeed = 8.0f;
+        // currentEyeHeight += (targetWorldEyeHeight - currentEyeHeight) * smoothingSpeed * GameTime::deltaTime;
+
+        SDL_Log("Current floor: %d, eye height: %.2f", currentFloor, currentEyeHeight);
+
+        SDL_Log("Current floor: %d", currentFloor);
 
         const float angleInRad = angle * M_PI / 180.0f;
         const float s = std::sin(angleInRad);

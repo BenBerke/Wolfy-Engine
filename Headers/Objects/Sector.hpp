@@ -24,6 +24,8 @@ struct Sector {
 
     int ceilingTextureIndex = -1;
     int floorTextureIndex = -1;
+
+    int floorCount;
 };
 
 #endif //WOLFY_ENGINE_SECTOR_H

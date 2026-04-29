@@ -192,26 +192,21 @@ void renderFlat() {
     }
 
     int sectorIndex = int(triangle.data.x);
-    int flatType = int(triangle.data.y);
+    int boundaryIndex = int(triangle.data.y);
 
     Sector sector = sectors[sectorIndex];
 
-    if(flatType == 2){
-        point.z = sector.heights.y + sector.heights.y - sector.heights.x;
-        vWallColor = sector.ceilingColor / 255.0;
-        vFlatTextureIndex = int(sector.textureData.y);
-    }
-    else if (flatType == 1) {
-        // Ceiling
-        point.z = sector.heights.y;
-        vWallColor = sector.ceilingColor / 255.0;
-        vFlatTextureIndex = int(sector.textureData.y);
-    }
-    else {
-        // Floor
-        point.z = sector.heights.x;
+    float storeyHeight = sector.heights.y - sector.heights.x;
+
+    point.z = sector.heights.x + storeyHeight * float(boundaryIndex);
+
+    if (boundaryIndex == 0) {
         vWallColor = sector.floorColor / 255.0;
         vFlatTextureIndex = int(sector.textureData.x);
+    }
+    else {
+        vWallColor = sector.ceilingColor / 255.0;
+        vFlatTextureIndex = int(sector.textureData.y);
     }
 
     float viewDepth = getViewDepth(point.xy);

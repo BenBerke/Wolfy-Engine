@@ -8,6 +8,8 @@
 #include <algorithm>
 #include <SDL3/SDL_log.h>
 
+#include "config.h"
+
 namespace RendererInternal {
     static float GetSectorFloorHeight(const Sector &sector) {
         return sector.ceilingHeight - sector.floorHeight;
@@ -29,10 +31,10 @@ namespace RendererInternal {
         return index >= 0 && index < static_cast<int>(MapEditor::sectors.size());
     }
 
-    static bool IsPortalWall(const Wall &wall) {
-        //return IsValidSectorIndex(wall.frontSector) &&
-        //  IsValidSectorIndex(wall.backSector);
-        return wall.frontSector != -1 && wall.backSector != -1 && wall.frontSector != wall.backSector;
+    static bool IsPortalWall(const Wall& wall) {
+        return IsValidSectorIndex(wall.frontSector) &&
+               IsValidSectorIndex(wall.backSector) &&
+               wall.frontSector != wall.backSector;
     }
 
     static void PushGpuWallPiece(
@@ -74,79 +76,91 @@ namespace RendererInternal {
         gpuWalls.push_back(gpuWall);
     }
 
-    static float GetSectorStoreyHeight(const Sector& sector) {
+    static float GetSectorStoreyHeight(const Sector &sector) {
         return sector.ceilingHeight - sector.floorHeight;
     }
 
-    static float GetSectorBoundaryHeight(const Sector& sector, const int boundaryIndex) {
+    static float GetSectorBoundaryHeight(const Sector &sector, const int boundaryIndex) {
         const float storeyHeight = GetSectorStoreyHeight(sector);
 
-        if (boundaryIndex == 0) {
-            return sector.floorHeight;
-        }
+        return sector.floorHeight + storeyHeight * static_cast<float>(boundaryIndex);
+    }
 
-        if (boundaryIndex == 1) {
-            return sector.ceilingHeight;
-        }
+    static float GetWallBandBottomHeight(const Sector &sector, const int floorIndex) {
+        return GetSectorBoundaryHeight(sector, floorIndex);
+    }
 
-        if (boundaryIndex == 2) {
-            return sector.ceilingHeight + storeyHeight;
-        }
-
-        return sector.floorHeight;
+    static float GetWallBandTopHeight(const Sector &sector, const int floorIndex) {
+        return GetSectorBoundaryHeight(sector, floorIndex + 1);
     }
 
     static void PushPortalBoundaryDifference(
-        const Wall& wall,
-        const Sector& front,
-        const Sector& back,
-        const int boundaryIndex
-    ) {
-        const float frontHeight = GetSectorBoundaryHeight(front, boundaryIndex);
-        const float backHeight = GetSectorBoundaryHeight(back, boundaryIndex);
+    const Wall& wall,
+    const Sector& front,
+    const int frontBoundaryIndex,
+    const Sector& back,
+    const int backBoundaryIndex,
+    const int label
+) {
+        const float frontHeight = GetSectorBoundaryHeight(front, frontBoundaryIndex);
+        const float backHeight = GetSectorBoundaryHeight(back, backBoundaryIndex);
 
         PushGpuWallPiece(
             wall,
             std::min(frontHeight, backHeight),
             std::max(frontHeight, backHeight),
             wall.color,
-            boundaryIndex
+            label
         );
     }
 
-    static float GetWallBandBottomHeight(const Sector& sector, const int floorIndex) {
-        return GetSectorBoundaryHeight(sector, floorIndex);
-    }
-
-    static float GetWallBandTopHeight(const Sector& sector, const int floorIndex) {
-        return GetSectorBoundaryHeight(sector, floorIndex + 1);
+    static int GetSafeSectorFloorCount(const Sector& sector) {
+        return std::clamp(sector.floorCount, 1, MAX_FLOOR_COUNT);
     }
 
     void BuildGpuWallsFromMap() {
         gpuWalls.clear();
 
-        for (const Wall &wall: MapEditor::walls) {
+        for (const Wall& wall : MapEditor::walls) {
             if (IsPortalWall(wall)) {
                 const Sector& front = MapEditor::sectors[wall.frontSector];
                 const Sector& back = MapEditor::sectors[wall.backSector];
 
-                // floor difference
-                PushPortalBoundaryDifference(wall, front, back, 0);
+                const int frontFloorCount = GetSafeSectorFloorCount(front);
+                const int backFloorCount = GetSafeSectorFloorCount(back);
 
-                // first ceiling / second floor difference
-                //PushPortalBoundaryDifference(wall, front, back, 1);
+                const float frontFloor = GetSectorBoundaryHeight(front, 0);
+                const float backFloor = GetSectorBoundaryHeight(back, 0);
 
-                // second ceiling difference
-                PushPortalBoundaryDifference(wall, front, back, 2);
+                const float frontTopCeiling = GetSectorBoundaryHeight(front, frontFloorCount);
+                const float backTopCeiling = GetSectorBoundaryHeight(back, backFloorCount);
+
+                // 1. Floor-to-floor wall difference.
+                PushGpuWallPiece(
+                    wall,
+                    std::min(frontFloor, backFloor),
+                    std::max(frontFloor, backFloor),
+                    wall.color,
+                    0
+                );
+
+                // 2. Highest-ceiling-to-highest-ceiling wall difference.
+                PushGpuWallPiece(
+                    wall,
+                    std::min(frontTopCeiling, backTopCeiling),
+                    std::max(frontTopCeiling, backTopCeiling),
+                    wall.color,
+                    std::max(frontFloorCount, backFloorCount)
+                );
 
                 continue;
             }
-
             int sectorIndex = -1;
 
             if (IsValidSectorIndex(wall.frontSector)) {
                 sectorIndex = wall.frontSector;
-            } else if (IsValidSectorIndex(wall.backSector)) {
+            }
+            else if (IsValidSectorIndex(wall.backSector)) {
                 sectorIndex = wall.backSector;
             }
 
@@ -156,6 +170,12 @@ namespace RendererInternal {
             }
 
             const Sector& sector = MapEditor::sectors[sectorIndex];
+
+            const int sectorFloorCount = GetSafeSectorFloorCount(sector);
+
+            if (wall.floor < 0 || wall.floor >= sectorFloorCount) {
+                continue;
+            }
 
             PushGpuWallPiece(
                 wall,
@@ -272,68 +292,80 @@ namespace RendererInternal {
     }
 
     void BuildFlatTrianglesFromSectors() {
-        flatTriangles.clear();
-        visibleFlatTriangles.clear();
+    flatTriangles.clear();
+    visibleFlatTriangles.clear();
 
-        for (int sectorIndex = 0; sectorIndex < static_cast<int>(MapEditor::sectors.size()); ++sectorIndex) {
-            const Sector &sector = MapEditor::sectors[sectorIndex];
+    for (int sectorIndex = 0; sectorIndex < static_cast<int>(MapEditor::sectors.size()); ++sectorIndex) {
+        const Sector& sector = MapEditor::sectors[sectorIndex];
 
-            for (const Triangle &triangle: sector.triangles) {
-                GpuFlatTriangle floorTriangle;
+        const int sectorFloorCount = GetSafeSectorFloorCount(sector);
+        const int sectorBoundaryCount = sectorFloorCount + 1;
 
-                floorTriangle.a = {triangle.a.x, triangle.a.y, 0.0f, 0.0f};
-                floorTriangle.b = {triangle.c.x, triangle.c.y, 0.0f, 0.0f};
-                floorTriangle.c = {triangle.b.x, triangle.b.y, 0.0f, 0.0f};
+        for (const Triangle& triangle : sector.triangles) {
+            for (int boundaryIndex = 0; boundaryIndex < sectorBoundaryCount; ++boundaryIndex) {
+                GpuFlatTriangle flatTriangle;
 
-                floorTriangle.color = {255.0f, 255.0f, 255.0f, 255.0f};
-
-                floorTriangle.data = {
-                    static_cast<float>(sectorIndex),
-                    0.0f, // floor
+                flatTriangle.a = {
+                    triangle.a.x,
+                    triangle.a.y,
                     0.0f,
                     0.0f
                 };
 
-                flatTriangles.push_back(floorTriangle);
+                if (boundaryIndex == 0) {
+                    // Bottom floor uses reversed winding.
+                    flatTriangle.b = {
+                        triangle.c.x,
+                        triangle.c.y,
+                        0.0f,
+                        0.0f
+                    };
 
-                GpuFlatTriangle ceilingTriangle;
+                    flatTriangle.c = {
+                        triangle.b.x,
+                        triangle.b.y,
+                        0.0f,
+                        0.0f
+                    };
+                }
+                else {
+                    // Ceilings / upper floors.
+                    flatTriangle.b = {
+                        triangle.b.x,
+                        triangle.b.y,
+                        0.0f,
+                        0.0f
+                    };
 
-                ceilingTriangle.a = {triangle.a.x, triangle.a.y, 0.0f, 0.0f};
-                ceilingTriangle.b = {triangle.b.x, triangle.b.y, 0.0f, 0.0f};
-                ceilingTriangle.c = {triangle.c.x, triangle.c.y, 0.0f, 0.0f};
+                    flatTriangle.c = {
+                        triangle.c.x,
+                        triangle.c.y,
+                        0.0f,
+                        0.0f
+                    };
+                }
 
-                ceilingTriangle.color = {255.0f, 255.0f, 255.0f, 255.0f};
+                flatTriangle.color = {
+                    255.0f,
+                    255.0f,
+                    255.0f,
+                    255.0f
+                };
 
-                ceilingTriangle.data = {
+                flatTriangle.data = {
                     static_cast<float>(sectorIndex),
-                    1.0f, // ceiling
+                    static_cast<float>(boundaryIndex),
                     0.0f,
                     0.0f
                 };
 
-                GpuFlatTriangle higherCeilingTriangle;
-
-                higherCeilingTriangle.a = {triangle.a.x, triangle.a.y, 0.0f, 0.0f};
-                higherCeilingTriangle.b = {triangle.b.x, triangle.b.y, 0.0f, 0.0f};
-                higherCeilingTriangle.c = {triangle.c.x, triangle.c.y, 0.0f, 0.0f};
-
-                higherCeilingTriangle.color = {255.0f, 255.0f, 255.0f, 255.0f};
-
-                higherCeilingTriangle.data = {
-                    static_cast<float>(sectorIndex),
-                    2.0f, // higher ceiling
-                    0.0f,
-                    0.0f
-                };
-
-                flatTriangles.push_back(higherCeilingTriangle);
-
-                flatTriangles.push_back(ceilingTriangle);
+                flatTriangles.push_back(flatTriangle);
             }
         }
-
-        flatTriangleCount = static_cast<GLsizei>(flatTriangles.size());
     }
+
+    flatTriangleCount = static_cast<GLsizei>(flatTriangles.size());
+}
 }
 
 namespace Renderer {

@@ -72,6 +72,8 @@ namespace MapEditorInternal {
             int floorTexture = MapEditor::sectors[selectedSector].floorTextureIndex;
             int ceilTexture = MapEditor::sectors[selectedSector].ceilingTextureIndex;
 
+            int floorCount = MapEditor::sectors[selectedSector].floorCount;
+
             Vector3 ceilColor = MapEditor::sectors[selectedSector].ceilingColor;
             Vector3 floorColor = MapEditor::sectors[selectedSector].floorColor;
 
@@ -81,6 +83,7 @@ namespace MapEditorInternal {
             ImGui::InputInt("Ceiling Texture Index", &ceilTexture);
             ImGui::InputFloat3("Ceiling Color", &ceilColor.x);
             ImGui::InputFloat3("Floor Color", &floorColor.x);
+            ImGui::InputInt("Floor Count", &floorCount);
 
             MapEditor::sectors[selectedSector].ceilingHeight = ceilHeight;
             MapEditor::sectors[selectedSector].floorHeight = floorHeight;
@@ -88,6 +91,7 @@ namespace MapEditorInternal {
             MapEditor::sectors[selectedSector].ceilingTextureIndex = ceilTexture;
             MapEditor::sectors[selectedSector].ceilingColor = ceilColor;
             MapEditor::sectors[selectedSector].floorColor = floorColor;
+            MapEditor::sectors[selectedSector].floorCount = floorCount;
 
             if (ImGui::Button("Delete")) {
                 MapEditor::sectors.erase(MapEditor::sectors.begin() + selectedSector);

@@ -3,8 +3,8 @@
         {
             "id": 0,
             "position": [
-                -139.0,
-                58.0
+                0.0,
+                0.0
             ],
             "type": 0
         }
@@ -12,49 +12,81 @@
     "sectors": [
         {
             "ceilingHeight": 40.0,
-            "ceilingTextureIndex": 0,
+            "ceilingTextureIndex": 2,
             "corners": [
                 {
-                    "x": -192.0,
+                    "x": -128.0,
+                    "y": -128.0
+                },
+                {
+                    "x": 128.0,
+                    "y": -128.0
+                },
+                {
+                    "x": 128.0,
                     "y": 128.0
                 },
                 {
-                    "x": -192.0,
-                    "y": -32.0
-                },
-                {
-                    "x": -32.0,
-                    "y": -32.0
-                },
-                {
-                    "x": -32.0,
+                    "x": -128.0,
                     "y": 128.0
                 }
             ],
+            "floorCount": 3,
             "floorHeight": 0.0,
-            "floorTextureIndex": 0,
+            "floorTextureIndex": 1,
             "id": 0
         },
         {
             "ceilingHeight": 40.0,
-            "ceilingTextureIndex": 2,
+            "ceilingTextureIndex": 3,
             "corners": [
                 {
-                    "x": -192.0,
+                    "x": -128.0,
                     "y": 128.0
                 },
                 {
-                    "x": -96.0,
-                    "y": 224.0
+                    "x": 128.0,
+                    "y": 128.0
                 },
                 {
-                    "x": -32.0,
-                    "y": 128.0
+                    "x": 128.0,
+                    "y": 288.0
+                },
+                {
+                    "x": -128.0,
+                    "y": 288.0
                 }
             ],
+            "floorCount": 1,
             "floorHeight": 0.0,
             "floorTextureIndex": 2,
             "id": 1
+        },
+        {
+            "ceilingHeight": 30.0,
+            "ceilingTextureIndex": 2,
+            "corners": [
+                {
+                    "x": 128.0,
+                    "y": -128.0
+                },
+                {
+                    "x": 320.0,
+                    "y": -128.0
+                },
+                {
+                    "x": 320.0,
+                    "y": 128.0
+                },
+                {
+                    "x": 128.0,
+                    "y": 128.0
+                }
+            ],
+            "floorCount": 2,
+            "floorHeight": -10.0,
+            "floorTextureIndex": 1,
+            "id": 2
         }
     ],
     "textures": [
@@ -65,151 +97,121 @@
     ],
     "walls": [
         {
-            "backSector": 0,
+            "backSector": 1,
             "end": [
-                -192.0,
+                128.0,
                 128.0
             ],
             "floor": 0,
-            "frontSector": -1,
+            "frontSector": 0,
             "id": 0,
             "start": [
-                -192.0,
-                -32.0
+                -128.0,
+                128.0
             ],
             "textureIndex": 0
         },
         {
-            "backSector": 1,
+            "backSector": 2,
             "end": [
-                -96.0,
-                224.0
+                128.0,
+                128.0
             ],
             "floor": 0,
-            "frontSector": -1,
+            "frontSector": 0,
             "id": 1,
             "start": [
-                -192.0,
-                128.0
-            ],
-            "textureIndex": 0
-        },
-        {
-            "backSector": 1,
-            "end": [
-                -32.0,
-                128.0
-            ],
-            "floor": 0,
-            "frontSector": -1,
-            "id": 2,
-            "start": [
-                -96.0,
-                224.0
+                128.0,
+                -128.0
             ],
             "textureIndex": 0
         },
         {
             "backSector": -1,
             "end": [
-                -32.0,
-                -32.0
+                128.0,
+                -128.0
             ],
             "floor": 0,
+            "frontSector": 0,
+            "id": 2,
+            "start": [
+                -128.0,
+                -128.0
+            ],
+            "textureIndex": 0
+        },
+        {
+            "backSector": -1,
+            "end": [
+                128.0,
+                -128.0
+            ],
+            "floor": 1,
             "frontSector": 0,
             "id": 3,
             "start": [
-                -32.0,
-                128.0
+                -128.0,
+                -128.0
             ],
             "textureIndex": 0
         },
         {
             "backSector": -1,
             "end": [
-                -192.0,
-                -32.0
+                128.0,
+                -128.0
             ],
-            "floor": 0,
+            "floor": 2,
             "frontSector": 0,
             "id": 4,
             "start": [
-                -32.0,
-                -32.0
+                -128.0,
+                -128.0
             ],
             "textureIndex": 0
         },
         {
-            "backSector": 0,
+            "backSector": -1,
             "end": [
-                -192.0,
-                -32.0
+                -128.0,
+                -128.0
             ],
-            "floor": 1,
-            "frontSector": -1,
+            "floor": 0,
+            "frontSector": 0,
             "id": 5,
             "start": [
-                -192.0,
+                -128.0,
                 128.0
             ],
-            "textureIndex": 1
+            "textureIndex": 0
         },
         {
             "backSector": -1,
             "end": [
-                -32.0,
-                -32.0
+                -128.0,
+                -128.0
             ],
             "floor": 1,
             "frontSector": 0,
             "id": 6,
             "start": [
-                -192.0,
-                -32.0
+                -128.0,
+                128.0
             ],
-            "textureIndex": 1
+            "textureIndex": 0
         },
         {
             "backSector": -1,
             "end": [
-                -32.0,
-                128.0
+                -128.0,
+                -128.0
             ],
-            "floor": 1,
+            "floor": 2,
             "frontSector": 0,
             "id": 7,
             "start": [
-                -32.0,
-                -32.0
-            ],
-            "textureIndex": 1
-        },
-        {
-            "backSector": 0,
-            "end": [
-                -96.0,
-                -32.0
-            ],
-            "floor": 1,
-            "frontSector": -1,
-            "id": 8,
-            "start": [
-                -96.0,
-                128.0
-            ],
-            "textureIndex": 1
-        },
-        {
-            "backSector": 1,
-            "end": [
-                -96.0,
-                224.0
-            ],
-            "floor": 1,
-            "frontSector": -1,
-            "id": 9,
-            "start": [
-                -192.0,
+                -128.0,
                 128.0
             ],
             "textureIndex": 0
@@ -217,30 +219,135 @@
         {
             "backSector": -1,
             "end": [
-                -32.0,
-                128.0
+                128.0,
+                288.0
             ],
-            "floor": 1,
+            "floor": 0,
             "frontSector": 1,
-            "id": 10,
+            "id": 8,
             "start": [
-                -96.0,
-                224.0
+                -128.0,
+                288.0
             ],
             "textureIndex": 0
         },
         {
-            "backSector": 0,
+            "backSector": -1,
             "end": [
-                -32.0,
+                -128.0,
+                288.0
+            ],
+            "floor": 0,
+            "frontSector": 1,
+            "id": 9,
+            "start": [
+                -128.0,
+                128.0
+            ],
+            "textureIndex": 0
+        },
+        {
+            "backSector": -1,
+            "end": [
+                128.0,
                 128.0
             ],
             "floor": 0,
             "frontSector": 1,
+            "id": 10,
+            "start": [
+                128.0,
+                288.0
+            ],
+            "textureIndex": 0
+        },
+        {
+            "backSector": -1,
+            "end": [
+                320.0,
+                128.0
+            ],
+            "floor": 0,
+            "frontSector": 2,
             "id": 11,
             "start": [
-                -192.0,
+                128.0,
                 128.0
+            ],
+            "textureIndex": 0
+        },
+        {
+            "backSector": -1,
+            "end": [
+                320.0,
+                128.0
+            ],
+            "floor": 1,
+            "frontSector": 2,
+            "id": 12,
+            "start": [
+                128.0,
+                128.0
+            ],
+            "textureIndex": 0
+        },
+        {
+            "backSector": -1,
+            "end": [
+                320.0,
+                -128.0
+            ],
+            "floor": 0,
+            "frontSector": 2,
+            "id": 13,
+            "start": [
+                320.0,
+                128.0
+            ],
+            "textureIndex": 0
+        },
+        {
+            "backSector": -1,
+            "end": [
+                320.0,
+                -128.0
+            ],
+            "floor": 1,
+            "frontSector": 2,
+            "id": 14,
+            "start": [
+                320.0,
+                128.0
+            ],
+            "textureIndex": 0
+        },
+        {
+            "backSector": -1,
+            "end": [
+                128.0,
+                -128.0
+            ],
+            "floor": 0,
+            "frontSector": 2,
+            "id": 15,
+            "start": [
+                320.0,
+                -128.0
+            ],
+            "textureIndex": 0
+        },
+        {
+            "backSector": -1,
+            "end": [
+                128.0,
+                -128.0
+            ],
+            "floor": 1,
+            "frontSector": 2,
+            "id": 16,
+            "start": [
+                320.0,
+                -128.0
             ],
             "textureIndex": 0
         }

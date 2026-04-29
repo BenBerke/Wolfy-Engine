@@ -73,6 +73,7 @@ namespace MapEditorInternal {
                 {"floorHeight", sector.floorHeight},
                 {"ceilingTextureIndex", sector.ceilingTextureIndex},
                 {"floorTextureIndex", sector.floorTextureIndex},
+                {"floorCount", sector.floorCount},
             };
 
             levelData["sectors"].push_back(jsonObj);
@@ -224,7 +225,8 @@ namespace MapEditor {
                     {255.0f, 255.0f, 255.0f},
                     {255.0f, 255.0f, 255.0f},
                     sectorJson.value("ceilingTextureIndex", 1),
-                    sectorJson.value("floorTextureIndex", 1)
+                    sectorJson.value("floorTextureIndex", 1),
+                    sectorJson.value("floorCount", 0)
                 };
 
                 sector.triangles = Triangulate(sector.vertices);
