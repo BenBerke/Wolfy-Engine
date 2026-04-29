@@ -1,12 +1,12 @@
-//
-// Created by berke on 4/26/2026.
-//
-
 #ifndef WOLFY_ENGINE_SECTOR_H
 #define WOLFY_ENGINE_SECTOR_H
-#include "Headers/Math/Vector/Vector3.hpp"
 
-struct Vector2;
+#include <array>
+#include <vector>
+
+#include "Headers/Math/Vector/Vector2.hpp"
+#include "Headers/Math/Vector/Vector3.hpp"
+#include "config.h"
 
 struct Triangle {
     Vector2 a, b, c;
@@ -22,10 +22,10 @@ struct Sector {
     Vector3 ceilingColor;
     Vector3 floorColor;
 
-    int ceilingTextureIndex = -1;
-    int floorTextureIndex = -1;
+    int floorCount = 2;
 
-    int floorCount;
+    std::array<int, MAX_FLOOR_COUNT> ceilingTextureIndices = {};
+    int floorTextureIndex = -1;
 };
 
-#endif //WOLFY_ENGINE_SECTOR_H
+#endif

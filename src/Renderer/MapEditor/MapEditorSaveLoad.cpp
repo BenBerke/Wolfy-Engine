@@ -66,14 +66,18 @@ namespace MapEditorInternal {
                 });
             }
 
+            json ceilingTextureArray = json::array();
+
+            for (int j = 0; j < MAX_FLOOR_COUNT; ++j) ceilingTextureArray.push_back(sector.ceilingTextureIndices[j]);
+
             json jsonObj = {
                 {"id", i},
                 {"corners", cornerArray},
                 {"ceilingHeight", sector.ceilingHeight},
                 {"floorHeight", sector.floorHeight},
-                {"ceilingTextureIndex", sector.ceilingTextureIndex},
                 {"floorTextureIndex", sector.floorTextureIndex},
                 {"floorCount", sector.floorCount},
+                {"ceilingTextureIndices", ceilingTextureArray}
             };
 
             levelData["sectors"].push_back(jsonObj);
@@ -217,17 +221,37 @@ namespace MapEditor {
                     });
                 }
 
-                Sector sector = {
-                    corners,
-                    {},
-                    sectorJson.value("ceilingHeight", 40.0f),
-                    sectorJson.value("floorHeight", 0.0f),
-                    {255.0f, 255.0f, 255.0f},
-                    {255.0f, 255.0f, 255.0f},
-                    sectorJson.value("ceilingTextureIndex", 1),
-                    sectorJson.value("floorTextureIndex", 1),
-                    sectorJson.value("floorCount", 0)
-                };
+                Sector sector;
+
+                sector.vertices = corners;
+                sector.triangles = {};
+
+                sector.ceilingHeight = sectorJson.value("ceilingHeight", 40.0f);
+                sector.floorHeight = sectorJson.value("floorHeight", 0.0f);
+
+                sector.ceilingColor = {255.0f, 255.0f, 255.0f};
+                sector.floorColor = {255.0f, 255.0f, 255.0f};
+
+                sector.floorCount = sectorJson.value("floorCount", 2);
+                sector.floorCount = std::clamp(sector.floorCount, 1, MAX_FLOOR_COUNT);
+
+                sector.floorTextureIndex = sectorJson.value("floorTextureIndex", 1);
+
+                // Backwards-compatible fallback for old maps.
+                const int oldCeilingTexture = sectorJson.value("ceilingTextureIndex", 1);
+
+                sector.ceilingTextureIndices.fill(oldCeilingTexture);
+
+                if (sectorJson.contains("ceilingTextureIndices")) {
+                    const json& ceilingTextureArray = sectorJson["ceilingTextureIndices"];
+
+                    for (int i = 0; i < std::min<int>(
+                        static_cast<int>(ceilingTextureArray.size()),
+                        MAX_FLOOR_COUNT
+                    ); ++i) {
+                        sector.ceilingTextureIndices[i] = ceilingTextureArray[i].get<int>();
+                    }
+                }
 
                 sector.triangles = Triangulate(sector.vertices);
 

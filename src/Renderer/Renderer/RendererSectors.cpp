@@ -33,7 +33,7 @@ namespace RendererInternal {
 
             gpuSector.textureData = {
                 static_cast<float>(sector.floorTextureIndex),
-                static_cast<float>(sector.ceilingTextureIndex),
+                0.0,
                 0.0f,
                 0.0f
             };

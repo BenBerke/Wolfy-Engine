@@ -12,7 +12,11 @@
     "sectors": [
         {
             "ceilingHeight": 40.0,
-            "ceilingTextureIndex": 2,
+            "ceilingTextureIndices": [
+                1,
+                2,
+                3
+            ],
             "corners": [
                 {
                     "x": -128.0,
@@ -33,12 +37,16 @@
             ],
             "floorCount": 3,
             "floorHeight": 0.0,
-            "floorTextureIndex": 1,
+            "floorTextureIndex": 0,
             "id": 0
         },
         {
             "ceilingHeight": 40.0,
-            "ceilingTextureIndex": 3,
+            "ceilingTextureIndices": [
+                0,
+                0,
+                0
+            ],
             "corners": [
                 {
                     "x": -128.0,
@@ -59,12 +67,16 @@
             ],
             "floorCount": 1,
             "floorHeight": 0.0,
-            "floorTextureIndex": 2,
+            "floorTextureIndex": 0,
             "id": 1
         },
         {
             "ceilingHeight": 30.0,
-            "ceilingTextureIndex": 2,
+            "ceilingTextureIndices": [
+                1,
+                2,
+                3
+            ],
             "corners": [
                 {
                     "x": 128.0,
@@ -83,9 +95,9 @@
                     "y": 128.0
                 }
             ],
-            "floorCount": 2,
+            "floorCount": 3,
             "floorHeight": -10.0,
-            "floorTextureIndex": 1,
+            "floorTextureIndex": 0,
             "id": 2
         }
     ],
@@ -350,6 +362,21 @@
                 -128.0
             ],
             "textureIndex": 0
+        },
+        {
+            "backSector": 2,
+            "end": [
+                320.0,
+                96.0
+            ],
+            "floor": 2,
+            "frontSector": 2,
+            "id": 17,
+            "start": [
+                128.0,
+                0.0
+            ],
+            "textureIndex": 1
         }
     ]
 }

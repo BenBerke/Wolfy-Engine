@@ -150,7 +150,7 @@ namespace Player {
 
         if (bestSector != -1) {
             currentSector = bestSector;
-        }
+        } else currentSector = 0;
 
         return bestSector;
     }
@@ -185,7 +185,7 @@ namespace Player {
         camZ = std::clamp(camZ, -.15f, .8f);
 
         //Check each sector every frame, might cause lag
-        currentSector = FindCurrentSector(sectors);
+        FindCurrentSector(sectors);
 
         if (currentSector < 0 || currentSector >= static_cast<int>(sectors.size())) {
             currentFloor = 0;
@@ -204,10 +204,6 @@ namespace Player {
         }
 
         const int floorCount = sector.floorCount;
-
-        // Work out which floor the player's feet are on.
-        // currentEyeHeight is world-space eye height,
-        // so subtract eyeHeight to estimate world-space foot height.
         const float worldFootHeight = currentEyeHeight - eyeHeight;
 
         int calculatedFloor = static_cast<int>(
@@ -218,8 +214,6 @@ namespace Player {
 
         currentFloor = calculatedFloor;
 
-        // Now update the actual eye height for this floor.
-        // DO NOT change eyeHeight. eyeHeight is just the local offset above the floor.
         const float targetWorldEyeHeight =
             sectorFloorHeight + static_cast<float>(currentFloor) * sectorHeight + eyeHeight;
 
@@ -229,10 +223,6 @@ namespace Player {
         // Or smooth version:
         // constexpr float smoothingSpeed = 8.0f;
         // currentEyeHeight += (targetWorldEyeHeight - currentEyeHeight) * smoothingSpeed * GameTime::deltaTime;
-
-        SDL_Log("Current floor: %d, eye height: %.2f", currentFloor, currentEyeHeight);
-
-        SDL_Log("Current floor: %d", currentFloor);
 
         const float angleInRad = angle * M_PI / 180.0f;
         const float s = std::sin(angleInRad);

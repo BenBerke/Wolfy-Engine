@@ -202,12 +202,12 @@ void renderFlat() {
 
     if (boundaryIndex == 0) {
         vWallColor = sector.floorColor / 255.0;
-        vFlatTextureIndex = int(sector.textureData.x);
     }
     else {
         vWallColor = sector.ceilingColor / 255.0;
-        vFlatTextureIndex = int(sector.textureData.y);
     }
+
+    vFlatTextureIndex = int(triangle.data.z);
 
     float viewDepth = getViewDepth(point.xy);
     vFlatInvZ = 1.0 / viewDepth;

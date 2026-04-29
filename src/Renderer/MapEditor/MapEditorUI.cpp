@@ -66,32 +66,38 @@ namespace MapEditorInternal {
         if (editingSector && currentMode == MODE_SECTOR && selectedSector != -1) {
             ImGui::Begin("Sector", &editingSector);
 
-            float ceilHeight = MapEditor::sectors[selectedSector].ceilingHeight;
-            float floorHeight = MapEditor::sectors[selectedSector].floorHeight;
+            auto& sector = MapEditor::sectors[selectedSector];
 
-            int floorTexture = MapEditor::sectors[selectedSector].floorTextureIndex;
-            int ceilTexture = MapEditor::sectors[selectedSector].ceilingTextureIndex;
+            float ceilHeight = sector.ceilingHeight;
+            float floorHeight = sector.floorHeight;
+            int floorTexture = sector.floorTextureIndex;
+            int floorCount = sector.floorCount;
 
-            int floorCount = MapEditor::sectors[selectedSector].floorCount;
-
-            Vector3 ceilColor = MapEditor::sectors[selectedSector].ceilingColor;
-            Vector3 floorColor = MapEditor::sectors[selectedSector].floorColor;
+            Vector3 ceilColor = sector.ceilingColor;
+            Vector3 floorColor = sector.floorColor;
 
             ImGui::InputFloat("Ceil Height", &ceilHeight);
             ImGui::InputFloat("Floor Height", &floorHeight);
-            ImGui::InputInt("Floor Texture Index", &floorTexture);
-            ImGui::InputInt("Ceiling Texture Index", &ceilTexture);
-            ImGui::InputFloat3("Ceiling Color", &ceilColor.x);
-            ImGui::InputFloat3("Floor Color", &floorColor.x);
             ImGui::InputInt("Floor Count", &floorCount);
 
-            MapEditor::sectors[selectedSector].ceilingHeight = ceilHeight;
-            MapEditor::sectors[selectedSector].floorHeight = floorHeight;
-            MapEditor::sectors[selectedSector].floorTextureIndex = floorTexture;
-            MapEditor::sectors[selectedSector].ceilingTextureIndex = ceilTexture;
-            MapEditor::sectors[selectedSector].ceilingColor = ceilColor;
-            MapEditor::sectors[selectedSector].floorColor = floorColor;
-            MapEditor::sectors[selectedSector].floorCount = floorCount;
+            floorCount = std::clamp(floorCount, 1, MAX_FLOOR_COUNT);
+
+            ImGui::InputInt("Ground Floor Texture", &floorTexture);
+
+            for (int i = 0; i < floorCount; ++i) {
+                std::string label = "Ceiling Texture " + std::to_string(i + 1);
+                ImGui::InputInt(label.c_str(), &sector.ceilingTextureIndices[i]);
+            }
+
+            ImGui::InputFloat3("Ceiling Color", &ceilColor.x);
+            ImGui::InputFloat3("Floor Color", &floorColor.x);
+
+            sector.ceilingHeight = ceilHeight;
+            sector.floorHeight = floorHeight;
+            sector.floorTextureIndex = floorTexture;
+            sector.ceilingColor = ceilColor;
+            sector.floorColor = floorColor;
+            sector.floorCount = floorCount;
 
             if (ImGui::Button("Delete")) {
                 MapEditor::sectors.erase(MapEditor::sectors.begin() + selectedSector);

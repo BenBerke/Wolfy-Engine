@@ -305,6 +305,16 @@ namespace RendererInternal {
             for (int boundaryIndex = 0; boundaryIndex < sectorBoundaryCount; ++boundaryIndex) {
                 GpuFlatTriangle flatTriangle;
 
+                int textureIndex = sector.floorTextureIndex;
+
+                if (boundaryIndex > 0) {
+                    const int ceilingIndex = boundaryIndex - 1;
+
+                    if (ceilingIndex >= 0 && ceilingIndex < MAX_FLOOR_COUNT) {
+                        textureIndex = sector.ceilingTextureIndices[ceilingIndex];
+                    }
+                }
+
                 flatTriangle.a = {
                     triangle.a.x,
                     triangle.a.y,
@@ -355,7 +365,7 @@ namespace RendererInternal {
                 flatTriangle.data = {
                     static_cast<float>(sectorIndex),
                     static_cast<float>(boundaryIndex),
-                    0.0f,
+                    static_cast<float>(textureIndex),
                     0.0f
                 };
 
