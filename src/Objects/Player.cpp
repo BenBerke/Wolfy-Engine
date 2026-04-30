@@ -11,6 +11,9 @@
 
 #include "../../Headers/Math/Vector/Vector2Math.hpp"
 
+#include "../../Headers/Math/Geometry/Geometry.h"
+#include "../../Headers/Map/MapQueries.h"
+
 #define FRICTION .8f
 #define TURN_SPEED 90.0f
 #define SENSITIVITY_X .5f
@@ -66,27 +69,6 @@ namespace {
         }
 
         return bestFloor;
-    }
-
-    bool IsPointInPolygon(const std::vector<Vector2> &polygon, const Vector2 p) {
-        bool inside = false;
-        const size_t n = polygon.size();
-
-        // Loop through every edge of the polygon
-        for (size_t i = 0, j = n - 1; i < n; j = i++) {
-            // Check if the point's Y-coordinate is between the edge's Y-coordinates
-            bool isBetweenY = (polygon[i].y > p.y) != (polygon[j].y > p.y);
-
-            // If it is, calculate the X-coordinate of the intersection of the edge and the ray
-            // then check if the point's X-coordinate is to the left of that intersection
-            if (isBetweenY &&
-                (p.x < (polygon[j].x - polygon[i].x) * (p.y - polygon[i].y) / (polygon[j].y - polygon[i].y) + polygon[i]
-                 .x)) {
-                inside = !inside; // Toggle the state
-            }
-        }
-
-        return inside;
     }
 
     Vector2 ClosestPointOnSegment(const Wall &wall, const Vector2 &p) {
@@ -213,55 +195,22 @@ namespace {
         const std::vector<Sector> &sectors
     ) {
         if (IsValidSectorIndex(wall.frontSector, sectors) &&
-            IsPointInPolygon(sectors[wall.frontSector].vertices, Player::position)) {
+            Geometry::IsPointInPolygon(sectors[wall.frontSector].vertices, Player::position)) {
             return wall.frontSector;
         }
 
         if (IsValidSectorIndex(wall.backSector, sectors) &&
-            IsPointInPolygon(sectors[wall.backSector].vertices, Player::position)) {
+            Geometry::IsPointInPolygon(sectors[wall.backSector].vertices, Player::position)) {
             return wall.backSector;
         }
 
         return Player::currentSector;
     }
-
-    float PolygonAreaAbs(const std::vector<Vector2> &polygon) {
-        float area = 0.0f;
-
-        for (int i = 0; i < static_cast<int>(polygon.size()); ++i) {
-            const int next = (i + 1) % static_cast<int>(polygon.size());
-
-            area += polygon[i].x * polygon[next].y;
-            area -= polygon[next].x * polygon[i].y;
-        }
-
-        return std::abs(area) * 0.5f;
-    }
 }
 
 namespace Player {
-    int FindCurrentSector(const std::vector<Sector> &sectors) {
-        int bestSector = -1;
-        float bestArea = std::numeric_limits<float>::max();
-
-        for (int i = 0; i < static_cast<int>(sectors.size()); ++i) {
-            if (!IsPointInPolygon(sectors[i].vertices, position)) {
-                continue;
-            }
-
-            const float area = PolygonAreaAbs(sectors[i].vertices);
-
-            if (area < bestArea) {
-                bestArea = area;
-                bestSector = i;
-            }
-        }
-
-        return bestSector;
-    }
-
     void Start(const std::vector<Sector> &sectors) {
-        currentSector = FindCurrentSector(sectors);
+        currentSector = MapQueries::FindSectorContainingPoint(sectors, position);
 
         if (IsValidSectorIndex(currentSector, sectors)) {
             currentFloor = std::clamp(
@@ -392,7 +341,7 @@ namespace Player {
         }
 
         //Check each sector every frame, might cause lag
-        const int foundSector = FindCurrentSector(sectors);
+        const int foundSector = MapQueries::FindSectorContainingPoint(sectors, position);
 
         if (foundSector != -1 && foundSector != currentSector) {
             EnterSectorKeepingWorldEyeHeight(foundSector, sectors);

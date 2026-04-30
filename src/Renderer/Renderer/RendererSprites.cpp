@@ -1,41 +1,50 @@
 #include "RendererInternal.hpp"
+#include "Headers/Map/MapQueries.h"
 #include "Headers/Renderer/MapEditor.hpp"
 
 namespace RendererInternal {
     void BuildGpuSprites() {
         gpuSprites.clear();
 
-        for (const Object& object : MapEditor::objects) {
-            if (object.type == OBJ_PLAYER_SPAWN) {
+        for (Object& object : MapEditor::objects) {
+            if (object.type != OBJ_SPRITE) {
                 continue;
             }
 
-            if (object.type == OBJ_SPRITE) {
-                GpuSprite sprite;
+            UpdateObjectSector(object, MapEditor::sectors);
 
-                sprite.positionSize = {
-                    object.position.x,
-                    object.position.y,
-                    0.0f,   // bottom height
-                    64.0f   // sprite height
-                };
+            if (object.sectorIndex < 0 ||
+                object.sectorIndex >= static_cast<int>(MapEditor::sectors.size())) {
+                continue;
+                }
 
-                sprite.color = {
-                    255.0f,
-                    255.0f,
-                    255.0f,
-                    255.0f
-                };
+            const float bottomHeight =
+                GetObjectBottomHeight(object, MapEditor::sectors);
 
-                sprite.data = {
-                    32.0f, // sprite width
-                    2.0f,  // texture index for now
-                    0.0f,
-                    0.0f
-                };
+            GpuSprite gpuSprite;
 
-                gpuSprites.push_back(sprite);
-            }
+            gpuSprite.positionSize = {
+                object.position.x,
+                object.position.y,
+                bottomHeight,
+                object.height
+            };
+
+            gpuSprite.color = {
+                255.0f,
+                255.0f,
+                255.0f,
+                255.0f
+            };
+
+            gpuSprite.data = {
+                object.width,
+                static_cast<float>(object.textureIndex),
+                0.0f,
+                0.0f
+            };
+
+            gpuSprites.push_back(gpuSprite);
         }
 
         spriteCount = static_cast<GLsizei>(gpuSprites.size());
@@ -45,7 +54,7 @@ namespace RendererInternal {
         glBufferData(
             GL_SHADER_STORAGE_BUFFER,
             gpuSprites.size() * sizeof(GpuSprite),
-            gpuSprites.data(),
+            gpuSprites.empty() ? nullptr : gpuSprites.data(),
             GL_DYNAMIC_DRAW
         );
 

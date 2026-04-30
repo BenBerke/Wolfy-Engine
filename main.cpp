@@ -9,6 +9,7 @@
 
 #include "Headers/Objects/Player.hpp"
 #include "../../Headers/Objects/Sector.hpp"
+#include "Headers/Map/MapQueries.h"
 
 #define SCREEN_WIDTH 1080
 #define SCREEN_HEIGHT 960
@@ -44,7 +45,7 @@ int main() {
     }
 
     Player::position = MapEditor::playerStartPos;
-    Player::FindCurrentSector(MapEditor::sectors);
+    MapQueries::FindSectorContainingPoint(MapEditor::sectors, Player::position);
 
     if (Player::currentSector == -1) {
         SDL_Log("Player is not inside any sector");
