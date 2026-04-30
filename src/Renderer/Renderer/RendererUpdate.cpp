@@ -31,12 +31,12 @@ namespace Renderer {
         glUniform1f(playerCamZUniform, Player::camZ);
 
         if (InputManager::GetKey(SDL_SCANCODE_G)) {
-            MapEditor::sectors[0].floorHeight += 1.0f;
-            MapEditor::sectors[0].ceilingHeight += 1.0f;
+            MapEditor::sectors[0].floorHeight += 55.0f * GameTime::deltaTime;
+            MapEditor::sectors[0].ceilingHeight += 55.0f * GameTime::deltaTime;
         }
         if (InputManager::GetKey(SDL_SCANCODE_H)) {
-            MapEditor::sectors[0].floorHeight -= 1.0f;
-            MapEditor::sectors[0].ceilingHeight -= 1.0f;
+            MapEditor::sectors[0].floorHeight -= 55.0f * GameTime::deltaTime;
+            MapEditor::sectors[0].ceilingHeight -= 55.0f * GameTime::deltaTime;
         }
 
         MapEditor::sectors[10].floorHeight += InputManager::GetMouseWheelScroll();

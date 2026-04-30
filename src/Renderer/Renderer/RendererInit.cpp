@@ -48,7 +48,7 @@ namespace RendererInternal {
 
         glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
 
-        if (!SDL_GL_SetSwapInterval(1)) {
+        if (!SDL_GL_SetSwapInterval(0)) {
             SDL_Log("SDL_GL_SetSwapInterval Warning: %s", SDL_GetError());
         }
 

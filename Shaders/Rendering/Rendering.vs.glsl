@@ -88,6 +88,8 @@ flat out float fSEnd;
 flat out float fZLeft;
 flat out float fZRight;
 
+flat out float fWallTextureAnchorHeight;
+
 noperspective out float vFlatInvZ;
 
 flat out int vTextureIndex;
@@ -95,6 +97,9 @@ flat out float fWallWorldHeight;
 
 noperspective out vec2 vFlatWorldOverZ;
 flat out int vFlatTextureIndex;
+
+flat out float fWallBottomHeight;
+flat out float fWallTopHeight;
 
 noperspective out vec2 vSpriteUV;
 flat out int vSpriteTextureIndex;
@@ -174,6 +179,11 @@ void outputDummyWallData() {
 
     fWallWorldHeight = 1.0;
     vTextureIndex = -1;
+
+    fWallBottomHeight = 0.0;
+    fWallTopHeight = 1.0;
+
+    fWallTextureAnchorHeight = 0.0;
 }
 
 void renderFlat() {
@@ -329,6 +339,11 @@ void renderWall() {
     float floorHeight = wall.heights.x;
     float ceilingHeight = wall.heights.y;
 
+    fWallBottomHeight = floorHeight;
+    fWallTopHeight = ceilingHeight;
+
+    fWallTextureAnchorHeight = wall.data.z;
+
     vTextureIndex = int(wall.data.x);
     fWallWorldHeight = ceilingHeight - floorHeight;
 
@@ -415,6 +430,11 @@ void renderDecal() {
 
     float floorHeight = decal.heights.x;
     float ceilingHeight = decal.heights.y;
+
+    fWallBottomHeight = floorHeight;
+    fWallTopHeight = ceilingHeight;
+
+    fWallTextureAnchorHeight = decal.data.z;
 
     vTextureIndex = int(decal.data.x);
     fWallWorldHeight = ceilingHeight - floorHeight;

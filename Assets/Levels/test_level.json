@@ -1,35 +1,43 @@
 {
     "objects": [
         {
+            "floor": 0,
             "id": 0,
             "position": [
                 0.0,
                 -32.0
             ],
+            "texture": -1,
             "type": 0
         },
         {
+            "floor": 0,
             "id": 1,
             "position": [
                 0.0,
                 0.0
             ],
+            "texture": -1,
             "type": 67
         },
         {
+            "floor": 0,
             "id": 2,
             "position": [
                 0.0,
                 0.0
             ],
+            "texture": -1,
             "type": 1
         },
         {
+            "floor": 0,
             "id": 3,
             "position": [
                 0.0,
                 0.0
             ],
+            "texture": -1,
             "type": 1
         }
     ],

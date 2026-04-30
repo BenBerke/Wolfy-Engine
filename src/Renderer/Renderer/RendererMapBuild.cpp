@@ -42,7 +42,8 @@ namespace RendererInternal {
         const float bottomHeight,
         const float topHeight,
         const Vector4 &color,
-        const int floor
+        const int floor,
+        const float textureAnchorHeight
     ) {
         if (topHeight <= bottomHeight + 0.0001f) {
             return;
@@ -53,7 +54,7 @@ namespace RendererInternal {
         gpuWall.data = {
             static_cast<float>(wall.textureIndex),
             static_cast<float>(floor),
-            0.0f,
+            textureAnchorHeight,
             0.0f
         };
 
@@ -105,12 +106,16 @@ namespace RendererInternal {
         const float frontHeight = GetSectorBoundaryHeight(front, frontBoundaryIndex);
         const float backHeight = GetSectorBoundaryHeight(back, backBoundaryIndex);
 
+        const float bottom = std::min(frontHeight, backHeight);
+        const float top = std::max(frontHeight, backHeight);
+
         PushGpuWallPiece(
             wall,
-            std::min(frontHeight, backHeight),
-            std::max(frontHeight, backHeight),
+            bottom,
+            top,
             wall.color,
-            label
+            label,
+            top
         );
     }
 
@@ -135,22 +140,28 @@ namespace RendererInternal {
                 const float frontTopCeiling = GetSectorBoundaryHeight(front, frontFloorCount);
                 const float backTopCeiling = GetSectorBoundaryHeight(back, backFloorCount);
 
-                // 1. Floor-to-floor wall difference.
+                const float lowerBottom = std::min(frontFloor, backFloor);
+                const float lowerTop = std::max(frontFloor, backFloor);
+
                 PushGpuWallPiece(
                     wall,
-                    std::min(frontFloor, backFloor),
-                    std::max(frontFloor, backFloor),
+                    lowerBottom,
+                    lowerTop,
                     wall.color,
-                    0
+                    0,
+                    lowerBottom
                 );
 
-                // 2. Highest-ceiling-to-highest-ceiling wall difference.
+                const float upperBottom = std::min(frontTopCeiling, backTopCeiling);
+                const float upperTop = std::max(frontTopCeiling, backTopCeiling);
+
                 PushGpuWallPiece(
                     wall,
-                    std::min(frontTopCeiling, backTopCeiling),
-                    std::max(frontTopCeiling, backTopCeiling),
+                    upperBottom,
+                    upperTop,
                     wall.color,
-                    std::max(frontFloorCount, backFloorCount)
+                    std::max(frontFloorCount, backFloorCount),
+                    upperTop
                 );
 
                 continue;
@@ -165,7 +176,14 @@ namespace RendererInternal {
             }
 
             if (sectorIndex == -1) {
-                PushGpuWallPiece(wall, 0.0f, 32.0f, wall.color, wall.floor);
+                PushGpuWallPiece(
+                    wall,
+                    0.0f,
+                    32.0f,
+                    wall.color,
+                    wall.floor,
+                    32.0f
+                );
                 continue;
             }
 
@@ -177,12 +195,16 @@ namespace RendererInternal {
                 continue;
             }
 
+            const float wallBottom = GetWallBandBottomHeight(sector, wall.floor);
+            const float wallTop = GetWallBandTopHeight(sector, wall.floor);
+
             PushGpuWallPiece(
                 wall,
-                GetWallBandBottomHeight(sector, wall.floor),
-                GetWallBandTopHeight(sector, wall.floor),
+                wallBottom,
+                wallTop,
                 wall.color,
-                wall.floor
+                wall.floor,
+                wallTop
             );
         }
 

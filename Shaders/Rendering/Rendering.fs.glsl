@@ -12,12 +12,17 @@
 flat in int vTextureIndex;
 flat in float fWallWorldHeight;
 
+flat in float fWallBottomHeight;
+flat in float fWallTopHeight;
+
 uniform sampler2D wallTextures[MAX_WALL_TEXTURES];
 
 flat in vec4 vWallColor;
 
 flat in float fScreenXStart;
 flat in float fScreenXEnd;
+
+flat in float fWallTextureAnchorHeight;
 
 flat in float fTopYStart;
 flat in float fTopYEnd;
@@ -202,7 +207,16 @@ void main() {
     v = clamp(v, 0.0, 1.0);
 
     float u = s / tileSize;
-    float texV = (v * fWallWorldHeight) / tileSize;
+
+    // World-space vertical texture coordinate.
+    // This stops the texture from resetting when the wall moves.
+    float worldHeightAtFragment = mix(
+    fWallTopHeight,
+    fWallBottomHeight,
+    v
+    );
+
+    float texV = -worldHeightAtFragment / tileSize;
 
     if (vTextureIndex >= 0 && vTextureIndex < MAX_WALL_TEXTURES) {
         vec4 texColor = SampleWallTexture(vTextureIndex, vec2(u, texV));
