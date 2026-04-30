@@ -98,10 +98,12 @@ namespace MapEditorInternal {
 
     void MoveMode();
 
-    bool SaveAndQuit();
+    bool Save(const std::string& saveTo);
 
     extern std::vector<std::array<char, 256>> textureInputs;
 
     float DistancePointToSegmentSq(const Vector2& point, const Vector2& a, const Vector2& b);
     int GetWallAtPoint(const Vector2& worldPoint);
+
+    void UpdateLevels();
 }

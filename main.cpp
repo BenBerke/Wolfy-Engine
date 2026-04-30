@@ -24,7 +24,7 @@ int main() {
     }
     MapEditor::Destroy();
 
-    MapEditor::LoadLevel("test_level");
+    MapEditor::LoadLevel(MapEditor::currentMap);
     Player::Start(MapEditor::sectors);
 
     if (!Renderer::Initialize()) {

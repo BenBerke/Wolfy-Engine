@@ -15,6 +15,9 @@ namespace MapEditor {
     extern std::vector<Object> objects;
     extern Vector2 playerStartPos;
 
+    extern std::string currentMap;
+    extern std::vector<std::string> maps;
+
     void Start();
     void Update();
     void Destroy();

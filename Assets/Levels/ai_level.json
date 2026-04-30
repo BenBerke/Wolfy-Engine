@@ -140,7 +140,11 @@
     "sectors": [
         {
             "ceilingHeight": 136.0,
-            "ceilingTextureIndex": 1,
+            "ceilingTextureIndices": [
+                1,
+                1,
+                1
+            ],
             "corners": [
                 {
                     "x": 160.0,
@@ -159,13 +163,18 @@
                     "y": 0.0
                 }
             ],
+            "floorCount": 2,
             "floorHeight": 0.0,
             "floorTextureIndex": 1,
             "id": 0
         },
         {
             "ceilingHeight": 136.0,
-            "ceilingTextureIndex": 1,
+            "ceilingTextureIndices": [
+                1,
+                1,
+                1
+            ],
             "corners": [
                 {
                     "x": 80.0,
@@ -192,13 +201,18 @@
                     "y": 55.42599868774414
                 }
             ],
+            "floorCount": 2,
             "floorHeight": 0.0,
             "floorTextureIndex": 1,
             "id": 1
         },
         {
             "ceilingHeight": 136.0,
-            "ceilingTextureIndex": 1,
+            "ceilingTextureIndices": [
+                1,
+                1,
+                1
+            ],
             "corners": [
                 {
                     "x": -80.0,
@@ -217,13 +231,18 @@
                     "y": 55.42599868774414
                 }
             ],
+            "floorCount": 2,
             "floorHeight": 0.0,
             "floorTextureIndex": 1,
             "id": 2
         },
         {
             "ceilingHeight": 136.0,
-            "ceilingTextureIndex": 1,
+            "ceilingTextureIndices": [
+                1,
+                1,
+                1
+            ],
             "corners": [
                 {
                     "x": -160.0,
@@ -242,13 +261,18 @@
                     "y": 0.0
                 }
             ],
+            "floorCount": 2,
             "floorHeight": 0.0,
             "floorTextureIndex": 1,
             "id": 3
         },
         {
             "ceilingHeight": 136.0,
-            "ceilingTextureIndex": 1,
+            "ceilingTextureIndices": [
+                1,
+                1,
+                1
+            ],
             "corners": [
                 {
                     "x": -80.0,
@@ -275,13 +299,18 @@
                     "y": -55.42599868774414
                 }
             ],
+            "floorCount": 2,
             "floorHeight": 0.0,
             "floorTextureIndex": 1,
             "id": 4
         },
         {
             "ceilingHeight": 136.0,
-            "ceilingTextureIndex": 1,
+            "ceilingTextureIndices": [
+                1,
+                1,
+                1
+            ],
             "corners": [
                 {
                     "x": 80.0,
@@ -300,13 +329,18 @@
                     "y": -55.42599868774414
                 }
             ],
+            "floorCount": 2,
             "floorHeight": 0.0,
             "floorTextureIndex": 1,
             "id": 5
         },
         {
             "ceilingHeight": 128.0,
-            "ceilingTextureIndex": 1,
+            "ceilingTextureIndices": [
+                1,
+                1,
+                1
+            ],
             "corners": [
                 {
                     "x": 64.0,
@@ -325,13 +359,18 @@
                     "y": 0.0
                 }
             ],
+            "floorCount": 2,
             "floorHeight": -6.0,
             "floorTextureIndex": 1,
             "id": 6
         },
         {
             "ceilingHeight": 128.0,
-            "ceilingTextureIndex": 1,
+            "ceilingTextureIndices": [
+                1,
+                1,
+                1
+            ],
             "corners": [
                 {
                     "x": 32.0,
@@ -350,13 +389,18 @@
                     "y": 41.569000244140625
                 }
             ],
+            "floorCount": 2,
             "floorHeight": -6.0,
             "floorTextureIndex": 1,
             "id": 7
         },
         {
             "ceilingHeight": 128.0,
-            "ceilingTextureIndex": 1,
+            "ceilingTextureIndices": [
+                1,
+                1,
+                1
+            ],
             "corners": [
                 {
                     "x": -32.0,
@@ -375,13 +419,18 @@
                     "y": 41.569000244140625
                 }
             ],
+            "floorCount": 2,
             "floorHeight": -6.0,
             "floorTextureIndex": 1,
             "id": 8
         },
         {
             "ceilingHeight": 128.0,
-            "ceilingTextureIndex": 1,
+            "ceilingTextureIndices": [
+                1,
+                1,
+                1
+            ],
             "corners": [
                 {
                     "x": -64.0,
@@ -400,13 +449,18 @@
                     "y": 0.0
                 }
             ],
+            "floorCount": 2,
             "floorHeight": -6.0,
             "floorTextureIndex": 1,
             "id": 9
         },
         {
             "ceilingHeight": 128.0,
-            "ceilingTextureIndex": 1,
+            "ceilingTextureIndices": [
+                1,
+                1,
+                1
+            ],
             "corners": [
                 {
                     "x": -32.0,
@@ -425,13 +479,18 @@
                     "y": -41.569000244140625
                 }
             ],
+            "floorCount": 2,
             "floorHeight": -6.0,
             "floorTextureIndex": 1,
             "id": 10
         },
         {
             "ceilingHeight": 128.0,
-            "ceilingTextureIndex": 1,
+            "ceilingTextureIndices": [
+                1,
+                1,
+                1
+            ],
             "corners": [
                 {
                     "x": 32.0,
@@ -450,13 +509,18 @@
                     "y": -41.569000244140625
                 }
             ],
+            "floorCount": 2,
             "floorHeight": -6.0,
             "floorTextureIndex": 1,
             "id": 11
         },
         {
             "ceilingHeight": 122.0,
-            "ceilingTextureIndex": 1,
+            "ceilingTextureIndices": [
+                1,
+                1,
+                1
+            ],
             "corners": [
                 {
                     "x": 48.0,
@@ -475,13 +539,18 @@
                     "y": 0.0
                 }
             ],
+            "floorCount": 2,
             "floorHeight": -12.0,
             "floorTextureIndex": 1,
             "id": 12
         },
         {
             "ceilingHeight": 122.0,
-            "ceilingTextureIndex": 1,
+            "ceilingTextureIndices": [
+                1,
+                1,
+                1
+            ],
             "corners": [
                 {
                     "x": 24.0,
@@ -500,13 +569,18 @@
                     "y": 27.71299934387207
                 }
             ],
+            "floorCount": 2,
             "floorHeight": -12.0,
             "floorTextureIndex": 1,
             "id": 13
         },
         {
             "ceilingHeight": 122.0,
-            "ceilingTextureIndex": 1,
+            "ceilingTextureIndices": [
+                1,
+                1,
+                1
+            ],
             "corners": [
                 {
                     "x": -24.0,
@@ -525,13 +599,18 @@
                     "y": 27.71299934387207
                 }
             ],
+            "floorCount": 2,
             "floorHeight": -12.0,
             "floorTextureIndex": 1,
             "id": 14
         },
         {
             "ceilingHeight": 122.0,
-            "ceilingTextureIndex": 1,
+            "ceilingTextureIndices": [
+                1,
+                1,
+                1
+            ],
             "corners": [
                 {
                     "x": -48.0,
@@ -550,13 +629,18 @@
                     "y": 0.0
                 }
             ],
+            "floorCount": 2,
             "floorHeight": -12.0,
             "floorTextureIndex": 1,
             "id": 15
         },
         {
             "ceilingHeight": 122.0,
-            "ceilingTextureIndex": 1,
+            "ceilingTextureIndices": [
+                1,
+                1,
+                1
+            ],
             "corners": [
                 {
                     "x": -24.0,
@@ -575,13 +659,18 @@
                     "y": -27.71299934387207
                 }
             ],
+            "floorCount": 2,
             "floorHeight": -12.0,
             "floorTextureIndex": 1,
             "id": 16
         },
         {
             "ceilingHeight": 122.0,
-            "ceilingTextureIndex": 1,
+            "ceilingTextureIndices": [
+                1,
+                1,
+                1
+            ],
             "corners": [
                 {
                     "x": 24.0,
@@ -600,13 +689,18 @@
                     "y": -27.71299934387207
                 }
             ],
+            "floorCount": 2,
             "floorHeight": -12.0,
             "floorTextureIndex": 1,
             "id": 17
         },
         {
             "ceilingHeight": 116.0,
-            "ceilingTextureIndex": 1,
+            "ceilingTextureIndices": [
+                1,
+                1,
+                1
+            ],
             "corners": [
                 {
                     "x": 32.0,
@@ -625,13 +719,18 @@
                     "y": 0.0
                 }
             ],
+            "floorCount": 2,
             "floorHeight": -18.0,
             "floorTextureIndex": 1,
             "id": 18
         },
         {
             "ceilingHeight": 116.0,
-            "ceilingTextureIndex": 1,
+            "ceilingTextureIndices": [
+                1,
+                1,
+                1
+            ],
             "corners": [
                 {
                     "x": 16.0,
@@ -650,13 +749,18 @@
                     "y": 13.855999946594238
                 }
             ],
+            "floorCount": 2,
             "floorHeight": -18.0,
             "floorTextureIndex": 1,
             "id": 19
         },
         {
             "ceilingHeight": 116.0,
-            "ceilingTextureIndex": 1,
+            "ceilingTextureIndices": [
+                1,
+                1,
+                1
+            ],
             "corners": [
                 {
                     "x": -16.0,
@@ -675,13 +779,18 @@
                     "y": 13.855999946594238
                 }
             ],
+            "floorCount": 2,
             "floorHeight": -18.0,
             "floorTextureIndex": 1,
             "id": 20
         },
         {
             "ceilingHeight": 116.0,
-            "ceilingTextureIndex": 1,
+            "ceilingTextureIndices": [
+                1,
+                1,
+                1
+            ],
             "corners": [
                 {
                     "x": -32.0,
@@ -700,13 +809,18 @@
                     "y": 0.0
                 }
             ],
+            "floorCount": 2,
             "floorHeight": -18.0,
             "floorTextureIndex": 1,
             "id": 21
         },
         {
             "ceilingHeight": 116.0,
-            "ceilingTextureIndex": 1,
+            "ceilingTextureIndices": [
+                1,
+                1,
+                1
+            ],
             "corners": [
                 {
                     "x": -16.0,
@@ -725,13 +839,18 @@
                     "y": -13.855999946594238
                 }
             ],
+            "floorCount": 2,
             "floorHeight": -18.0,
             "floorTextureIndex": 1,
             "id": 22
         },
         {
             "ceilingHeight": 116.0,
-            "ceilingTextureIndex": 1,
+            "ceilingTextureIndices": [
+                1,
+                1,
+                1
+            ],
             "corners": [
                 {
                     "x": 16.0,
@@ -750,13 +869,18 @@
                     "y": -13.855999946594238
                 }
             ],
+            "floorCount": 2,
             "floorHeight": -18.0,
             "floorTextureIndex": 1,
             "id": 23
         },
         {
             "ceilingHeight": 112.0,
-            "ceilingTextureIndex": 1,
+            "ceilingTextureIndices": [
+                1,
+                1,
+                1
+            ],
             "corners": [
                 {
                     "x": 16.0,
@@ -783,13 +907,18 @@
                     "y": -13.855999946594238
                 }
             ],
+            "floorCount": 2,
             "floorHeight": -24.0,
             "floorTextureIndex": 1,
             "id": 24
         },
         {
             "ceilingHeight": 126.0,
-            "ceilingTextureIndex": 1,
+            "ceilingTextureIndices": [
+                1,
+                1,
+                1
+            ],
             "corners": [
                 {
                     "x": -32.0,
@@ -808,13 +937,18 @@
                     "y": 205.0
                 }
             ],
+            "floorCount": 2,
             "floorHeight": 0.0,
             "floorTextureIndex": 1,
             "id": 25
         },
         {
             "ceilingHeight": 132.0,
-            "ceilingTextureIndex": 1,
+            "ceilingTextureIndices": [
+                1,
+                1,
+                1
+            ],
             "corners": [
                 {
                     "x": -32.0,
@@ -833,13 +967,18 @@
                     "y": 255.0
                 }
             ],
+            "floorCount": 2,
             "floorHeight": 6.0,
             "floorTextureIndex": 1,
             "id": 26
         },
         {
             "ceilingHeight": 138.0,
-            "ceilingTextureIndex": 1,
+            "ceilingTextureIndices": [
+                1,
+                1,
+                1
+            ],
             "corners": [
                 {
                     "x": -32.0,
@@ -858,13 +997,18 @@
                     "y": 305.0
                 }
             ],
+            "floorCount": 2,
             "floorHeight": 12.0,
             "floorTextureIndex": 1,
             "id": 27
         },
         {
             "ceilingHeight": 150.0,
-            "ceilingTextureIndex": 1,
+            "ceilingTextureIndices": [
+                1,
+                1,
+                1
+            ],
             "corners": [
                 {
                     "x": -32.0,
@@ -883,13 +1027,18 @@
                     "y": 355.0
                 }
             ],
+            "floorCount": 2,
             "floorHeight": 18.0,
             "floorTextureIndex": 1,
             "id": 28
         },
         {
             "ceilingHeight": 190.0,
-            "ceilingTextureIndex": 1,
+            "ceilingTextureIndices": [
+                1,
+                1,
+                1
+            ],
             "corners": [
                 {
                     "x": -260.0,
@@ -928,13 +1077,18 @@
                     "y": 470.0
                 }
             ],
+            "floorCount": 2,
             "floorHeight": 18.0,
             "floorTextureIndex": 1,
             "id": 29
         },
         {
             "ceilingHeight": 150.0,
-            "ceilingTextureIndex": 1,
+            "ceilingTextureIndices": [
+                1,
+                1,
+                1
+            ],
             "corners": [
                 {
                     "x": 260.0,
@@ -953,13 +1107,18 @@
                     "y": 470.0
                 }
             ],
+            "floorCount": 2,
             "floorHeight": 18.0,
             "floorTextureIndex": 1,
             "id": 30
         },
         {
             "ceilingHeight": 168.0,
-            "ceilingTextureIndex": 1,
+            "ceilingTextureIndices": [
+                1,
+                1,
+                1
+            ],
             "corners": [
                 {
                     "x": 390.0,
@@ -986,13 +1145,18 @@
                     "y": 470.0
                 }
             ],
+            "floorCount": 2,
             "floorHeight": 18.0,
             "floorTextureIndex": 1,
             "id": 31
         },
         {
             "ceilingHeight": 118.0,
-            "ceilingTextureIndex": 1,
+            "ceilingTextureIndices": [
+                1,
+                1,
+                1
+            ],
             "corners": [
                 {
                     "x": 32.0,
@@ -1011,13 +1175,18 @@
                     "y": -205.0
                 }
             ],
+            "floorCount": 2,
             "floorHeight": -4.0,
             "floorTextureIndex": 1,
             "id": 32
         },
         {
             "ceilingHeight": 112.0,
-            "ceilingTextureIndex": 1,
+            "ceilingTextureIndices": [
+                1,
+                1,
+                1
+            ],
             "corners": [
                 {
                     "x": 32.0,
@@ -1036,13 +1205,18 @@
                     "y": -255.0
                 }
             ],
+            "floorCount": 2,
             "floorHeight": -8.0,
             "floorTextureIndex": 1,
             "id": 33
         },
         {
             "ceilingHeight": 106.0,
-            "ceilingTextureIndex": 1,
+            "ceilingTextureIndices": [
+                1,
+                1,
+                1
+            ],
             "corners": [
                 {
                     "x": 32.0,
@@ -1061,13 +1235,18 @@
                     "y": -305.0
                 }
             ],
+            "floorCount": 2,
             "floorHeight": -12.0,
             "floorTextureIndex": 1,
             "id": 34
         },
         {
             "ceilingHeight": 100.0,
-            "ceilingTextureIndex": 1,
+            "ceilingTextureIndices": [
+                1,
+                1,
+                1
+            ],
             "corners": [
                 {
                     "x": 32.0,
@@ -1086,13 +1265,18 @@
                     "y": -355.0
                 }
             ],
+            "floorCount": 2,
             "floorHeight": -16.0,
             "floorTextureIndex": 1,
             "id": 35
         },
         {
             "ceilingHeight": 130.0,
-            "ceilingTextureIndex": 1,
+            "ceilingTextureIndices": [
+                1,
+                1,
+                1
+            ],
             "corners": [
                 {
                     "x": -430.0,
@@ -1135,13 +1319,18 @@
                     "y": -355.0
                 }
             ],
+            "floorCount": 2,
             "floorHeight": -16.0,
             "floorTextureIndex": 1,
             "id": 36
         },
         {
             "ceilingHeight": 92.0,
-            "ceilingTextureIndex": 1,
+            "ceilingTextureIndices": [
+                1,
+                1,
+                1
+            ],
             "corners": [
                 {
                     "x": 300.0,
@@ -1160,13 +1349,18 @@
                     "y": -290.01800537109375
                 }
             ],
+            "floorCount": 2,
             "floorHeight": -16.0,
             "floorTextureIndex": 1,
             "id": 37
         },
         {
             "ceilingHeight": 106.0,
-            "ceilingTextureIndex": 1,
+            "ceilingTextureIndices": [
+                1,
+                1,
+                1
+            ],
             "corners": [
                 {
                     "x": 382.47698974609375,
@@ -1185,13 +1379,18 @@
                     "y": -225.03700256347656
                 }
             ],
+            "floorCount": 2,
             "floorHeight": -16.0,
             "floorTextureIndex": 1,
             "id": 38
         },
         {
             "ceilingHeight": 120.0,
-            "ceilingTextureIndex": 1,
+            "ceilingTextureIndices": [
+                1,
+                1,
+                1
+            ],
             "corners": [
                 {
                     "x": 464.9530029296875,
@@ -1214,13 +1413,18 @@
                     "y": -110.66500091552734
                 }
             ],
+            "floorCount": 2,
             "floorHeight": -16.0,
             "floorTextureIndex": 1,
             "id": 39
         },
         {
             "ceilingHeight": 118.0,
-            "ceilingTextureIndex": 1,
+            "ceilingTextureIndices": [
+                1,
+                1,
+                1
+            ],
             "corners": [
                 {
                     "x": -80.0,
@@ -1239,13 +1443,18 @@
                     "y": -186.06399536132813
                 }
             ],
+            "floorCount": 2,
             "floorHeight": 0.0,
             "floorTextureIndex": 1,
             "id": 40
         },
         {
             "ceilingHeight": 126.0,
-            "ceilingTextureIndex": 1,
+            "ceilingTextureIndices": [
+                1,
+                1,
+                1
+            ],
             "corners": [
                 {
                     "x": -162.27200317382813,
@@ -1264,13 +1473,18 @@
                     "y": -231.06399536132813
                 }
             ],
+            "floorCount": 2,
             "floorHeight": 6.0,
             "floorTextureIndex": 1,
             "id": 41
         },
         {
             "ceilingHeight": 160.0,
-            "ceilingTextureIndex": 1,
+            "ceilingTextureIndices": [
+                1,
+                1,
+                1
+            ],
             "corners": [
                 {
                     "x": -240.21499633789063,
@@ -1293,13 +1507,18 @@
                     "y": -366.6860046386719
                 }
             ],
+            "floorCount": 2,
             "floorHeight": 6.0,
             "floorTextureIndex": 1,
             "id": 42
         },
         {
             "ceilingHeight": 118.0,
-            "ceilingTextureIndex": 1,
+            "ceilingTextureIndices": [
+                1,
+                1,
+                1
+            ],
             "corners": [
                 {
                     "x": 80.0,
@@ -1318,13 +1537,18 @@
                     "y": 181.06399536132813
                 }
             ],
+            "floorCount": 2,
             "floorHeight": 0.0,
             "floorTextureIndex": 1,
             "id": 43
         },
         {
             "ceilingHeight": 126.0,
-            "ceilingTextureIndex": 1,
+            "ceilingTextureIndices": [
+                1,
+                1,
+                1
+            ],
             "corners": [
                 {
                     "x": 153.61199951171875,
@@ -1343,13 +1567,18 @@
                     "y": 223.56399536132813
                 }
             ],
+            "floorCount": 2,
             "floorHeight": 6.0,
             "floorTextureIndex": 1,
             "id": 44
         },
         {
             "ceilingHeight": 150.0,
-            "ceilingTextureIndex": 1,
+            "ceilingTextureIndices": [
+                1,
+                1,
+                1
+            ],
             "corners": [
                 {
                     "x": 227.2239990234375,
@@ -1372,13 +1601,18 @@
                     "y": 335.5260009765625
                 }
             ],
+            "floorCount": 2,
             "floorHeight": 6.0,
             "floorTextureIndex": 1,
             "id": 45
         },
         {
             "ceilingHeight": 40.0,
-            "ceilingTextureIndex": 1,
+            "ceilingTextureIndices": [
+                1,
+                1,
+                1
+            ],
             "corners": [
                 {
                     "x": -512.0,
@@ -1397,6 +1631,7 @@
                     "y": 224.0
                 }
             ],
+            "floorCount": 2,
             "floorHeight": 0.0,
             "floorTextureIndex": 1,
             "id": 46
@@ -1418,6 +1653,7 @@
                 80.0,
                 138.56399536132813
             ],
+            "floor": 0,
             "frontSector": 0,
             "id": 0,
             "start": [
@@ -1432,6 +1668,7 @@
                 32.0,
                 55.42599868774414
             ],
+            "floor": 0,
             "frontSector": 0,
             "id": 1,
             "start": [
@@ -1446,6 +1683,7 @@
                 64.0,
                 0.0
             ],
+            "floor": 0,
             "frontSector": 0,
             "id": 2,
             "start": [
@@ -1460,6 +1698,7 @@
                 160.0,
                 0.0
             ],
+            "floor": 0,
             "frontSector": 0,
             "id": 3,
             "start": [
@@ -1474,6 +1713,7 @@
                 32.0,
                 138.56399536132813
             ],
+            "floor": 0,
             "frontSector": 1,
             "id": 4,
             "start": [
@@ -1488,6 +1728,7 @@
                 -32.0,
                 138.56399536132813
             ],
+            "floor": 0,
             "frontSector": 1,
             "id": 5,
             "start": [
@@ -1502,6 +1743,7 @@
                 -80.0,
                 138.56399536132813
             ],
+            "floor": 0,
             "frontSector": 1,
             "id": 6,
             "start": [
@@ -1516,6 +1758,7 @@
                 -32.0,
                 55.42599868774414
             ],
+            "floor": 0,
             "frontSector": 1,
             "id": 7,
             "start": [
@@ -1530,6 +1773,7 @@
                 32.0,
                 55.42599868774414
             ],
+            "floor": 0,
             "frontSector": 1,
             "id": 8,
             "start": [
@@ -1544,6 +1788,7 @@
                 -160.0,
                 0.0
             ],
+            "floor": 0,
             "frontSector": 2,
             "id": 9,
             "start": [
@@ -1558,6 +1803,7 @@
                 -64.0,
                 0.0
             ],
+            "floor": 0,
             "frontSector": 2,
             "id": 10,
             "start": [
@@ -1572,6 +1818,7 @@
                 -32.0,
                 55.42599868774414
             ],
+            "floor": 0,
             "frontSector": 2,
             "id": 11,
             "start": [
@@ -1586,6 +1833,7 @@
                 -80.0,
                 -138.56399536132813
             ],
+            "floor": 0,
             "frontSector": 3,
             "id": 12,
             "start": [
@@ -1600,6 +1848,7 @@
                 -32.0,
                 -55.42599868774414
             ],
+            "floor": 0,
             "frontSector": 3,
             "id": 13,
             "start": [
@@ -1614,6 +1863,7 @@
                 -64.0,
                 0.0
             ],
+            "floor": 0,
             "frontSector": 3,
             "id": 14,
             "start": [
@@ -1628,6 +1878,7 @@
                 -32.0,
                 -138.56399536132813
             ],
+            "floor": 0,
             "frontSector": 4,
             "id": 15,
             "start": [
@@ -1642,6 +1893,7 @@
                 32.0,
                 -138.56399536132813
             ],
+            "floor": 0,
             "frontSector": 4,
             "id": 16,
             "start": [
@@ -1656,6 +1908,7 @@
                 80.0,
                 -138.56399536132813
             ],
+            "floor": 0,
             "frontSector": 4,
             "id": 17,
             "start": [
@@ -1670,6 +1923,7 @@
                 32.0,
                 -55.42599868774414
             ],
+            "floor": 0,
             "frontSector": 4,
             "id": 18,
             "start": [
@@ -1684,6 +1938,7 @@
                 -32.0,
                 -55.42599868774414
             ],
+            "floor": 0,
             "frontSector": 4,
             "id": 19,
             "start": [
@@ -1698,6 +1953,7 @@
                 160.0,
                 0.0
             ],
+            "floor": 0,
             "frontSector": 5,
             "id": 20,
             "start": [
@@ -1712,6 +1968,7 @@
                 32.0,
                 -55.42599868774414
             ],
+            "floor": 0,
             "frontSector": 5,
             "id": 21,
             "start": [
@@ -1726,6 +1983,7 @@
                 24.0,
                 41.569000244140625
             ],
+            "floor": 0,
             "frontSector": 6,
             "id": 22,
             "start": [
@@ -1740,6 +1998,7 @@
                 48.0,
                 0.0
             ],
+            "floor": 0,
             "frontSector": 6,
             "id": 23,
             "start": [
@@ -1754,6 +2013,7 @@
                 64.0,
                 0.0
             ],
+            "floor": 0,
             "frontSector": 6,
             "id": 24,
             "start": [
@@ -1768,6 +2028,7 @@
                 -24.0,
                 41.569000244140625
             ],
+            "floor": 0,
             "frontSector": 7,
             "id": 25,
             "start": [
@@ -1782,6 +2043,7 @@
                 24.0,
                 41.569000244140625
             ],
+            "floor": 0,
             "frontSector": 7,
             "id": 26,
             "start": [
@@ -1796,6 +2058,7 @@
                 -48.0,
                 0.0
             ],
+            "floor": 0,
             "frontSector": 8,
             "id": 27,
             "start": [
@@ -1810,6 +2073,7 @@
                 -24.0,
                 41.569000244140625
             ],
+            "floor": 0,
             "frontSector": 8,
             "id": 28,
             "start": [
@@ -1824,6 +2088,7 @@
                 -24.0,
                 -41.569000244140625
             ],
+            "floor": 0,
             "frontSector": 9,
             "id": 29,
             "start": [
@@ -1838,6 +2103,7 @@
                 -48.0,
                 0.0
             ],
+            "floor": 0,
             "frontSector": 9,
             "id": 30,
             "start": [
@@ -1852,6 +2118,7 @@
                 24.0,
                 -41.569000244140625
             ],
+            "floor": 0,
             "frontSector": 10,
             "id": 31,
             "start": [
@@ -1866,6 +2133,7 @@
                 -24.0,
                 -41.569000244140625
             ],
+            "floor": 0,
             "frontSector": 10,
             "id": 32,
             "start": [
@@ -1880,6 +2148,7 @@
                 24.0,
                 -41.569000244140625
             ],
+            "floor": 0,
             "frontSector": 11,
             "id": 33,
             "start": [
@@ -1894,6 +2163,7 @@
                 16.0,
                 27.71299934387207
             ],
+            "floor": 0,
             "frontSector": 12,
             "id": 34,
             "start": [
@@ -1908,6 +2178,7 @@
                 32.0,
                 0.0
             ],
+            "floor": 0,
             "frontSector": 12,
             "id": 35,
             "start": [
@@ -1922,6 +2193,7 @@
                 48.0,
                 0.0
             ],
+            "floor": 0,
             "frontSector": 12,
             "id": 36,
             "start": [
@@ -1936,6 +2208,7 @@
                 -16.0,
                 27.71299934387207
             ],
+            "floor": 0,
             "frontSector": 13,
             "id": 37,
             "start": [
@@ -1950,6 +2223,7 @@
                 16.0,
                 27.71299934387207
             ],
+            "floor": 0,
             "frontSector": 13,
             "id": 38,
             "start": [
@@ -1964,6 +2238,7 @@
                 -32.0,
                 0.0
             ],
+            "floor": 0,
             "frontSector": 14,
             "id": 39,
             "start": [
@@ -1978,6 +2253,7 @@
                 -16.0,
                 27.71299934387207
             ],
+            "floor": 0,
             "frontSector": 14,
             "id": 40,
             "start": [
@@ -1992,6 +2268,7 @@
                 -16.0,
                 -27.71299934387207
             ],
+            "floor": 0,
             "frontSector": 15,
             "id": 41,
             "start": [
@@ -2006,6 +2283,7 @@
                 -32.0,
                 0.0
             ],
+            "floor": 0,
             "frontSector": 15,
             "id": 42,
             "start": [
@@ -2020,6 +2298,7 @@
                 16.0,
                 -27.71299934387207
             ],
+            "floor": 0,
             "frontSector": 16,
             "id": 43,
             "start": [
@@ -2034,6 +2313,7 @@
                 -16.0,
                 -27.71299934387207
             ],
+            "floor": 0,
             "frontSector": 16,
             "id": 44,
             "start": [
@@ -2048,6 +2328,7 @@
                 16.0,
                 -27.71299934387207
             ],
+            "floor": 0,
             "frontSector": 17,
             "id": 45,
             "start": [
@@ -2062,6 +2343,7 @@
                 8.0,
                 13.855999946594238
             ],
+            "floor": 0,
             "frontSector": 18,
             "id": 46,
             "start": [
@@ -2076,6 +2358,7 @@
                 16.0,
                 0.0
             ],
+            "floor": 0,
             "frontSector": 18,
             "id": 47,
             "start": [
@@ -2090,6 +2373,7 @@
                 32.0,
                 0.0
             ],
+            "floor": 0,
             "frontSector": 18,
             "id": 48,
             "start": [
@@ -2104,6 +2388,7 @@
                 -8.0,
                 13.855999946594238
             ],
+            "floor": 0,
             "frontSector": 19,
             "id": 49,
             "start": [
@@ -2118,6 +2403,7 @@
                 8.0,
                 13.855999946594238
             ],
+            "floor": 0,
             "frontSector": 19,
             "id": 50,
             "start": [
@@ -2132,6 +2418,7 @@
                 -16.0,
                 0.0
             ],
+            "floor": 0,
             "frontSector": 20,
             "id": 51,
             "start": [
@@ -2146,6 +2433,7 @@
                 -8.0,
                 13.855999946594238
             ],
+            "floor": 0,
             "frontSector": 20,
             "id": 52,
             "start": [
@@ -2160,6 +2448,7 @@
                 -8.0,
                 -13.855999946594238
             ],
+            "floor": 0,
             "frontSector": 21,
             "id": 53,
             "start": [
@@ -2174,6 +2463,7 @@
                 -16.0,
                 0.0
             ],
+            "floor": 0,
             "frontSector": 21,
             "id": 54,
             "start": [
@@ -2188,6 +2478,7 @@
                 8.0,
                 -13.855999946594238
             ],
+            "floor": 0,
             "frontSector": 22,
             "id": 55,
             "start": [
@@ -2202,6 +2493,7 @@
                 -8.0,
                 -13.855999946594238
             ],
+            "floor": 0,
             "frontSector": 22,
             "id": 56,
             "start": [
@@ -2216,6 +2508,7 @@
                 8.0,
                 -13.855999946594238
             ],
+            "floor": 0,
             "frontSector": 23,
             "id": 57,
             "start": [
@@ -2230,6 +2523,7 @@
                 32.0,
                 205.0
             ],
+            "floor": 0,
             "frontSector": 25,
             "id": 58,
             "start": [
@@ -2244,6 +2538,7 @@
                 -32.0,
                 205.0
             ],
+            "floor": 0,
             "frontSector": 25,
             "id": 59,
             "start": [
@@ -2258,6 +2553,7 @@
                 -32.0,
                 138.56399536132813
             ],
+            "floor": 0,
             "frontSector": 25,
             "id": 60,
             "start": [
@@ -2272,6 +2568,7 @@
                 32.0,
                 255.0
             ],
+            "floor": 0,
             "frontSector": 26,
             "id": 61,
             "start": [
@@ -2286,6 +2583,7 @@
                 -32.0,
                 255.0
             ],
+            "floor": 0,
             "frontSector": 26,
             "id": 62,
             "start": [
@@ -2300,6 +2598,7 @@
                 -32.0,
                 205.0
             ],
+            "floor": 0,
             "frontSector": 26,
             "id": 63,
             "start": [
@@ -2314,6 +2613,7 @@
                 32.0,
                 305.0
             ],
+            "floor": 0,
             "frontSector": 27,
             "id": 64,
             "start": [
@@ -2328,6 +2628,7 @@
                 -32.0,
                 305.0
             ],
+            "floor": 0,
             "frontSector": 27,
             "id": 65,
             "start": [
@@ -2342,6 +2643,7 @@
                 -32.0,
                 255.0
             ],
+            "floor": 0,
             "frontSector": 27,
             "id": 66,
             "start": [
@@ -2356,6 +2658,7 @@
                 32.0,
                 355.0
             ],
+            "floor": 0,
             "frontSector": 28,
             "id": 67,
             "start": [
@@ -2370,6 +2673,7 @@
                 -32.0,
                 355.0
             ],
+            "floor": 0,
             "frontSector": 28,
             "id": 68,
             "start": [
@@ -2384,6 +2688,7 @@
                 -32.0,
                 305.0
             ],
+            "floor": 0,
             "frontSector": 28,
             "id": 69,
             "start": [
@@ -2398,6 +2703,7 @@
                 -32.0,
                 355.0
             ],
+            "floor": 0,
             "frontSector": 29,
             "id": 70,
             "start": [
@@ -2412,6 +2718,7 @@
                 260.0,
                 355.0
             ],
+            "floor": 0,
             "frontSector": 29,
             "id": 71,
             "start": [
@@ -2426,6 +2733,7 @@
                 340.0,
                 470.0
             ],
+            "floor": 0,
             "frontSector": 29,
             "id": 72,
             "start": [
@@ -2440,6 +2748,7 @@
                 250.0,
                 660.0
             ],
+            "floor": 0,
             "frontSector": 29,
             "id": 73,
             "start": [
@@ -2454,6 +2763,7 @@
                 0.0,
                 760.0
             ],
+            "floor": 0,
             "frontSector": 29,
             "id": 74,
             "start": [
@@ -2468,6 +2778,7 @@
                 -250.0,
                 660.0
             ],
+            "floor": 0,
             "frontSector": 29,
             "id": 75,
             "start": [
@@ -2482,6 +2793,7 @@
                 -340.0,
                 470.0
             ],
+            "floor": 0,
             "frontSector": 29,
             "id": 76,
             "start": [
@@ -2496,6 +2808,7 @@
                 -260.0,
                 355.0
             ],
+            "floor": 0,
             "frontSector": 29,
             "id": 77,
             "start": [
@@ -2510,6 +2823,7 @@
                 390.0,
                 430.0
             ],
+            "floor": 0,
             "frontSector": 30,
             "id": 78,
             "start": [
@@ -2524,6 +2838,7 @@
                 390.0,
                 470.0
             ],
+            "floor": 0,
             "frontSector": 30,
             "id": 79,
             "start": [
@@ -2538,6 +2853,7 @@
                 340.0,
                 470.0
             ],
+            "floor": 0,
             "frontSector": 30,
             "id": 80,
             "start": [
@@ -2552,6 +2868,7 @@
                 260.0,
                 430.0
             ],
+            "floor": 0,
             "frontSector": 30,
             "id": 81,
             "start": [
@@ -2566,6 +2883,7 @@
                 610.0,
                 390.0
             ],
+            "floor": 0,
             "frontSector": 31,
             "id": 82,
             "start": [
@@ -2580,6 +2898,7 @@
                 700.0,
                 510.0
             ],
+            "floor": 0,
             "frontSector": 31,
             "id": 83,
             "start": [
@@ -2594,6 +2913,7 @@
                 610.0,
                 650.0
             ],
+            "floor": 0,
             "frontSector": 31,
             "id": 84,
             "start": [
@@ -2608,6 +2928,7 @@
                 390.0,
                 610.0
             ],
+            "floor": 0,
             "frontSector": 31,
             "id": 85,
             "start": [
@@ -2622,6 +2943,7 @@
                 390.0,
                 470.0
             ],
+            "floor": 0,
             "frontSector": 31,
             "id": 86,
             "start": [
@@ -2636,6 +2958,7 @@
                 390.0,
                 390.0
             ],
+            "floor": 0,
             "frontSector": 31,
             "id": 87,
             "start": [
@@ -2650,6 +2973,7 @@
                 -32.0,
                 -205.0
             ],
+            "floor": 0,
             "frontSector": 32,
             "id": 88,
             "start": [
@@ -2664,6 +2988,7 @@
                 32.0,
                 -205.0
             ],
+            "floor": 0,
             "frontSector": 32,
             "id": 89,
             "start": [
@@ -2678,6 +3003,7 @@
                 32.0,
                 -138.56399536132813
             ],
+            "floor": 0,
             "frontSector": 32,
             "id": 90,
             "start": [
@@ -2692,6 +3018,7 @@
                 -32.0,
                 -255.0
             ],
+            "floor": 0,
             "frontSector": 33,
             "id": 91,
             "start": [
@@ -2706,6 +3033,7 @@
                 32.0,
                 -255.0
             ],
+            "floor": 0,
             "frontSector": 33,
             "id": 92,
             "start": [
@@ -2720,6 +3048,7 @@
                 32.0,
                 -205.0
             ],
+            "floor": 0,
             "frontSector": 33,
             "id": 93,
             "start": [
@@ -2734,6 +3063,7 @@
                 -32.0,
                 -305.0
             ],
+            "floor": 0,
             "frontSector": 34,
             "id": 94,
             "start": [
@@ -2748,6 +3078,7 @@
                 32.0,
                 -305.0
             ],
+            "floor": 0,
             "frontSector": 34,
             "id": 95,
             "start": [
@@ -2762,6 +3093,7 @@
                 32.0,
                 -255.0
             ],
+            "floor": 0,
             "frontSector": 34,
             "id": 96,
             "start": [
@@ -2776,6 +3108,7 @@
                 -32.0,
                 -355.0
             ],
+            "floor": 0,
             "frontSector": 35,
             "id": 97,
             "start": [
@@ -2790,6 +3123,7 @@
                 32.0,
                 -355.0
             ],
+            "floor": 0,
             "frontSector": 35,
             "id": 98,
             "start": [
@@ -2804,6 +3138,7 @@
                 32.0,
                 -305.0
             ],
+            "floor": 0,
             "frontSector": 35,
             "id": 99,
             "start": [
@@ -2818,6 +3153,7 @@
                 -340.0,
                 -740.0
             ],
+            "floor": 0,
             "frontSector": 36,
             "id": 100,
             "start": [
@@ -2832,6 +3168,7 @@
                 -90.0,
                 -870.0
             ],
+            "floor": 0,
             "frontSector": 36,
             "id": 101,
             "start": [
@@ -2846,6 +3183,7 @@
                 90.0,
                 -870.0
             ],
+            "floor": 0,
             "frontSector": 36,
             "id": 102,
             "start": [
@@ -2860,6 +3198,7 @@
                 340.0,
                 -740.0
             ],
+            "floor": 0,
             "frontSector": 36,
             "id": 103,
             "start": [
@@ -2874,6 +3213,7 @@
                 430.0,
                 -520.0
             ],
+            "floor": 0,
             "frontSector": 36,
             "id": 104,
             "start": [
@@ -2888,6 +3228,7 @@
                 300.0,
                 -355.0
             ],
+            "floor": 0,
             "frontSector": 36,
             "id": 105,
             "start": [
@@ -2902,6 +3243,7 @@
                 32.0,
                 -355.0
             ],
+            "floor": 0,
             "frontSector": 36,
             "id": 106,
             "start": [
@@ -2916,6 +3258,7 @@
                 -300.0,
                 -355.0
             ],
+            "floor": 0,
             "frontSector": 36,
             "id": 107,
             "start": [
@@ -2930,6 +3273,7 @@
                 -430.0,
                 -520.0
             ],
+            "floor": 0,
             "frontSector": 36,
             "id": 108,
             "start": [
@@ -2944,6 +3288,7 @@
                 512.4769897460938,
                 -455.01800537109375
             ],
+            "floor": 0,
             "frontSector": 37,
             "id": 109,
             "start": [
@@ -2958,6 +3303,7 @@
                 382.47698974609375,
                 -290.01800537109375
             ],
+            "floor": 0,
             "frontSector": 37,
             "id": 110,
             "start": [
@@ -2972,6 +3318,7 @@
                 300.0,
                 -355.0
             ],
+            "floor": 0,
             "frontSector": 37,
             "id": 111,
             "start": [
@@ -2986,6 +3333,7 @@
                 594.9530029296875,
                 -390.0369873046875
             ],
+            "floor": 0,
             "frontSector": 38,
             "id": 112,
             "start": [
@@ -3000,6 +3348,7 @@
                 464.9530029296875,
                 -225.03700256347656
             ],
+            "floor": 0,
             "frontSector": 38,
             "id": 113,
             "start": [
@@ -3014,6 +3363,7 @@
                 382.47698974609375,
                 -290.01800537109375
             ],
+            "floor": 0,
             "frontSector": 38,
             "id": 114,
             "start": [
@@ -3028,6 +3378,7 @@
                 719.322998046875,
                 -362.0690002441406
             ],
+            "floor": 0,
             "frontSector": 39,
             "id": 115,
             "start": [
@@ -3042,6 +3393,7 @@
                 710.6160278320313,
                 -165.1959991455078
             ],
+            "floor": 0,
             "frontSector": 39,
             "id": 116,
             "start": [
@@ -3056,6 +3408,7 @@
                 521.2470092773438,
                 -110.66500091552734
             ],
+            "floor": 0,
             "frontSector": 39,
             "id": 117,
             "start": [
@@ -3070,6 +3423,7 @@
                 464.9530029296875,
                 -225.03700256347656
             ],
+            "floor": 0,
             "frontSector": 39,
             "id": 118,
             "start": [
@@ -3084,6 +3438,7 @@
                 -242.27200317382813,
                 -47.5
             ],
+            "floor": 0,
             "frontSector": 40,
             "id": 119,
             "start": [
@@ -3098,6 +3453,7 @@
                 -162.27200317382813,
                 -186.06399536132813
             ],
+            "floor": 0,
             "frontSector": 40,
             "id": 120,
             "start": [
@@ -3112,6 +3468,7 @@
                 -80.0,
                 -138.56399536132813
             ],
+            "floor": 0,
             "frontSector": 40,
             "id": 121,
             "start": [
@@ -3126,6 +3483,7 @@
                 -320.2149963378906,
                 -92.5
             ],
+            "floor": 0,
             "frontSector": 41,
             "id": 122,
             "start": [
@@ -3140,6 +3498,7 @@
                 -240.21499633789063,
                 -231.06399536132813
             ],
+            "floor": 0,
             "frontSector": 41,
             "id": 123,
             "start": [
@@ -3154,6 +3513,7 @@
                 -162.27200317382813,
                 -186.06399536132813
             ],
+            "floor": 0,
             "frontSector": 41,
             "id": 124,
             "start": [
@@ -3168,6 +3528,7 @@
                 -485.1189880371094,
                 -106.87799835205078
             ],
+            "floor": 0,
             "frontSector": 42,
             "id": 125,
             "start": [
@@ -3182,6 +3543,7 @@
                 -540.0230102539063,
                 -311.7820129394531
             ],
+            "floor": 0,
             "frontSector": 42,
             "id": 126,
             "start": [
@@ -3196,6 +3558,7 @@
                 -335.1189880371094,
                 -366.6860046386719
             ],
+            "floor": 0,
             "frontSector": 42,
             "id": 127,
             "start": [
@@ -3210,6 +3573,7 @@
                 -240.21499633789063,
                 -231.06399536132813
             ],
+            "floor": 0,
             "frontSector": 42,
             "id": 128,
             "start": [
@@ -3224,6 +3588,7 @@
                 233.61199951171875,
                 42.5
             ],
+            "floor": 0,
             "frontSector": 43,
             "id": 129,
             "start": [
@@ -3238,6 +3603,7 @@
                 153.61199951171875,
                 181.06399536132813
             ],
+            "floor": 0,
             "frontSector": 43,
             "id": 130,
             "start": [
@@ -3252,6 +3618,7 @@
                 80.0,
                 138.56399536132813
             ],
+            "floor": 0,
             "frontSector": 43,
             "id": 131,
             "start": [
@@ -3266,6 +3633,7 @@
                 307.2239990234375,
                 85.0
             ],
+            "floor": 0,
             "frontSector": 44,
             "id": 132,
             "start": [
@@ -3280,6 +3648,7 @@
                 227.2239990234375,
                 223.56399536132813
             ],
+            "floor": 0,
             "frontSector": 44,
             "id": 133,
             "start": [
@@ -3294,6 +3663,7 @@
                 153.61199951171875,
                 181.06399536132813
             ],
+            "floor": 0,
             "frontSector": 44,
             "id": 134,
             "start": [
@@ -3308,6 +3678,7 @@
                 441.1470031738281,
                 93.03800201416016
             ],
+            "floor": 0,
             "frontSector": 45,
             "id": 135,
             "start": [
@@ -3322,6 +3693,7 @@
                 483.7300109863281,
                 279.2820129394531
             ],
+            "floor": 0,
             "frontSector": 45,
             "id": 136,
             "start": [
@@ -3336,6 +3708,7 @@
                 301.1470031738281,
                 335.5260009765625
             ],
+            "floor": 0,
             "frontSector": 45,
             "id": 137,
             "start": [
@@ -3350,6 +3723,7 @@
                 227.2239990234375,
                 223.56399536132813
             ],
+            "floor": 0,
             "frontSector": 45,
             "id": 138,
             "start": [
@@ -3364,6 +3738,7 @@
                 -512.0,
                 224.0
             ],
+            "floor": 0,
             "frontSector": -1,
             "id": 139,
             "start": [
@@ -3378,6 +3753,7 @@
                 -320.0,
                 224.0
             ],
+            "floor": 0,
             "frontSector": -1,
             "id": 140,
             "start": [
@@ -3392,6 +3768,7 @@
                 -384.0,
                 32.0
             ],
+            "floor": 0,
             "frontSector": 46,
             "id": 141,
             "start": [
@@ -3406,6 +3783,7 @@
                 -576.0,
                 32.0
             ],
+            "floor": 0,
             "frontSector": 46,
             "id": 142,
             "start": [

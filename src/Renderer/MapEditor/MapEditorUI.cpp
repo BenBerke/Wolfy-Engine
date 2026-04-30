@@ -57,9 +57,9 @@ namespace MapEditorInternal {
 
         ImGui::Text("%s", GetModeName(currentMode));
 
-        ImGui::Text("\nDots: %d", static_cast<int>(placedCorners.size()));
-        ImGui::Text("Lines: %d", static_cast<int>(MapEditor::walls.size()));
-        ImGui::Text("Sectors: %d", static_cast<int>(MapEditor::sectors.size()));
+        //ImGui::Text("\nDots: %d", static_cast<int>(placedCorners.size()));
+        //ImGui::Text("Lines: %d", static_cast<int>(MapEditor::walls.size()));
+        //ImGui::Text("Sectors: %d", static_cast<int>(MapEditor::sectors.size()));
 
         //region EDITING
 
@@ -218,6 +218,8 @@ namespace MapEditorInternal {
             ImGui::PopID();
         }
 
+        PutSpace(5);
+
         if (currentMode == MODE_OBJECT) {
             ImGui::Text("Object Details");
             PutSpace(3);
@@ -240,12 +242,16 @@ namespace MapEditorInternal {
             if (ImGui::Button("Close")) {
                 editingObject = false;
             }
+            PutSpace(5);
         }
-
         ImGui::InputInt("Floor", &currentFloor);
 
+        if (ImGui::Button("Save")) Save(MapEditor::currentMap);
+        PutSpace(1);
+
         if (ImGui::Button("Save & Play")) {
-            if (SaveAndQuit()) {
+            if (Save(MapEditor::currentMap)) {
+                SDL_Log("%s", MapEditor::currentMap.c_str());
                 quit = true;
             }
         }
@@ -255,6 +261,63 @@ namespace MapEditorInternal {
             quit = true;
         }
 
+        static char buf[64] = "";
+
+        if (buf[0] == '\0' && !MapEditor::currentMap.empty()) {
+            strncpy(buf, MapEditor::currentMap.c_str(), sizeof(buf) - 1);
+        }
+
+        if (ImGui::InputText("Level Name", buf, IM_ARRAYSIZE(buf))) {
+            MapEditor::currentMap = buf;
+        }
+
+        ImGui::End(); // Editor
+
+        ImGui::Begin("Levels");
+        ImGui::Begin("Levels");
+
+        for (int i = 0; i < static_cast<int>(MapEditor::maps.size()); ++i) {
+            ImGui::PushID(i);
+
+            std::string mapName = MapEditor::maps[i];
+            std::string cleanName = mapName.substr(0, mapName.find('.'));
+
+            ImGui::Text("%s", cleanName.c_str());
+
+            if (ImGui::Button("Load Level")) {
+                Save(MapEditor::currentMap);
+                MapEditor::LoadLevel(cleanName);
+            }
+
+            ImGui::SameLine();
+
+            if (ImGui::Button("Delete Level")) {
+                const std::string path = "../Assets/Levels/" + cleanName + ".json";
+
+                try {
+                    if (std::filesystem::remove(path)) {
+                        SDL_Log("Deleted level: %s", path.c_str());
+
+                        if (MapEditor::currentMap == cleanName) {
+                            MapEditor::currentMap = "test_level";
+                            MapEditor::LoadLevel(MapEditor::currentMap);
+                        }
+
+                        UpdateLevels();
+                    }
+                    else {
+                        SDL_Log("Failed to delete level, file may not exist: %s", path.c_str());
+                    }
+                }
+                catch (const std::filesystem::filesystem_error& e) {
+                    SDL_Log("Delete level failed: %s", e.what());
+                }
+            }
+
+            ImGui::PopID();
+        }
+
+        ImGui::End();
         ImGui::End();
     }
 }

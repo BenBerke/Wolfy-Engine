@@ -7,7 +7,29 @@
 using json = nlohmann::json;
 
 namespace MapEditorInternal {
-    bool SaveAndQuit() {
+    void UpdateLevels() {
+        const std::string levelPath = "test_level";
+
+        if (!MapEditor::LoadLevel(levelPath)) {
+            SDL_Log("No existing test_scene.json loaded. Starting with an empty editor.");
+        }
+
+        const std::string levelsPath = "../Assets/Levels";
+        try {
+            MapEditor::maps.clear();
+            if (std::filesystem::exists(levelsPath) && std::filesystem::is_directory(levelsPath)) {
+                for (const auto& entry : std::filesystem::directory_iterator(levelsPath)) {
+                    if (std::filesystem::is_regular_file(entry)) {
+                        MapEditor::maps.push_back(entry.path().filename().string());
+                    }
+                }
+            }
+        } catch (const std::filesystem::filesystem_error& e) {
+            SDL_Log("Error loading levels: %s", e.what());
+        }
+    }
+
+    bool Save(const std::string& saveTo) {
         if (!playerPlaced) {
             SDL_Log("Can not play without a player");
             return false;
@@ -83,10 +105,12 @@ namespace MapEditorInternal {
             levelData["sectors"].push_back(jsonObj);
         }
 
-        std::ofstream file("../Assets/Levels/test_level.json");
+        const std::string level = "../Assets/Levels/" + saveTo + ".json";
+
+        std::ofstream file(level);
 
         if (!file.is_open()) {
-            SDL_Log("Failed to open test_level.json");
+            SDL_Log("Failed to open level");
             return false;
         }
 
@@ -94,6 +118,9 @@ namespace MapEditorInternal {
         file.close();
 
         SDL_Log("Level created successfully");
+
+        UpdateLevels();
+
         return true;
     }
 }
@@ -102,6 +129,7 @@ namespace MapEditor {
     bool LoadLevel(const std::string& _level) {
         using namespace MapEditorInternal;
 
+        currentMap = _level;
         const std::string level = "../Assets/Levels/" + _level + ".json";
 
         walls.clear();
@@ -259,7 +287,7 @@ namespace MapEditor {
             }
         }
 
-        SDL_Log("Level loaded successfully");
+        //SDL_Log("Level loaded successfully");
         return true;
     }
 }

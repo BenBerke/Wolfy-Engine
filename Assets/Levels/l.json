@@ -1,0 +1,382 @@
+{
+    "objects": [
+        {
+            "id": 0,
+            "position": [
+                0.0,
+                0.0
+            ],
+            "type": 0
+        }
+    ],
+    "sectors": [
+        {
+            "ceilingHeight": 40.0,
+            "ceilingTextureIndices": [
+                1,
+                2,
+                3
+            ],
+            "corners": [
+                {
+                    "x": -128.0,
+                    "y": -128.0
+                },
+                {
+                    "x": 128.0,
+                    "y": -128.0
+                },
+                {
+                    "x": 128.0,
+                    "y": 128.0
+                },
+                {
+                    "x": -128.0,
+                    "y": 128.0
+                }
+            ],
+            "floorCount": 3,
+            "floorHeight": 0.0,
+            "floorTextureIndex": 0,
+            "id": 0
+        },
+        {
+            "ceilingHeight": 40.0,
+            "ceilingTextureIndices": [
+                0,
+                0,
+                0
+            ],
+            "corners": [
+                {
+                    "x": -128.0,
+                    "y": 128.0
+                },
+                {
+                    "x": 128.0,
+                    "y": 128.0
+                },
+                {
+                    "x": 128.0,
+                    "y": 288.0
+                },
+                {
+                    "x": -128.0,
+                    "y": 288.0
+                }
+            ],
+            "floorCount": 1,
+            "floorHeight": 0.0,
+            "floorTextureIndex": 0,
+            "id": 1
+        },
+        {
+            "ceilingHeight": 30.0,
+            "ceilingTextureIndices": [
+                1,
+                2,
+                3
+            ],
+            "corners": [
+                {
+                    "x": 128.0,
+                    "y": -128.0
+                },
+                {
+                    "x": 320.0,
+                    "y": -128.0
+                },
+                {
+                    "x": 320.0,
+                    "y": 128.0
+                },
+                {
+                    "x": 128.0,
+                    "y": 128.0
+                }
+            ],
+            "floorCount": 3,
+            "floorHeight": -10.0,
+            "floorTextureIndex": 0,
+            "id": 2
+        }
+    ],
+    "textures": [
+        "wall",
+        "floor",
+        "wood",
+        "skybox"
+    ],
+    "walls": [
+        {
+            "backSector": 1,
+            "end": [
+                128.0,
+                128.0
+            ],
+            "floor": 0,
+            "frontSector": 0,
+            "id": 0,
+            "start": [
+                -128.0,
+                128.0
+            ],
+            "textureIndex": 0
+        },
+        {
+            "backSector": 2,
+            "end": [
+                128.0,
+                128.0
+            ],
+            "floor": 0,
+            "frontSector": 0,
+            "id": 1,
+            "start": [
+                128.0,
+                -128.0
+            ],
+            "textureIndex": 0
+        },
+        {
+            "backSector": -1,
+            "end": [
+                128.0,
+                -128.0
+            ],
+            "floor": 0,
+            "frontSector": 0,
+            "id": 2,
+            "start": [
+                -128.0,
+                -128.0
+            ],
+            "textureIndex": 0
+        },
+        {
+            "backSector": -1,
+            "end": [
+                128.0,
+                -128.0
+            ],
+            "floor": 1,
+            "frontSector": 0,
+            "id": 3,
+            "start": [
+                -128.0,
+                -128.0
+            ],
+            "textureIndex": 0
+        },
+        {
+            "backSector": -1,
+            "end": [
+                128.0,
+                -128.0
+            ],
+            "floor": 2,
+            "frontSector": 0,
+            "id": 4,
+            "start": [
+                -128.0,
+                -128.0
+            ],
+            "textureIndex": 0
+        },
+        {
+            "backSector": -1,
+            "end": [
+                -128.0,
+                -128.0
+            ],
+            "floor": 0,
+            "frontSector": 0,
+            "id": 5,
+            "start": [
+                -128.0,
+                128.0
+            ],
+            "textureIndex": 0
+        },
+        {
+            "backSector": -1,
+            "end": [
+                -128.0,
+                -128.0
+            ],
+            "floor": 1,
+            "frontSector": 0,
+            "id": 6,
+            "start": [
+                -128.0,
+                128.0
+            ],
+            "textureIndex": 0
+        },
+        {
+            "backSector": -1,
+            "end": [
+                -128.0,
+                -128.0
+            ],
+            "floor": 2,
+            "frontSector": 0,
+            "id": 7,
+            "start": [
+                -128.0,
+                128.0
+            ],
+            "textureIndex": 0
+        },
+        {
+            "backSector": -1,
+            "end": [
+                128.0,
+                288.0
+            ],
+            "floor": 0,
+            "frontSector": 1,
+            "id": 8,
+            "start": [
+                -128.0,
+                288.0
+            ],
+            "textureIndex": 0
+        },
+        {
+            "backSector": -1,
+            "end": [
+                -128.0,
+                288.0
+            ],
+            "floor": 0,
+            "frontSector": 1,
+            "id": 9,
+            "start": [
+                -128.0,
+                128.0
+            ],
+            "textureIndex": 0
+        },
+        {
+            "backSector": -1,
+            "end": [
+                128.0,
+                128.0
+            ],
+            "floor": 0,
+            "frontSector": 1,
+            "id": 10,
+            "start": [
+                128.0,
+                288.0
+            ],
+            "textureIndex": 0
+        },
+        {
+            "backSector": -1,
+            "end": [
+                320.0,
+                128.0
+            ],
+            "floor": 0,
+            "frontSector": 2,
+            "id": 11,
+            "start": [
+                128.0,
+                128.0
+            ],
+            "textureIndex": 0
+        },
+        {
+            "backSector": -1,
+            "end": [
+                320.0,
+                128.0
+            ],
+            "floor": 1,
+            "frontSector": 2,
+            "id": 12,
+            "start": [
+                128.0,
+                128.0
+            ],
+            "textureIndex": 0
+        },
+        {
+            "backSector": -1,
+            "end": [
+                320.0,
+                -128.0
+            ],
+            "floor": 0,
+            "frontSector": 2,
+            "id": 13,
+            "start": [
+                320.0,
+                128.0
+            ],
+            "textureIndex": 0
+        },
+        {
+            "backSector": -1,
+            "end": [
+                320.0,
+                -128.0
+            ],
+            "floor": 1,
+            "frontSector": 2,
+            "id": 14,
+            "start": [
+                320.0,
+                128.0
+            ],
+            "textureIndex": 0
+        },
+        {
+            "backSector": -1,
+            "end": [
+                128.0,
+                -128.0
+            ],
+            "floor": 0,
+            "frontSector": 2,
+            "id": 15,
+            "start": [
+                320.0,
+                -128.0
+            ],
+            "textureIndex": 0
+        },
+        {
+            "backSector": -1,
+            "end": [
+                128.0,
+                -128.0
+            ],
+            "floor": 1,
+            "frontSector": 2,
+            "id": 16,
+            "start": [
+                320.0,
+                -128.0
+            ],
+            "textureIndex": 0
+        },
+        {
+            "backSector": 2,
+            "end": [
+                320.0,
+                96.0
+            ],
+            "floor": 2,
+            "frontSector": 2,
+            "id": 17,
+            "start": [
+                128.0,
+                0.0
+            ],
+            "textureIndex": 1
+        }
+    ]
+}
