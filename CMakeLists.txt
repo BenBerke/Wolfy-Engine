@@ -51,7 +51,7 @@ add_executable(Wolfy_Engine
         src/Renderer/Renderer/RendererDebug.cpp
         src/Renderer/Renderer/RendererUpdate.cpp
         src/Renderer/Renderer/RendererDestroy.cpp
-        Headers/Objects/Object.h
+        Headers/Objects/Object.hpp
         src/Renderer/Renderer/RendererDecals.cpp
         src/Renderer/Renderer/RendererSectors.cpp
         config.h
@@ -59,6 +59,7 @@ add_executable(Wolfy_Engine
         src/Math/Geometry/Geometry.cpp
         Headers/Map/MapQueries.h
         src/Map/MapQueries.cpp
+        src/Renderer/Renderer/RenderBackground.cpp
 )
 
 target_precompile_headers(Wolfy_Engine PRIVATE
@@ -99,6 +100,7 @@ if (WOLFY_USE_IMGUI AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/External/imgui/imgui
 
             External/imgui/backends/imgui_impl_sdl3.cpp
             External/imgui/backends/imgui_impl_sdlrenderer3.cpp
+            External/imgui/backends/imgui_impl_opengl3.cpp
     )
 
     target_include_directories(imgui PUBLIC
@@ -109,6 +111,7 @@ if (WOLFY_USE_IMGUI AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/External/imgui/imgui
     target_link_libraries(imgui PUBLIC
             SDL3::SDL3
             SDL3::Headers
+            OpenGL::GL
     )
 
     target_link_libraries(Wolfy_Engine PRIVATE imgui)

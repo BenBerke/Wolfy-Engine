@@ -10,6 +10,7 @@
 #include "Headers/Objects/Player.hpp"
 #include "../../Headers/Objects/Sector.hpp"
 #include "Headers/Map/MapQueries.h"
+#include "src/Renderer/Renderer/RendererInternal.hpp"
 
 #define SCREEN_WIDTH 1080
 #define SCREEN_HEIGHT 960
@@ -46,6 +47,8 @@ int main() {
             SDL_Log("Failed to load texture: %s", pathInput.data());
         }
     }
+    RendererInternal::backgroundTextureIndex =
+    TextureManager::CreateTexture("water");
 
 
     if (Player::currentSector == -1) {

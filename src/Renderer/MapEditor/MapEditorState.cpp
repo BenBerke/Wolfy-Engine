@@ -5,6 +5,7 @@ namespace MapEditor {
     std::vector<Sector> sectors;
     std::vector<Object> objects;
     Vector2 playerStartPos = {0.0f, 0.0f};
+    int backgroundTextureIndex = -1;
 }
 
 namespace MapEditorInternal {

@@ -29,10 +29,11 @@ struct Object {
 
     // For decals
     int wallIndex = -1;
-    float zOffset = 0;
-    float wallOffset = -1.0f;
-    float wallT = 0.5f;
+    float zOffset = 0; // Vertical Position
+    float wallOffset = -1.0f; // Horizontal positoon
+    float wallT = 0.5f; // Horizontal percentage among the wall
     float decalBaseHeight = 0.0f; // fixed world height of the wall floor when decal was placed
+    bool absHeight = false; // Move with the wall or not.
 
     static float GetObjectBottomHeight(const Object& object, const std::vector<Sector>& sectors) {
         if (object.sectorIndex < 0 ||

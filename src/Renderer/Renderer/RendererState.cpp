@@ -53,4 +53,7 @@ namespace RendererInternal {
     std::vector<GpuSprite> gpuSprites;
 
     std::vector<GpuDecal> gpuDecals;
+
+    std::unique_ptr<Shader> backgroundShader = nullptr;
+    int backgroundTextureIndex = -1;
 }

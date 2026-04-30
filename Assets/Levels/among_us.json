@@ -1,6 +1,12 @@
 {
+    "levelVars": [
+        {
+            "backgroundTextureIndex": -1
+        }
+    ],
     "objects": [
         {
+            "absHeight": false,
             "decalBaseHeight": 0.0,
             "floor": 0,
             "id": 0,
@@ -15,6 +21,7 @@
             "zOffset": 0.0
         },
         {
+            "absHeight": false,
             "decalBaseHeight": 0.0,
             "floor": 0,
             "id": 1,
@@ -29,6 +36,7 @@
             "zOffset": 0.0
         },
         {
+            "absHeight": false,
             "decalBaseHeight": 0.0,
             "floor": 0,
             "id": 2,

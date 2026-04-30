@@ -1,7 +1,7 @@
 #include "RendererInternal.hpp"
 
 #include "Headers/Renderer/MapEditor.hpp"
-#include "Headers/Objects/Object.h"
+#include "Headers/Objects/Object.hpp"
 #include "Headers/Objects/Wall.hpp"
 
 namespace RendererInternal {
@@ -106,17 +106,26 @@ namespace RendererInternal {
 
             const Sector& sector = MapEditor::sectors[sectorIndex];
 
-            const float sectorHeight =
+            float decalBottom = 0;
+            float decalTop = 0;
+
+            if (object.absHeight) {
+                decalBottom = object.decalBaseHeight + object.zOffset;
+                decalTop = decalBottom + object.height;
+            }
+            else {
+                const float sectorHeight =
                 sector.ceilingHeight - sector.floorHeight;
 
-            const int floor = std::clamp(
-                wall.floor,
-                0,
-                std::max(1, sector.floorCount) - 1
-            );
-
-            const float decalBottom = object.decalBaseHeight + object.zOffset;
-            const float decalTop = decalBottom + object.height;
+                const int floor = std::clamp(
+                    wall.floor,
+                    0,
+                    std::max(1, sector.floorCount) - 1
+                );
+                 const float floorBaseHeight = sector.floorHeight + sectorHeight * static_cast<float>(floor);
+                 decalBottom = floorBaseHeight + object.zOffset;
+                 decalTop = decalBottom + object.height;
+            }
 
             decal.heights = {
                 decalBottom,

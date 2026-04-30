@@ -287,7 +287,6 @@ namespace Player {
 
             for (int i = 0; i < sectors[currentSector].walls.size(); ++i) {
                 const Wall &wall = sectors[currentSector].walls[i];
-                SDL_Log("%d", wall.frontSector);
 
                 if (wall.floor != currentFloor) continue;
 

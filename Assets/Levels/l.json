@@ -1,6 +1,10 @@
 {
+    "levelVars": {
+        "backgroundTextureIndex": 0
+    },
     "objects": [
         {
+            "absHeight": false,
             "decalBaseHeight": 0.0,
             "floor": 0,
             "id": 0,
@@ -15,6 +19,7 @@
             "zOffset": 0.0
         },
         {
+            "absHeight": false,
             "decalBaseHeight": 0.0,
             "floor": 2,
             "id": 1,
@@ -29,20 +34,22 @@
             "zOffset": 0.0
         },
         {
+            "absHeight": true,
             "decalBaseHeight": 0.0,
             "floor": 0,
             "id": 2,
             "position": [
                 -128.0,
-                64.0
+                57.0
             ],
             "texture": 4,
             "type": 2,
             "wallIndex": 5,
-            "wallOffset": 64.0,
+            "wallOffset": 71.0,
             "zOffset": 0.0
         },
         {
+            "absHeight": false,
             "decalBaseHeight": 40.0,
             "floor": 1,
             "id": 3,
@@ -57,6 +64,7 @@
             "zOffset": 0.0
         },
         {
+            "absHeight": false,
             "decalBaseHeight": 0.0,
             "floor": 0,
             "id": 4,
@@ -71,6 +79,7 @@
             "zOffset": 0.0
         },
         {
+            "absHeight": false,
             "decalBaseHeight": 0.0,
             "floor": 0,
             "id": 5,
@@ -217,7 +226,7 @@
             "textureIndex": 0
         },
         {
-            "backSector": -1,
+            "backSector": 2,
             "end": [
                 128.0,
                 -128.0
@@ -262,7 +271,7 @@
             "textureIndex": 0
         },
         {
-            "backSector": -1,
+            "backSector": 1,
             "end": [
                 -128.0,
                 -128.0

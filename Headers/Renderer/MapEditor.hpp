@@ -7,13 +7,14 @@
 #include "../Math/Vector/Vector3.hpp"
 #include "../Objects/Wall.hpp"
 #include "../Objects/Sector.hpp"
-#include "Headers/Objects/Object.h"
+#include "Headers/Objects/Object.hpp"
 
 namespace MapEditor {
     extern std::vector<Wall> walls;
     extern std::vector<Sector> sectors;
     extern std::vector<Object> objects;
     extern Vector2 playerStartPos;
+    extern int backgroundTextureIndex;
 
     extern std::string currentMap;
     extern std::vector<std::string> maps;

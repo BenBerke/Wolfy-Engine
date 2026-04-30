@@ -2,6 +2,9 @@
 #include "RendererInternal.hpp"
 
 #include "Headers/Math/Matrix/Matrix4.hpp"
+#include "imgui.h"
+#include "imgui_impl_sdl3.h"
+#include "imgui_impl_opengl3.h"
 
 #include <SDL3/SDL_init.h>
 #include <SDL3/SDL_log.h>
@@ -76,6 +79,17 @@ namespace Renderer {
             return false;
         }
 
+        IMGUI_CHECKVERSION();
+        ImGui::CreateContext();
+
+        ImGuiIO& io = ImGui::GetIO();
+        io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+
+        ImGui::StyleColorsDark();
+
+        ImGui_ImplSDL3_InitForOpenGL(window, glContext);
+        ImGui_ImplOpenGL3_Init("#version 430");
+
         projectionShader = std::make_unique<Shader>(
             "../Shaders/Rendering/Rendering.vs.glsl",
             "../Shaders/Rendering/Rendering.fs.glsl"
@@ -86,9 +100,26 @@ namespace Renderer {
             return false;
         }
 
+        backgroundShader = std::make_unique<Shader>(
+            "../Shaders/Background/Background.vs.glsl",
+            "../Shaders/Background/Background.fs.glsl"
+        );
+
+        if (backgroundShader->ID == 0) {
+            SDL_Log("Background Shader creation failed");
+            return false;
+        }
+
+        backgroundShader->use();
+        glUniform1i(
+            glGetUniformLocation(backgroundShader->ID, "backgroundTexture"),
+            0
+        );
+
         glGenVertexArrays(1, &VAO);
         glBindVertexArray(VAO);
         glBindVertexArray(0);
+
 
         if (DEBUG_ENABLED) {
             debugShader = std::make_unique<Shader>(

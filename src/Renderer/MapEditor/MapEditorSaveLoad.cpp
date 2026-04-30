@@ -35,6 +35,10 @@ namespace MapEditorInternal {
         levelData["walls"] = json::array();
         levelData["sectors"] = json::array();
         levelData["textures"] = json::array();
+        levelData["levelVars"] = {
+            {"backgroundTextureIndex", MapEditor::backgroundTextureIndex},
+        };
+
 
         for (const auto& pathInput : textureInputs) {
             if (pathInput[0] == '\0') {
@@ -56,6 +60,7 @@ namespace MapEditorInternal {
                 {"wallOffset", obj.wallOffset},
                 {"wallIndex", obj.wallIndex},
                 {"decalBaseHeight", obj.decalBaseHeight},
+                    {"absHeight", obj.absHeight},
             };
 
             levelData["objects"].push_back(jsonObj);
@@ -161,6 +166,10 @@ namespace MapEditor {
 
         file.close();
 
+        if (levelData.contains("levelVars") && levelData["levelVars"].is_object()) {
+            backgroundTextureIndex = levelData["levelVars"].value("backgroundTextureIndex", -1);
+        }
+
         if (levelData.contains("textures")) {
             for (const json& textureJson : levelData["textures"]) {
                 std::array<char, 256> input{};
@@ -184,6 +193,7 @@ namespace MapEditor {
                 object.wallOffset = objectJson.value("wallOffset", 0.0f);
                 object.wallIndex = objectJson.value("wallIndex", 0);
                 object.decalBaseHeight = objectJson.value("decalBaseHeight", 0);
+                object.absHeight = objectJson.value("absHeight", false);
 
 
                 if (playerPlaced && object.type == OBJ_PLAYER_SPAWN) continue;

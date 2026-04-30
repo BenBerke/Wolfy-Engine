@@ -179,16 +179,22 @@ namespace MapEditorInternal {
             int floor = object.floor;
             float zOffset = object.zOffset;
             float wallOffset = object.wallOffset;
+            float width = object.width;
+            float height = object.height;
+            bool absHeight = object.absHeight;
 
             ImGui::Text("ID:%d", object.id);
             ImGui::Text("Type:%s", GetObjectName(object.type));
             ImGui::InputFloat2("Position", &position.x);
             if (object.type != OBJ_DECAL) ImGui::InputInt("Floor", &floor);
             ImGui::InputInt("Texture Index", &textureIndex);
+            ImGui::InputFloat("Width", &width);
+            ImGui::InputFloat("Height", &height);
 
             if (object.type == OBJ_DECAL) {
                 ImGui::InputFloat("Horizontal Offset", &wallOffset);
                 ImGui::InputFloat("Vertical Offset", &zOffset);
+                ImGui::Checkbox("Absolute Height", &absHeight);
                 floor = MapEditor::walls[wallIndex].floor;
             }
 
@@ -198,6 +204,9 @@ namespace MapEditorInternal {
             object.wallIndex = wallIndex;
             object.zOffset = zOffset;
             object.wallOffset = wallOffset;
+            object.width = width;
+            object.height = height;
+            object.absHeight = absHeight;
 
             if (object.type == OBJ_DECAL &&
                 object.wallIndex >= 0 &&
@@ -269,6 +278,10 @@ namespace MapEditorInternal {
         }
 
         PutSpace(5);
+
+        int bgTextureIndex = MapEditor::backgroundTextureIndex;
+        ImGui::InputInt("Background Texture", &bgTextureIndex);
+        MapEditor::backgroundTextureIndex = bgTextureIndex;
 
         if (currentMode == MODE_OBJECT) {
             ImGui::Text("Object Details");

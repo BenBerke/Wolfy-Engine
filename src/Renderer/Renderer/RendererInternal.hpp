@@ -143,6 +143,11 @@ namespace RendererInternal {
 
     inline constexpr SDL_WindowFlags WINDOW_FLAGS = static_cast<SDL_WindowFlags>(SDL_WINDOW_OPENGL);
 
+    extern std::unique_ptr<Shader> backgroundShader;
+    extern int backgroundTextureIndex;
+
+    void DrawBackground(float playerAngle);
+
     bool InitializeOpenGL();
     bool InitializeFont();
 
