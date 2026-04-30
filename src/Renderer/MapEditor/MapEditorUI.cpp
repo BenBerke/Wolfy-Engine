@@ -172,14 +172,17 @@ namespace MapEditorInternal {
 
             Vector2 position = object.position;
             int textureIndex = object.textureIndex;
+            int floor = object.floor;
 
             ImGui::Text("ID:%d", object.id);
             ImGui::Text("Type:%s", GetObjectName(object.type));
             ImGui::InputFloat2("Position", &position.x);
+            ImGui::InputInt("Floor", &floor);
             ImGui::InputInt("Texture Index", &textureIndex);
 
             object.position = position;
             object.textureIndex = textureIndex;
+            object.floor = floor;
 
             if (object.type != OBJ_PLAYER_SPAWN && ImGui::Button("Delete")) {
                 MapEditor::objects.erase(MapEditor::objects.begin() + selectedObject);

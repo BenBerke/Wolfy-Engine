@@ -1,6 +1,7 @@
 {
     "objects": [
         {
+            "floor": 0,
             "id": 0,
             "position": [
                 -65.0,
@@ -10,6 +11,7 @@
             "type": 0
         },
         {
+            "floor": 0,
             "id": 1,
             "position": [
                 0.0,
@@ -19,6 +21,7 @@
             "type": 150
         },
         {
+            "floor": 0,
             "id": 2,
             "position": [
                 0.0,
@@ -28,6 +31,7 @@
             "type": 150
         },
         {
+            "floor": 0,
             "id": 3,
             "position": [
                 0.0,
@@ -37,6 +41,7 @@
             "type": 150
         },
         {
+            "floor": 0,
             "id": 4,
             "position": [
                 0.0,
@@ -46,6 +51,7 @@
             "type": 150
         },
         {
+            "floor": 0,
             "id": 5,
             "position": [
                 0.0,
@@ -55,6 +61,7 @@
             "type": 81
         },
         {
+            "floor": 0,
             "id": 6,
             "position": [
                 0.0,
@@ -64,12 +71,13 @@
             "type": 81
         },
         {
+            "floor": 2,
             "id": 7,
             "position": [
                 0.0,
                 75.0
             ],
-            "texture": 2,
+            "texture": 4,
             "type": 1
         }
     ],
@@ -169,7 +177,8 @@
         "wall",
         "floor",
         "wood",
-        "skybox"
+        "skybox",
+        "human"
     ],
     "walls": [
         {

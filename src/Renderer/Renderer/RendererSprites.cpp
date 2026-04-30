@@ -1,5 +1,4 @@
 #include "RendererInternal.hpp"
-#include "Headers/Map/MapQueries.h"
 #include "Headers/Renderer/MapEditor.hpp"
 
 namespace RendererInternal {
@@ -11,15 +10,14 @@ namespace RendererInternal {
                 continue;
             }
 
-            UpdateObjectSector(object, MapEditor::sectors);
+            Object::UpdateObjectSector(object, MapEditor::sectors);
 
             if (object.sectorIndex < 0 ||
                 object.sectorIndex >= static_cast<int>(MapEditor::sectors.size())) {
                 continue;
                 }
 
-            const float bottomHeight =
-                GetObjectBottomHeight(object, MapEditor::sectors);
+            const float bottomHeight = Object::GetObjectBottomHeight(object, MapEditor::sectors);
 
             GpuSprite gpuSprite;
 
