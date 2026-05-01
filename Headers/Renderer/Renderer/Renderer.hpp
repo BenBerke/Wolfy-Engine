@@ -23,6 +23,9 @@ namespace Renderer {
     extern GLuint textVAO;
     extern GLuint textVBO;
 
+    extern GLuint uiVAO;
+    extern GLuint uiVBO;
+
     bool Initialize();
     void Update(const Vector2& playerPos, float angle);
     bool CreateMap();

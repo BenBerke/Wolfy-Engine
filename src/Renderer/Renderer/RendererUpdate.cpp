@@ -104,7 +104,6 @@ namespace Renderer {
             decalCount
         );
 
-
         if (InputManager::GetKey(SDL_SCANCODE_TAB)) {
             glDisable(GL_DEPTH_TEST);
 
@@ -145,6 +144,14 @@ namespace Renderer {
         //ImGui::Render();
 
         glDisable(GL_DEPTH_TEST);
+
+        uiShader->use();
+        glBindVertexArray(uiVAO);
+
+        glDrawArrays(GL_TRIANGLES, 0, 3);
+
+        glBindVertexArray(0);
+
         //ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
     }
 }

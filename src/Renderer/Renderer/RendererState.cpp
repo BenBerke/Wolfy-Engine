@@ -14,12 +14,16 @@ namespace Renderer {
 
     GLuint textVAO = 0;
     GLuint textVBO = 0;
+
+    GLuint uiVAO = 0;
+    GLuint uiVBO = 0;
 }
 
 namespace RendererInternal {
     std::unique_ptr<Shader> projectionShader;
     std::unique_ptr<Shader> debugShader;
     std::unique_ptr<Shader> textShader;
+    std::unique_ptr<Shader> uiShader;
 
     GLint playerPosUniform = -1;
     GLint playerAngleUniform = -1;

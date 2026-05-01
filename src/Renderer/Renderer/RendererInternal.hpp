@@ -99,6 +99,7 @@ namespace RendererInternal {
     extern std::unique_ptr<Shader> projectionShader;
     extern std::unique_ptr<Shader> debugShader;
     extern std::unique_ptr<Shader> textShader;
+    extern std::unique_ptr<Shader> uiShader;
 
     extern GLint playerPosUniform;
     extern GLint playerAngleUniform;

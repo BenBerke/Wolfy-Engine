@@ -60,9 +60,9 @@ namespace RendererInternal {
 }
 
 namespace Renderer {
-    bool Initialize() {
-        using namespace RendererInternal;
-
+    using namespace RendererInternal;
+    //region init
+    bool InitSDL() {
         if (SDL_Init(SDL_INIT_VIDEO) == false) {
             SDL_Log("SDL_Init Error: %s\n", SDL_GetError());
             return false;
@@ -78,7 +78,9 @@ namespace Renderer {
             SDL_Log("Initialize OpenGL Error: %s\n", SDL_GetError());
             return false;
         }
-
+        return true;
+    }
+    bool InitImGui() {
         IMGUI_CHECKVERSION();
         ImGui::CreateContext();
 
@@ -90,6 +92,10 @@ namespace Renderer {
         ImGui_ImplSDL3_InitForOpenGL(window, glContext);
         ImGui_ImplOpenGL3_Init("#version 430");
 
+        return true;
+    }
+
+    bool InitProjection() {
         projectionShader = std::make_unique<Shader>(
             "../Shaders/Rendering/Rendering.vs.glsl",
             "../Shaders/Rendering/Rendering.fs.glsl"
@@ -119,37 +125,88 @@ namespace Renderer {
         glGenVertexArrays(1, &VAO);
         glBindVertexArray(VAO);
         glBindVertexArray(0);
+        return true;
+    }
 
+    bool InitUI() {
+        float vertices[] = {
+            // x, y, z
+            -0.5f, -0.5f, 0.0f,
+             0.5f, -0.5f, 0.0f,
+             0.0f,  0.5f, 0.0f
+        };
 
-        if (DEBUG_ENABLED) {
-            debugShader = std::make_unique<Shader>(
+        uiShader = std::make_unique<Shader>(
+            "../Shaders/UI/UI.vs.glsl",
+            "../Shaders/UI/UI.fs.glsl"
+        );
+
+        if (uiShader->ID == 0) {
+            SDL_Log("UI Shader creation failed");
+            return false;
+        }
+
+        glGenVertexArrays(1, &uiVAO);
+        glGenBuffers(1, &uiVBO);
+
+        glBindVertexArray(uiVAO);
+
+        glBindBuffer(GL_ARRAY_BUFFER, uiVBO);
+        glBufferData(
+            GL_ARRAY_BUFFER,
+            sizeof(vertices),
+            vertices,
+            GL_STATIC_DRAW
+        );
+
+        glVertexAttribPointer(
+            0,
+            3,
+            GL_FLOAT,
+            GL_FALSE,
+            3 * sizeof(float),
+            static_cast<void*>(nullptr)
+        );
+
+        glEnableVertexAttribArray(0);
+
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        glBindVertexArray(0);
+
+        return true;
+    }
+
+    bool InitDebug() {
+        debugShader = std::make_unique<Shader>(
                 "../Shaders/Debug/debug.vs.glsl",
                 "../Shaders/Debug/debug.fs.glsl"
             );
 
-            if (debugShader->ID == 0) {
-                SDL_Log("Debug Shader creation failed");
-                return false;
-            }
-
-            glGenVertexArrays(1, &debugVAO);
-            glGenBuffers(1, &debugVBO);
-
-            glBindVertexArray(debugVAO);
-            glBindBuffer(GL_ARRAY_BUFFER, debugVBO);
-            glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 16, nullptr, GL_DYNAMIC_DRAW);
-            glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
-            glEnableVertexAttribArray(0);
-            glBindBuffer(GL_ARRAY_BUFFER, 0);
-            glBindVertexArray(0);
-
-            debugColorUniform = glGetUniformLocation(debugShader->ID, "uColor");
-            if (debugColorUniform == -1) {
-                SDL_Log("Failed to get debug shader uniform location uColor");
-                return false;
-            }
+        if (debugShader->ID == 0) {
+            SDL_Log("Debug Shader creation failed");
+            return false;
         }
 
+        glGenVertexArrays(1, &debugVAO);
+        glGenBuffers(1, &debugVBO);
+
+        glBindVertexArray(debugVAO);
+        glBindBuffer(GL_ARRAY_BUFFER, debugVBO);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 16, nullptr, GL_DYNAMIC_DRAW);
+        glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
+        glEnableVertexAttribArray(0);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        glBindVertexArray(0);
+
+        debugColorUniform = glGetUniformLocation(debugShader->ID, "uColor");
+        if (debugColorUniform == -1) {
+            SDL_Log("Failed to get debug shader uniform location uColor");
+            return false;
+        }
+        return true;
+    }
+
+    bool InitText() {
         textShader = std::make_unique<Shader>(
             "../Shaders/Glyph/glyph.vs.glsl",
             "../Shaders/Glyph/glyph.fs.glsl"
@@ -161,7 +218,6 @@ namespace Renderer {
         }
 
         textShader->use();
-
         Matrix4 projection = Matrix4::Orthographic(
             0.0f, static_cast<float>(SCREEN_WIDTH),
             0.0f, static_cast<float>(SCREEN_HEIGHT),
@@ -181,6 +237,19 @@ namespace Renderer {
             SDL_Log("Failed to initialize font");
             return false;
         }
+
+        return true;
+    }
+
+    //endregion
+
+    bool Initialize() {
+        InitSDL();
+        InitImGui();
+        InitProjection();
+        InitUI();
+        if (DEBUG_ENABLED) InitDebug();
+        InitText();
 
         SDL_SetWindowRelativeMouseMode(window, true);
 
