@@ -11,7 +11,7 @@ namespace {
 namespace TextureManager {
 
     int CreateTexture(const std::string& _path) {
-        const std::string path = "../Assets/Textures/" + _path + ".png";
+        const std::string path = "../EngineAssets/Textures/" + _path + ".png";
         SDL_Surface* loadedSurface = IMG_Load(path.c_str());
 
         if (loadedSurface == nullptr) {

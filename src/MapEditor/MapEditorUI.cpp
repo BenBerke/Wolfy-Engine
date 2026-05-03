@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "Headers/Map/LevelManager.hpp"
-#include "../../Headers/Core/Localisation.hpp"
+#include "../../Headers/Engine/Local/Local.hpp"
 
 namespace MapEditorInternal {
     void MoveMode() {
@@ -74,7 +74,7 @@ namespace MapEditorInternal {
                 editingSector = false;
             }
             else {
-                ImGui::Begin(Get("sector.title").c_str(), &editingSector);
+                ImGui::Begin(Get("sector").c_str(), &editingSector);
 
                 auto& sector = level.sectors[selectedSector];
 
@@ -132,7 +132,7 @@ namespace MapEditorInternal {
                 editingWall = false;
             }
             else {
-                ImGui::Begin(Get("wall.title").c_str(), &editingWall);
+                ImGui::Begin(Get("wall").c_str(), &editingWall);
 
                 auto& wall = level.walls[selectedWall];
 
@@ -265,7 +265,7 @@ namespace MapEditorInternal {
             ImGui::SameLine();
 
             if (ImGui::Button(Get("levels.delete").c_str())) {
-                const std::string path = "../Assets/Levels/" + cleanName + ".json";
+                const std::string path = "../EngineAssets/Levels/" + cleanName + ".json";
 
                 try {
                     if (std::filesystem::remove(path)) {

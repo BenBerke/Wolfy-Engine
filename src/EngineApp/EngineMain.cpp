@@ -1,30 +1,49 @@
-#include "Headers/Engine/GameTime.hpp"
-#include "Headers/Engine/InputManager.hpp"
-#include "Headers/core/Localisation.hpp"
+#include <iostream>
 
-#include "Headers/Renderer/Renderer/Renderer.hpp"
-#include "Headers/Renderer/Shader.hpp"
-#include "Headers/Renderer/MapEditor.hpp"
+#include "../../Headers/Engine/GameTime.hpp"
+#include "../../Headers/Engine/InputManager.hpp"
+
+#include "../../Headers/Engine/Local/Local.hpp"
+#include "../../Headers/Project/ProjectManager.hpp"
+
+#include "../../Headers/Renderer/Renderer/Renderer.hpp"
+#include "../../Headers/Renderer/Shader.hpp"
+#include "../../Headers/Renderer/MapEditor.hpp"
 #include "../../Headers/Renderer/TextureManager.hpp"
 
-#include "Headers/Objects/Player.hpp"
+#include "../../Headers/Map/MapQueries.hpp"
+#include "../../Headers/Map/LevelManager.hpp"
+
+#include "../../Headers/Objects/Player.hpp"
 #include "../../Headers/Objects/Sector.hpp"
-#include "Headers/Map/MapQueries.hpp"
-#include "Headers/Map/LevelManager.hpp"
-#include "src/MapEditor/MapEditorInternal.hpp"
-#include "src/Renderer/Renderer/RendererInternal.hpp"
+
+#include "../MapEditor/MapEditorInternal.hpp"
+#include "../Renderer/Renderer/RendererInternal.hpp"
 
 #define SCREEN_WIDTH 1080
 #define SCREEN_HEIGHT 960
 
-void Editor() {
+namespace fs = std::filesystem;
 
-}
+int main(int argc, char** argv) {
+    fs::path projectFile;
+    for (int i = 1; i < argc; i++) {
+        std::string arg = argv[i];
 
-int main() {
-    bool editorMode = true;
+        if (arg == "--project" && i + 1 < argc) {
+            projectFile = argv[i + 1];
+        }
+    }
+    if (projectFile.empty()) {
+        std::cout << "No project found" << std::endl;
+        return 1;
+    }
+    std::cout << "Opening File: " << projectFile << std::endl;
+    if (!ProjectManager::OpenProject(projectFile)) return 1;
+
     Localisation::LoadLanguage("tr");
 
+    bool editorMode = true;
     if (editorMode) MapEditor::Start();
 
     while (editorMode) {

@@ -43,7 +43,7 @@ namespace MapEditor {
             return;
         }
 
-        font = TTF_OpenFont("../Assets/Fonts/arial.ttf", FONT_SIZE);
+        font = TTF_OpenFont("../EngineAssets/Fonts/Notosans.ttf", FONT_SIZE);
 
         if (!font) {
             SDL_Log("TTF_OpenFont failed: %s\n", SDL_GetError());
@@ -61,7 +61,7 @@ namespace MapEditor {
         io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
 
         io.Fonts->AddFontFromFileTTF(
-            "../Assets/Fonts/Notosans.ttf",
+            "../EngineAssets/Fonts/Notosans.ttf",
             18.0f
         );
 

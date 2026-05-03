@@ -21,7 +21,9 @@
   "mode.object": "Nesne Kipi",
   "mode.unknown": "Bilinmeney Kip",
 
-  "sector.title": "Kesim",
+  "sector": "Kesim",
+  "wall": "Duvar",
+
   "sector.ceil_height": "Tavan Yüksekliği",
   "sector.floor_height": "Zemin Yüksekliği",
   "sector.floor_count": "Zemin Sayısı",
@@ -30,7 +32,6 @@
   "sector.ceiling_color": "Tavan Rengi",
   "sector.floor_color": "Zemin Rengi",
 
-  "wall.title": "Duvar",
   "wall.front_sector": "Ön Kesim",
   "wall.back_sector": "Arka Kesim",
   "wall.texture_index": "Doku Dizini",

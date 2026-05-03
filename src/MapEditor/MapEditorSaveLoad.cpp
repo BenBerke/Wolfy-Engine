@@ -6,7 +6,10 @@
 #include <nlohmann/json.hpp>
 #include <SDL3/SDL_log.h>
 
+#include "Headers/Project/ProjectManager.hpp"
+
 #include "Headers/Map/LevelManager.hpp"
+
 #include "Headers/Objects/Level.hpp"
 #include "Headers/Objects/Wall.hpp"
 #include "Headers/Objects/Sector.hpp"
@@ -19,14 +22,14 @@ using json = nlohmann::json;
 namespace {
 
     //region backend
-    std::string BuildLevelPath(const std::string& levelName) {
+    std::filesystem::path BuildLevelPath(const std::string& levelName) {
         std::string cleanName = levelName;
 
         if (cleanName.ends_with(".json")) {
             cleanName = cleanName.substr(0, cleanName.size() - 5);
         }
 
-        return "../Assets/Levels/" + cleanName + ".json";
+        return ProjectManager::GetLevelsPath() / (cleanName + ".json");
     }
 
     std::string CleanLevelName(const std::string& levelName) {
@@ -463,7 +466,7 @@ namespace {
 
 namespace MapEditorInternal {
     void UpdateLevels() {
-        const std::string levelsPath = "../Assets/Levels";
+        const std::filesystem::path levelsPath = ProjectManager::GetLevelsPath();
 
         try {
             MapEditor::maps.clear();
@@ -472,10 +475,9 @@ namespace MapEditorInternal {
                 !std::filesystem::is_directory(levelsPath)) {
                 std::filesystem::create_directories(levelsPath);
                 return;
-            }
+                }
 
-            for (const auto& entry :
-                 std::filesystem::directory_iterator(levelsPath)) {
+            for (const auto& entry : std::filesystem::directory_iterator(levelsPath)) {
                 if (!std::filesystem::is_regular_file(entry)) {
                     continue;
                 }
@@ -520,14 +522,14 @@ namespace MapEditorInternal {
         SaveWalls(levelData, level);
         SaveSectors(levelData, level);
 
-        const std::string path = BuildLevelPath(cleanName);
+        const std::filesystem::path path = BuildLevelPath(cleanName);
 
-        std::filesystem::create_directories("../Assets/Levels");
+        std::filesystem::create_directories(ProjectManager::GetLevelsPath());
 
         std::ofstream file(path);
 
         if (!file.is_open()) {
-            SDL_Log("Failed to open level for saving: %s", path.c_str());
+            SDL_Log("Failed to open level for saving: %s", path.string().c_str());
             return false;
         }
 
@@ -547,12 +549,12 @@ namespace MapEditor {
         using namespace MapEditorInternal;
 
         const std::string cleanName = CleanLevelName(levelName);
-        const std::string path = BuildLevelPath(cleanName);
+        const std::filesystem::path path = BuildLevelPath(cleanName);
 
         std::ifstream file(path);
 
         if (!file.is_open()) {
-            SDL_Log("Couldn't open level file: %s", path.c_str());
+            SDL_Log("Couldn't open level file: %s", path.string().c_str());
             return false;
         }
 

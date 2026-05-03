@@ -263,7 +263,7 @@ namespace Player {
 
         camZ = std::clamp(camZ, -.15f, .8f);
 
-        const float angleInRad = angle * M_PI / 180.0f;
+        const float angleInRad = angle * std::numbers::pi / 180.0f;
         const float s = std::sin(angleInRad);
         const float c = std::cos(angleInRad);
 

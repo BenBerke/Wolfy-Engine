@@ -1,9 +1,11 @@
 #include "../../Headers/Renderer/Renderer/Renderer.hpp"
+#include "Headers/Project/ProjectManager.hpp"
 #include "RendererInternal.hpp"
 
 #include "../../Headers/Math/Vector/Vector3.hpp"
 
 #include <SDL3/SDL_log.h>
+
 
 namespace RendererInternal {
     bool InitializeFont() {
@@ -12,8 +14,11 @@ namespace RendererInternal {
             return false;
         }
 
-        if (FT_New_Face(ft, "../Assets/Fonts/arial.ttf", 0, &face)) {
-            SDL_Log("FT_New_Face Error");
+        const std::filesystem::path fontPath =
+        ProjectManager::GetEngineBasePath() / "../EngineAssets/Fonts/arial.ttf";
+
+        if (FT_New_Face(ft, fontPath.string().c_str(), 0, &face)) {
+            SDL_Log("FT_New_Face Error. Tried path: %s", fontPath.string().c_str());
             return false;
         }
 
