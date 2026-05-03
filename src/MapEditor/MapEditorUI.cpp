@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "Headers/Map/LevelManager.hpp"
-#include "Headers/Renderer/TextureManager.hpp"
+#include "../../Headers/Core/Localisation.hpp"
 
 namespace MapEditorInternal {
     void MoveMode() {
@@ -19,15 +19,17 @@ namespace MapEditorInternal {
     }
 
     void DrawEditorUI() {
+        using namespace Localisation;
+
         Level& level = LevelManager::CurrentLevel();
 
-        ImGui::Begin("Editor");
+        ImGui::Begin(Get("editor.title").c_str());
 
         auto PutSpace = [](const int amount) {
             for (int i = 0; i < amount; i++) ImGui::Spacing();
         };
 
-        if (ImGui::Button("Mode")) {
+        if (ImGui::Button(Get("editor.mode").c_str())) {
             const Mode previousMode = currentMode;
 
             MoveMode();
@@ -43,22 +45,22 @@ namespace MapEditorInternal {
             }
         }
 
-        auto GetModeName = [](const int mode) {
+        auto GetModeName = [](const int mode) -> const char* {
             switch (mode) {
                 case MODE_DOT:
-                    return "Dot Mode";
+                    return Localisation::Get("mode.dot").c_str();
 
                 case MODE_WALL:
-                    return "Wall Mode";
+                    return Localisation::Get("mode.wall").c_str();
 
                 case MODE_SECTOR:
-                    return "Sector Mode";
+                    return Localisation::Get("mode.sector").c_str();
 
                 case MODE_OBJECT:
-                    return "Object Mode";
+                    return Localisation::Get("mode.object").c_str();
 
                 default:
-                    return "Unknown Mode";
+                    return Localisation::Get("mode.unknown").c_str();
             }
         };
 
@@ -72,7 +74,7 @@ namespace MapEditorInternal {
                 editingSector = false;
             }
             else {
-                ImGui::Begin("Sector", &editingSector);
+                ImGui::Begin(Get("sector.title").c_str(), &editingSector);
 
                 auto& sector = level.sectors[selectedSector];
 
@@ -84,21 +86,23 @@ namespace MapEditorInternal {
                 Vector3 ceilColor = sector.ceilingColor;
                 Vector3 floorColor = sector.floorColor;
 
-                ImGui::InputFloat("Ceil Height", &ceilHeight);
-                ImGui::InputFloat("Floor Height", &floorHeight);
-                ImGui::InputInt("Floor Count", &floorCount);
+                ImGui::InputFloat(Get("sector.ceil_height").c_str(), &ceilHeight);
+                ImGui::InputFloat(Get("sector.floor_height").c_str(), &floorHeight);
+                ImGui::InputInt(Get("sector.floor_count").c_str(), &floorCount);
 
                 floorCount = std::clamp(floorCount, 1, MAX_FLOOR_COUNT);
 
-                ImGui::InputInt("Ground Floor Texture", &floorTexture);
+                ImGui::InputInt(Get("sector.ground_floor_texture").c_str(), &floorTexture);
 
                 for (int i = 0; i < floorCount; ++i) {
-                    std::string label = "Ceiling Texture " + std::to_string(i + 1);
+                    std::string label =
+                        Get("sector.ceiling_texture") + " " + std::to_string(i + 1);
+
                     ImGui::InputInt(label.c_str(), &sector.ceilingTextureIndices[i]);
                 }
 
-                ImGui::InputFloat3("Ceiling Color", &ceilColor.x);
-                ImGui::InputFloat3("Floor Color", &floorColor.x);
+                ImGui::InputFloat3(Get("sector.ceiling_color").c_str(), &ceilColor.x);
+                ImGui::InputFloat3(Get("sector.floor_color").c_str(), &floorColor.x);
 
                 sector.ceilingHeight = ceilHeight;
                 sector.floorHeight = floorHeight;
@@ -107,16 +111,16 @@ namespace MapEditorInternal {
                 sector.floorColor = floorColor;
                 sector.floorCount = floorCount;
 
-                if (ImGui::Button("Delete")) {
+                if (ImGui::Button(Get("common.delete").c_str())) {
                     level.sectors.erase(level.sectors.begin() + selectedSector);
                     editingSector = false;
                 }
 
-                if (ImGui::Button("Close")) {
+                if (ImGui::Button(Get("common.close").c_str())) {
                     editingSector = false;
                 }
 
-                ImGui::Text("ID: %d", selectedSector);
+                ImGui::Text("%s: %d", Get("common.id").c_str(), selectedSector);
 
                 ImGui::End();
             }
@@ -128,7 +132,7 @@ namespace MapEditorInternal {
                 editingWall = false;
             }
             else {
-                ImGui::Begin("Wall", &editingSector);
+                ImGui::Begin(Get("wall.title").c_str(), &editingWall);
 
                 auto& wall = level.walls[selectedWall];
 
@@ -140,12 +144,12 @@ namespace MapEditorInternal {
 
                 int floor = wall.floor;
 
-                ImGui::InputInt("Front Sector", &frontSector);
-                ImGui::InputInt("Back Sector", &backSector);
-                ImGui::InputInt("Texture Index", &textureIndex);
-                ImGui::InputInt("Floor", &floor);
+                ImGui::InputInt(Get("wall.front_sector").c_str(), &frontSector);
+                ImGui::InputInt(Get("wall.back_sector").c_str(), &backSector);
+                ImGui::InputInt(Get("wall.texture_index").c_str(), &textureIndex);
+                ImGui::InputInt(Get("wall.floor").c_str(), &floor);
 
-                ImGui::InputFloat4("Wall Color", &color.x);
+                ImGui::InputFloat4(Get("wall.color").c_str(), &color.x);
 
                 wall.color = color;
                 wall.textureIndex = textureIndex;
@@ -153,16 +157,16 @@ namespace MapEditorInternal {
                 wall.backSector = backSector;
                 wall.floor = floor;
 
-                if (ImGui::Button("Delete")) {
+                if (ImGui::Button(Get("common.delete").c_str())) {
                     level.walls.erase(level.walls.begin() + selectedWall);
                     editingWall = false;
                 }
 
-                if (ImGui::Button("Close")) {
+                if (ImGui::Button(Get("common.close").c_str())) {
                     editingWall = false;
                 }
 
-                ImGui::Text("ID: %d", selectedWall);
+                ImGui::Text("%s: %d", Get("common.id").c_str(), selectedWall);
 
                 ImGui::End();
             }
@@ -170,7 +174,7 @@ namespace MapEditorInternal {
         //endregion
 
         if (creatableSector) {
-            if (ImGui::Button("Create Sector")) {
+            if (ImGui::Button(Get("editor.create_sector").c_str())) {
                 if (sectorBeingCreated.size() >= 3) {
                     if (!SamePoint(sectorBeingCreated.front(), sectorBeingCreated.back())) {
                         sectorBeingCreated.push_back(sectorBeingCreated.front());
@@ -185,14 +189,17 @@ namespace MapEditorInternal {
         }
 
         PutSpace(2);
-        if (ImGui::Button("Create Texture")) {
+
+        if (ImGui::Button(Get("editor.create_texture").c_str())) {
             textureInputs.push_back({});
         }
 
         for (int i = 0; i < static_cast<int>(textureInputs.size()); ++i) {
             ImGui::PushID(i);
 
-            std::string label = "Texture " + std::to_string(i);
+            std::string label =
+                Get("editor.texture") + " " + std::to_string(i);
+
             ImGui::InputText(label.c_str(), textureInputs[i].data(), textureInputs[i].size());
 
             ImGui::PopID();
@@ -201,27 +208,31 @@ namespace MapEditorInternal {
         PutSpace(5);
 
         int bgTextureIndex = MapEditor::backgroundTextureIndex;
-        ImGui::InputInt("Background Texture", &bgTextureIndex);
+        ImGui::InputInt(Get("editor.background_texture").c_str(), &bgTextureIndex);
         MapEditor::backgroundTextureIndex = bgTextureIndex;
 
         if (currentMode == MODE_OBJECT) {
 
         }
 
-        ImGui::InputInt("Floor", &currentFloor);
+        ImGui::InputInt(Get("editor.floor").c_str(), &currentFloor);
 
-        if (ImGui::Button("Save")) Save(MapEditor::currentMap);
+        if (ImGui::Button(Get("editor.save").c_str())) {
+            Save(MapEditor::currentMap);
+        }
+
         PutSpace(1);
 
-        if (ImGui::Button("Save & Play")) {
+        if (ImGui::Button(Get("editor.save_and_play").c_str())) {
             if (Save(MapEditor::currentMap)) {
                 SDL_Log("%s", MapEditor::currentMap.c_str());
                 quit = true;
             }
         }
+
         PutSpace(3);
 
-        if (ImGui::Button("Shutdown")) {
+        if (ImGui::Button(Get("editor.shutdown").c_str())) {
             quit = true;
         }
 
@@ -231,13 +242,13 @@ namespace MapEditorInternal {
             std::strncpy(buf, MapEditor::currentMap.c_str(), sizeof(buf) - 1);
         }
 
-        if (ImGui::InputText("Level Name", buf, IM_ARRAYSIZE(buf))) {
+        if (ImGui::InputText(Get("editor.level_name").c_str(), buf, IM_ARRAYSIZE(buf))) {
             MapEditor::currentMap = buf;
         }
 
-        ImGui::End(); // Editor
+        ImGui::End();
 
-        ImGui::Begin("Levels");
+        ImGui::Begin(Get("levels.title").c_str());
 
         for (int i = 0; i < static_cast<int>(MapEditor::maps.size()); ++i) {
             ImGui::PushID(i);
@@ -246,19 +257,23 @@ namespace MapEditorInternal {
 
             ImGui::Text("%s", cleanName.c_str());
 
-            if (ImGui::Button("Load Level")) {
+            if (ImGui::Button(Get("levels.load").c_str())) {
                 Save(MapEditor::currentMap);
                 MapEditor::LoadLevel(cleanName);
             }
 
             ImGui::SameLine();
 
-            if (ImGui::Button("Delete Level")) {
+            if (ImGui::Button(Get("levels.delete").c_str())) {
                 const std::string path = "../Assets/Levels/" + cleanName + ".json";
 
                 try {
                     if (std::filesystem::remove(path)) {
-                        SDL_Log("Deleted level: %s", path.c_str());
+                        SDL_Log(
+                            "%s %s",
+                            Get("log.deleted_level").c_str(),
+                            path.c_str()
+                        );
 
                         if (MapEditor::currentMap == cleanName) {
                             MapEditor::currentMap = "test_level";
@@ -268,11 +283,19 @@ namespace MapEditorInternal {
                         UpdateLevels();
                     }
                     else {
-                        SDL_Log("Failed to delete level, file may not exist: %s", path.c_str());
+                        SDL_Log(
+                            "%s %s",
+                            Get("log.failed_delete_missing").c_str(),
+                            path.c_str()
+                        );
                     }
                 }
                 catch (const std::filesystem::filesystem_error& e) {
-                    SDL_Log("Delete level failed: %s", e.what());
+                    SDL_Log(
+                        "%s %s",
+                        Get("log.delete_level_failed").c_str(),
+                        e.what()
+                    );
                 }
             }
 

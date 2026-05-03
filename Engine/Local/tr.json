@@ -1,0 +1,47 @@
+{
+  "editor.title": "Düzenleyici",
+  "editor.mode": "Kip",
+  "editor.create_sector": "Kesim Oluştur",
+  "editor.create_texture": "Doku Oluştur",
+  "editor.texture": "Doku",
+  "editor.background_texture": "Arka Plan Dokusu",
+  "editor.floor": "Zemin",
+  "editor.save": "Kaydet",
+  "editor.save_and_play": "Kaydet ve Oyna",
+  "editor.shutdown": "Kapat",
+  "editor.level_name": "Seviye Adı",
+
+  "levels.title": "Seviyeler",
+  "levels.load": "Seviyeyi Yükle",
+  "levels.delete": "Seviyeyi Sil",
+
+  "mode.dot": "Nokta Kipi",
+  "mode.wall": "Duvar Kipi",
+  "mode.sector": "Kesim Kipi",
+  "mode.object": "Nesne Kipi",
+  "mode.unknown": "Bilinmeney Kip",
+
+  "sector.title": "Kesim",
+  "sector.ceil_height": "Tavan Yüksekliği",
+  "sector.floor_height": "Zemin Yüksekliği",
+  "sector.floor_count": "Zemin Sayısı",
+  "sector.ground_floor_texture": "Zemin Dokusu",
+  "sector.ceiling_texture": "Tavan Dokusu",
+  "sector.ceiling_color": "Tavan Rengi",
+  "sector.floor_color": "Zemin Rengi",
+
+  "wall.title": "Duvar",
+  "wall.front_sector": "Ön Kesim",
+  "wall.back_sector": "Arka Kesim",
+  "wall.texture_index": "Doku Dizini",
+  "wall.floor": "Zemin",
+  "wall.color": "Duvar Rengi",
+
+  "common.delete": "Sil",
+  "common.close": "Kapat",
+  "common.id": "No.",
+
+  "log.deleted_level": "Silinen Seviye:",
+  "log.failed_delete_missing": "Seviye Silinemedi, dosya var olmayabilir:",
+  "log.delete_level_failed": "Seviye Silinemedi:"
+}

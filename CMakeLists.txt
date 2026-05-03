@@ -31,13 +31,13 @@ add_executable(Wolfy_Engine
 
         src/Renderer/TextureManager.cpp
 
-        src/Renderer/MapEditor/MapEditor.cpp
-        src/Renderer/MapEditor/MapEditorState.cpp
-        src/Renderer/MapEditor/MapEditorGeometry.cpp
-        src/Renderer/MapEditor/MapEditorDrawing.cpp
-        src/Renderer/MapEditor/MapEditorInput.cpp
-        src/Renderer/MapEditor/MapEditorUI.cpp
-        src/Renderer/MapEditor/MapEditorSaveLoad.cpp
+        src/MapEditor/MapEditor.cpp
+        src/MapEditor/MapEditorState.cpp
+        src/MapEditor/MapEditorGeometry.cpp
+        src/MapEditor/MapEditorDrawing.cpp
+        src/MapEditor/MapEditorInput.cpp
+        src/MapEditor/MapEditorUI.cpp
+        src/MapEditor/MapEditorSaveLoad.cpp
 
         src/Engine/GameTime.cpp
         src/Engine/InputManager.cpp
@@ -65,6 +65,8 @@ add_executable(Wolfy_Engine
         Headers/Map/LevelManager.hpp
         src/Map/LevelManager.cpp
         Headers/Objects/Components.hpp
+        Headers/Core/Localisation.hpp
+        src/Core/Locilasation.cpp
 )
 
 target_precompile_headers(Wolfy_Engine PRIVATE
@@ -82,7 +84,7 @@ target_precompile_headers(Wolfy_Engine PRIVATE
 
 target_include_directories(Wolfy_Engine PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/Renderer/MapEditor
+        src/MapEditor
 )
 
 target_link_libraries(Wolfy_Engine PRIVATE

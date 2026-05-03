@@ -60,6 +60,11 @@ namespace MapEditor {
         ImGuiIO &io = ImGui::GetIO();
         io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
 
+        io.Fonts->AddFontFromFileTTF(
+            "../Assets/Fonts/Notosans.ttf",
+            18.0f
+        );
+
         ImGui::StyleColorsDark();
 
         ImGui_ImplSDL3_InitForSDLRenderer(window, renderer);

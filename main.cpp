@@ -1,6 +1,6 @@
-#include "MapEditorInternal.hpp"
 #include "Headers/Engine/GameTime.hpp"
 #include "Headers/Engine/InputManager.hpp"
+#include "Headers/core/Localisation.hpp"
 
 #include "Headers/Renderer/Renderer/Renderer.hpp"
 #include "Headers/Renderer/Shader.hpp"
@@ -11,6 +11,7 @@
 #include "../../Headers/Objects/Sector.hpp"
 #include "Headers/Map/MapQueries.hpp"
 #include "Headers/Map/LevelManager.hpp"
+#include "src/MapEditor/MapEditorInternal.hpp"
 #include "src/Renderer/Renderer/RendererInternal.hpp"
 
 #define SCREEN_WIDTH 1080
@@ -22,6 +23,7 @@ void Editor() {
 
 int main() {
     bool editorMode = true;
+    Localisation::LoadLanguage("tr");
 
     if (editorMode) MapEditor::Start();
 
