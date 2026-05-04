@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <cstdint>
 #include <vector>
+#include <unordered_map>
 
 #include "../Math/Vector/Vector2.hpp"
 #include "../Objects/Sector.hpp"

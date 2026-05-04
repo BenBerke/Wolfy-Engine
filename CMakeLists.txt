@@ -6,9 +6,11 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-# Keep both executables in the same output folder.
-# Useful if the launcher starts Wolfy_Engine.exe.
+# Keep all .exe files in the same folder.
+# This helps the launcher find Wolfy_Engine.exe.
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
+
+option(WOLFY_USE_IMGUI "Enable Dear ImGui editor UI" ON)
 
 find_package(OpenGL REQUIRED)
 find_package(SDL3 REQUIRED CONFIG COMPONENTS SDL3 Headers)
@@ -16,8 +18,6 @@ find_package(SDL3_image REQUIRED CONFIG)
 find_package(SDL3_ttf REQUIRED CONFIG)
 find_package(Freetype REQUIRED)
 find_package(nlohmann_json CONFIG REQUIRED)
-
-option(WOLFY_USE_IMGUI "Enable Dear ImGui editor UI" ON)
 
 # -------------------------
 # GLAD
@@ -39,7 +39,7 @@ target_link_libraries(glad PUBLIC
 # Dear ImGui
 # -------------------------
 
-if (WOLFY_USE_IMGUI AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/External/imgui/imgui.h")
+if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/External/imgui/imgui.h")
     add_library(imgui STATIC
             External/imgui/imgui.cpp
             External/imgui/imgui_draw.cpp
@@ -62,10 +62,37 @@ if (WOLFY_USE_IMGUI AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/External/imgui/imgui
             SDL3::Headers
             OpenGL::GL
     )
+else()
+    message(FATAL_ERROR "Dear ImGui not found at External/imgui/imgui.h")
 endif()
 
 # -------------------------
+# Shared project library
+# Used by both the engine and launcher.
+# -------------------------
+
+add_library(Wolfy_Project STATIC
+        src/Project/ProjectManager.cpp
+        Headers/Project/ProjectManager.hpp
+)
+
+target_include_directories(Wolfy_Project PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}
+)
+
+target_link_libraries(Wolfy_Project PUBLIC
+        SDL3::SDL3
+        SDL3::Headers
+        nlohmann_json::nlohmann_json
+)
+
+target_compile_definitions(Wolfy_Project PUBLIC
+        WOLFY_CONTENT_ROOT="${CMAKE_CURRENT_SOURCE_DIR}"
+)
+
+# -------------------------
 # Engine sources
+# Engine-only code. No launcher files here.
 # -------------------------
 
 set(WOLFY_ENGINE_SOURCES
@@ -104,8 +131,6 @@ set(WOLFY_ENGINE_SOURCES
         src/Map/MapQueries.cpp
         src/Map/LevelManager.cpp
 
-        src/Project/ProjectManager.cpp
-
         config.h
         Headers/Objects/Entity.hpp
         Headers/Objects/Level.hpp
@@ -114,15 +139,14 @@ set(WOLFY_ENGINE_SOURCES
         Headers/Objects/Wall.hpp
         Headers/Map/MapQueries.hpp
         Headers/Map/LevelManager.hpp
-        Headers/Math/Geometry/Geometry.h
+        Headers/Math/Geometry/Geometry.hpp
         Headers/Engine/Local/Local.hpp
-        Headers/Project/ProjectManager.hpp
 )
 
 # -------------------------
-# Engine target
+# Engine executable
 # Configuration 2: Engine
-# Builds engine files only and runs Wolfy_Engine.
+# Compiles engine code and runs Wolfy_Engine.
 # -------------------------
 
 add_executable(Wolfy_Engine
@@ -156,6 +180,8 @@ target_link_libraries(Wolfy_Engine PRIVATE
         SDL3_ttf::SDL3_ttf
         Freetype::Freetype
         glad
+        imgui
+        Wolfy_Project
         nlohmann_json::nlohmann_json
 )
 
@@ -163,22 +189,31 @@ target_compile_definitions(Wolfy_Engine PRIVATE
         WOLFY_CONTENT_ROOT="${CMAKE_CURRENT_SOURCE_DIR}"
 )
 
-if (WOLFY_USE_IMGUI AND TARGET imgui)
-    target_link_libraries(Wolfy_Engine PRIVATE imgui)
+if (WOLFY_USE_IMGUI)
     target_compile_definitions(Wolfy_Engine PRIVATE WOLFY_USE_IMGUI=1)
 else()
     target_compile_definitions(Wolfy_Engine PRIVATE WOLFY_USE_IMGUI=0)
 endif()
 
 # -------------------------
-# Launcher target
+# Launcher sources
+# Launcher-only code.
+# -------------------------
+
+set(WOLFY_LAUNCHER_SOURCES
+        src/Launcher/LauncherApp.cpp
+        Headers/Launcher/LauncherApp.hpp
+)
+
+# -------------------------
+# Launcher executable
 # Configuration 1: Launcher
-# Builds launcher files only and runs Wolfy_Launcher.
+# Compiles launcher code only, plus shared Wolfy_Project.
 # -------------------------
 
 add_executable(Wolfy_Launcher
         src/Launcher/LauncherMain.cpp
-        Headers/Project/ProjectManager.hpp
+        ${WOLFY_LAUNCHER_SOURCES}
 )
 
 target_include_directories(Wolfy_Launcher PRIVATE
@@ -186,6 +221,10 @@ target_include_directories(Wolfy_Launcher PRIVATE
 )
 
 target_link_libraries(Wolfy_Launcher PRIVATE
+        SDL3::SDL3
+        SDL3::Headers
+        imgui
+        Wolfy_Project
         nlohmann_json::nlohmann_json
 )
 
@@ -196,12 +235,12 @@ target_compile_definitions(Wolfy_Launcher PRIVATE
 # -------------------------
 # All executable
 # Configuration 3: All
-# Builds engine + launcher-style executable, then runs Wolfy_All.
+# Builds engine + launcher, then runs launcher-style executable.
 # -------------------------
 
 add_executable(Wolfy_All
         src/Launcher/LauncherMain.cpp
-        Headers/Project/ProjectManager.hpp
+        ${WOLFY_LAUNCHER_SOURCES}
 )
 
 target_include_directories(Wolfy_All PRIVATE
@@ -209,6 +248,10 @@ target_include_directories(Wolfy_All PRIVATE
 )
 
 target_link_libraries(Wolfy_All PRIVATE
+        SDL3::SDL3
+        SDL3::Headers
+        imgui
+        Wolfy_Project
         nlohmann_json::nlohmann_json
 )
 
@@ -216,4 +259,8 @@ target_compile_definitions(Wolfy_All PRIVATE
         WOLFY_CONTENT_ROOT="${CMAKE_CURRENT_SOURCE_DIR}"
 )
 
-add_dependencies(Wolfy_All Wolfy_Engine)
+# When you run Wolfy_All, it first builds the actual engine and launcher targets.
+add_dependencies(Wolfy_All
+        Wolfy_Engine
+        Wolfy_Launcher
+)

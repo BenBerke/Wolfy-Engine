@@ -82,7 +82,7 @@ namespace MapEditorInternal {
     }
 
     void DrawExistingSectors() {
-        Level& level = LevelManager::CurrentLevel();
+        const Level& level = LevelManager::CurrentLevel();
 
         const Vector2 mouseScreen = InputManager::GetMousePosition();
         const Vector2 mouseWorld = ScreenToWorld(mouseScreen, cameraPos);

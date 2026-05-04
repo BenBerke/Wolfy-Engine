@@ -5,13 +5,23 @@
 #ifndef WOLFY_ENGINE_PROJECTMANAGER_H
 #define WOLFY_ENGINE_PROJECTMANAGER_H
 
+#include <filesystem>
+#include <string>
+
 namespace fs = std::filesystem;
 
 namespace ProjectManager {
-    bool OpenProject(const std::filesystem::path &projectFile);
+    void LaunchEngine(const fs::path &projectFile);
+
+    bool OpenProject(const std::filesystem::path &path);
+    void CreateProject(const fs::path &directory, const std::string &projectName);
+    void CreateDirectory(const std::string &projectName);
+    bool LoadProject(const fs::path &path);
 
     bool HasProject();
 
+    fs::path GetUserHomeDirectory();
+    fs::path GetDefaultProjectsFolder();
     fs::path GetProjectFiles();
     fs::path GetProjectFolder();
     fs::path GetAssetsPath();
