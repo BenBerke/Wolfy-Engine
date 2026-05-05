@@ -39,7 +39,11 @@ int main(int argc, char** argv) {
         return 1;
     }
     std::cout << "Opening File: " << projectFile << std::endl;
-    if (!ProjectManager::OpenProject(projectFile)) return 1;
+
+    if (!ProjectManager::LoadProjectMetaData(projectFile)) {
+        std::cout << "Failed to load project metadata\n";
+        return 1;
+    }
 
     Localisation::LoadLanguage("tr");
 

@@ -2,6 +2,9 @@
 // Created by berke on 5/4/2026.
 //
 #include "Headers/Launcher/LauncherApp.hpp"
+
+#include <fstream>
+
 #include "Headers/Project/ProjectManager.hpp"
 #include "Headers/Engine/Local/Local.hpp"
 
@@ -11,6 +14,10 @@
 #include "imgui.h"
 #include "imgui_impl_sdl3.h"
 #include "imgui_impl_sdlrenderer3.h"
+
+#include <nlohmann/json.hpp>
+
+using json = nlohmann::json;
 
 namespace {
     SDL_Window* window = nullptr;
@@ -94,13 +101,67 @@ namespace LauncherApp {
             std::cout << "Create Project clicked\n";
         }
 
-        for (const fs::directory_entry& entry : fs::directory_iterator(ProjectManager::GetDefaultProjectsFolder())) {
-            if (entry.is_directory()) {
-                //std::cout << entry.path().filename().string() << '\n';
+        ImGui::Text(Localisation::Get("launcher.projects").c_str());
+
+        PutSpace(10);
+
+        fs::path projectToDelete;
+        for (const auto& entry : fs::recursive_directory_iterator(ProjectManager::GetDefaultProjectsFolder())) {
+            if (entry.is_regular_file() && entry.path().extension() == ".tilky") {
+                const fs::path& foundPath = entry.path();
+                std::ifstream file(foundPath);
+                if (file.is_open()) {
+                    try {
+                        json data = json::parse(file);
+                        if (data.contains("name")) {
+                            const std::string name = data["name"];
+
+                            ImGui::Text("%s", name.c_str());
+                            ImGui::SameLine();
+
+                            std::string openButtonId =
+                                Localisation::Get("launcher.open_project") + "##open_" + foundPath.string();
+
+                            if (ImGui::Button(openButtonId.c_str())) {
+                                quitRequested = true;
+                                ProjectManager::OpenProject(foundPath.parent_path());
+                            }
+
+                            ImGui::SameLine();
+
+                            std::string deleteButtonId =
+                                Localisation::Get("launcher.delete_project") + "##delete_" + foundPath.string();
+
+                            if (ImGui::Button(deleteButtonId.c_str())) {
+                                projectToDelete = foundPath.parent_path();
+                            }
+                        }
+                    } catch (json::parse_error& e) {
+                        std::cerr << "JSON format error in " << foundPath.filename() << ": " << e.what() << std::endl;
+                    }
+                }
+
+                break;
             }
         }
+        if (!projectToDelete.empty()) {
+            try {
+                const std::uintmax_t removedCount = fs::remove_all(projectToDelete);
 
-        ImGui::Text(Localisation::Get("launcher.projects").c_str());
+                std::cout << "Deleted project folder: "
+                          << projectToDelete
+                          << " removed items: "
+                          << removedCount
+                          << std::endl;
+            }
+            catch (const std::exception& e) {
+                std::cerr << "Failed to delete project folder: "
+                          << projectToDelete
+                          << " error: "
+                          << e.what()
+                          << std::endl;
+            }
+        }
 
         ImGui::SetCursorPosY(static_cast<float>(windowHeight) - 35.0f);
         if (ImGui::Button(Localisation::Get("launcher.quit").c_str())) {
@@ -108,7 +169,9 @@ namespace LauncherApp {
         }
 
         ImGui::SameLine();
-        ImGui::SetCursorPosX(static_cast<float>(windowWidth) - 120.0f);
+
+        int langCount = 2;
+        ImGui::SetCursorPosX(static_cast<float>(windowWidth) - langCount * 60.0f);
         if (ImGui::Button("English")) Localisation::LoadLanguage("en");
         ImGui::SameLine();
         if (ImGui::Button("Türkçe")) Localisation::LoadLanguage("tr");

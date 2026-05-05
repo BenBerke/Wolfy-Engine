@@ -16,7 +16,7 @@ namespace ProjectManager {
     bool OpenProject(const std::filesystem::path &path);
     void CreateProject(const fs::path &directory, const std::string &projectName);
     void CreateDirectory(const std::string &projectName);
-    bool LoadProject(const fs::path &path);
+    bool LoadProjectMetaData(const fs::path &path);
 
     bool HasProject();
 

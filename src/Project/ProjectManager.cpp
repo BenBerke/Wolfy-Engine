@@ -64,23 +64,73 @@ namespace ProjectManager {
 #endif
     }
 
+    // Launches the engine executable and passes it a specific .tilky project file.
+    // Parameter:
+    // - projectFile should be the full path to the project's project.tilky file.
+    // - It should NOT be the project root folder.
+    // - It should NOT be the top-level Projects folder.
+    //
+    // Example:
+    // C:\Users\x\Documents\Tilky Engine\Projects\TestProject\project.tilky
     void LaunchEngine(const fs::path &projectFile) {
         const std::string command = "Wolfy_Engine.exe --project \"" + projectFile.string() + "\"";
         std::system(command.c_str());
     }
 
-    bool OpenProject(const fs::path &path) {
-        const fs::path projectFile = path / "project.tilky";
+    // Opens an existing project from its project root folder.
+    // Parameter:
+    // - path should be the root folder of one specific project.
+    // - It should be the folder that contains project.tilky.
+    // - It should NOT be the project.tilky file itself.
+    // - It should NOT be the top-level Projects folder.
+    //
+    // Example:
+    // C:\Users\x\Documents\Tilky Engine\Projects\TestProject
+    //
+    // This function builds the project.tilky path internally, loads the project metadata,
+    // then launches the engine with that .tilky file.
+    bool OpenProject(const fs::path& path) {
+        fs::path projectFile;
+
+        if (path.extension() == ".tilky") {
+            projectFile = path;
+        }
+        else {
+            projectFile = path / "project.tilky";
+        }
+
         if (!fs::exists(projectFile)) {
-            std::cout << "Missing .tilky file" << std::endl;
+            std::cout << "Missing .tilky file at: " << projectFile << std::endl;
             return false;
         }
 
-        LoadProject(path);
+        if (!LoadProjectMetaData(projectFile)) {
+            std::cout << "Failed to load project metadata before launching engine\n";
+            return false;
+        }
+
         LaunchEngine(projectFile);
+
         return true;
     }
 
+    // Creates the internal files/folders for a new project inside an already-created
+    // project root folder.
+    // Parameters:
+    // - directory should be the root folder of one specific project.
+    // - projectName should be the display/name value written into project.tilky.
+    //
+    // directory should NOT be the top-level Projects folder by itself.
+    // directory should NOT be the .tilky file.
+    //
+    // Example directory:
+    // C:\Users\x\Documents\Tilky Engine\Projects\TestProject
+    //
+    // This function creates:
+    // C:\Users\x\Documents\Tilky Engine\Projects\TestProject\project.tilky
+    // C:\Users\x\Documents\Tilky Engine\Projects\TestProject\Assets
+    // C:\Users\x\Documents\Tilky Engine\Projects\TestProject\Assets\Levels
+    // C:\Users\x\Documents\Tilky Engine\Projects\TestProject\Assets\Textures
     void CreateProject(const fs::path &directory, const std::string &projectName) {
         const fs::path assetsPath = directory / "Assets";
         const fs::path levelsPath = assetsPath / "Levels";
@@ -95,12 +145,14 @@ namespace ProjectManager {
                     openProject = false;
                 }
             }
+
             if (!fs::exists(levelsPath)) {
                 if (!fs::create_directories(levelsPath)) {
                     std::cout << "Could not create levels folder" << std::endl;
                     openProject = false;
                 }
             }
+
             if (!fs::exists(texturesPath)) {
                 if (!fs::create_directories(texturesPath)) {
                     std::cout << "Could not create textures folder" << std::endl;
@@ -108,33 +160,57 @@ namespace ProjectManager {
                 }
             }
 
-            const fs::path dataPath = directory / ("project.tilky");
+            const fs::path dataPath = directory / "project.tilky";
 
             json projectData;
             projectData["name"] = projectName;
             projectData["assetsFolder"] = "Assets";
 
             std::ofstream file(dataPath);
+
             if (file.is_open()) {
                 file << projectData.dump(4);
                 file.close();
-            } else std::cout << "Failed to create metadata " << projectName << std::endl;
+            } else {
+                std::cout << "Failed to create metadata " << projectName << std::endl;
+            }
         } catch (std::exception &e) {
             std::cout << "Failed to create project " << e.what() << std::endl;
         }
 
-        if (!openProject) return;
+        if (!openProject) {
+            return;
+        }
+
         OpenProject(directory);
     }
 
+    // Creates a new project folder inside the top-level Projects folder, then creates
+    // the actual project files inside it.
+    // Parameter:
+    // - projectName should be just the project folder/name, not a full path.
+    // - It should NOT include ".tilky".
+    // - It should NOT be "C:\Users\...\Projects\TestProject".
+    // - It should just be something like "TestProject".
+    //
+    // Example projectName:
+    // TestProject
+    //
+    // This function turns that into:
+    // C:\Users\x\Documents\Tilky Engine\Projects\TestProject
+    //
+    // Then it calls CreateProject() using that project root folder.
     void CreateDirectory(const std::string &projectName) {
         const fs::path path = GetDefaultProjectsFolder() / projectName;
+
         try {
             if (!fs::exists(path)) {
                 if (fs::create_directories(path)) {
                     std::cout << "Folder created at " + path.string() << std::endl;
                     CreateProject(path, projectName);
-                } else std::cout << "Failed to create folder " << std::endl;
+                } else {
+                    std::cout << "Failed to create folder " << std::endl;
+                }
             } else {
                 std::cout << "Folder already exists " << std::endl;
                 OpenProject(path);
@@ -144,23 +220,40 @@ namespace ProjectManager {
         }
     }
 
-    bool LoadProject(const fs::path &tilkyEnginePath) {
+    // Loads a project's metadata from its project.tilky file and stores the important
+    // project paths inside ProjectManager.
+    // Parameter:
+    // - tilkyEnginePath should be the full path to one project's project.tilky file.
+    // - It should NOT be the project root folder.
+    // - It should NOT be the top-level Projects folder.
+    //
+    // Example:
+    // C:\Users\x\Documents\Tilky Engine\Projects\TestProject\project.tilky
+    //
+    // After loading, this fills:
+    // currentProjectFile    = ...\TestProject\project.tilky
+    // currentProjectFolder  = ...\TestProject
+    // currentAssetsPath     = ...\TestProject\Assets
+    // currentLevelsPath     = ...\TestProject\Assets\Levels
+    // currentTexturesPath   = ...\TestProject\Assets\Textures
+    bool LoadProjectMetaData(const fs::path &tilkyEnginePath) {
         if (!fs::exists(tilkyEnginePath)) {
             std::cout << "Project file does not exist" << std::endl;
             return false;
         }
 
         std::ifstream file(tilkyEnginePath);
+
         if (!file.is_open()) {
             std::cout << "Failed to open project" << std::endl;
             return false;
         }
 
         json projectData;
+
         try {
             file >> projectData;
-        }
-        catch (std::exception &e) {
+        } catch (std::exception &e) {
             std::cout << "Failed to parse project file:" << e.what() << std::endl;
             return false;
         }
@@ -191,10 +284,11 @@ namespace ProjectManager {
         }
 
         projectLoaded = true;
+
         return true;
     }
 
-        // Returns whether a project has successfully been loaded into ProjectManager.
+    // Returns whether a project has successfully been loaded into ProjectManager.
     // This does not return a file path.
     // Example result:
     // true if C:\Users\berke\Documents\Tilky Engine\Projects\TestProject\project.tilky was loaded successfully.
@@ -248,7 +342,7 @@ namespace ProjectManager {
     // Example:
     // C:\Users\berke\Desktop\CLion Projects\Wolfy Engine\cmake-build-debug
     fs::path GetEngineBasePath() {
-        const char* basePath = SDL_GetBasePath();
+        const char *basePath = SDL_GetBasePath();
 
         if (basePath == nullptr) {
             return fs::current_path();

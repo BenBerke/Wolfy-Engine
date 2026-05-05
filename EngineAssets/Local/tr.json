@@ -49,5 +49,7 @@
   "launcher.name": "Tilki Motoru Başlatıcısı",
   "launcher.projects": "Tasarılar",
   "launcher.create_project": "Tasarı Oluştur",
+  "launcher.open_project": "Tasarıyı Aç",
+  "launcher.delete_project": "Tasarıyı Sil",
   "launcher.quit": "Çık"
 }
