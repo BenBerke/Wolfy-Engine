@@ -50,6 +50,9 @@
   "launcher.projects": "Tasarılar",
   "launcher.create_project": "Tasarı Oluştur",
   "launcher.open_project": "Tasarıyı Aç",
+  "launcher.create": "Oluştur",
+  "launcher.Cancel": "Vazgeç",
+  "launcher.input_name": "Tasarı Adı",
   "launcher.delete_project": "Tasarıyı Sil",
   "launcher.quit": "Çık"
 }

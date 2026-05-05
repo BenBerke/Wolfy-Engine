@@ -48,6 +48,9 @@
   "launcher.name": "Tilky Engine Launcher",
   "launcher.projects": "Projects",
   "launcher.create_project": "Create Project",
+  "launcher.create": "Create",
+  "launcher.cancel": "Cancel",
+  "launcher.input_name": "Project Name",
   "launcher.open_project": "Open Project",
   "launcher.delete_project": "Delete Project",
   "launcher.quit": "Quit"

@@ -25,6 +25,9 @@ namespace {
 
     bool quitRequested = false;
 
+    bool creatingProject = false;
+    std::array<char, 64> projectName{};
+
     void PutSpace(const int n) {
         for (int i = 0; i < n; i++) {
             ImGui::Spacing();
@@ -98,7 +101,25 @@ namespace LauncherApp {
             ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoBackground);
 
         if (ImGui::Button(Localisation::Get("launcher.create_project").c_str())) {
-            std::cout << "Create Project clicked\n";
+            creatingProject = true;
+        }
+        if (creatingProject) {
+            ImGui::SetNextWindowSize(ImVec2(static_cast<float>(windowWidth) * 0.5f, 100.0f), ImGuiCond_Always);
+            ImGui::SetNextWindowPos(ImVec2(static_cast<float>(windowWidth) * .25f, static_cast<float>(windowHeight) * .5f), ImGuiCond_Always);
+            ImGui::Begin(Localisation::Get("launcher.create_project").c_str(), nullptr, ImGuiWindowFlags_NoCollapse);
+
+            ImGui::InputText(Localisation::Get("launcher.input_name").c_str(), projectName.data(), projectName.size());
+
+            if (ImGui::Button(Localisation::Get("launcher.create").c_str())) {
+                ProjectManager::CreateDirectory(projectName.data());
+                creatingProject = false;
+            }
+            ImGui::SameLine();
+            if (ImGui::Button(Localisation::Get("launcher.cancel").c_str())) {
+                creatingProject = false;
+            }
+
+            ImGui::End();
         }
 
         ImGui::Text(Localisation::Get("launcher.projects").c_str());
