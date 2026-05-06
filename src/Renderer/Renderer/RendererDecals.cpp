@@ -53,7 +53,7 @@ namespace RendererInternal {
                 wallVector.y / wallLength
             };
 
-            if (decalComponent.wallOffset < 0.0f) {
+            if (decalComponent.horizontalPos < 0.0f) {
                 const Vector2 toObject = transform->position - wall.start;
 
                 float t =
@@ -62,11 +62,11 @@ namespace RendererInternal {
 
                 t = std::clamp(t, 0.0f, 1.0f);
 
-                decalComponent.wallOffset = wallLength * t;
+                decalComponent.horizontalPos = wallLength * t;
             }
 
-            decalComponent.wallOffset =
-                std::clamp(decalComponent.wallOffset, 0.0f, wallLength);
+            decalComponent.horizontalPos =
+                std::clamp(decalComponent.horizontalPos, 0.0f, wallLength);
 
             const Vector2 wallNormal = {
                 -wallDir.y,
@@ -75,11 +75,11 @@ namespace RendererInternal {
 
             const Vector2 decalCentre = {
                 wall.start.x +
-                    wallDir.x * decalComponent.wallOffset +
+                    wallDir.x * decalComponent.horizontalPos +
                     wallNormal.x * decalComponent.wallNormalOffset,
 
                 wall.start.y +
-                    wallDir.y * decalComponent.wallOffset +
+                    wallDir.y * decalComponent.horizontalPos +
                     wallNormal.y * decalComponent.wallNormalOffset
             };
 
@@ -136,7 +136,7 @@ namespace RendererInternal {
             if (decalComponent.absHeight) {
                 decalBottom =
                     decalComponent.baseHeight +
-                    decalComponent.zOffset;
+                    decalComponent.verticalPos;
 
                 decalTop =
                     decalBottom +
@@ -158,7 +158,7 @@ namespace RendererInternal {
 
                 decalBottom =
                     floorBaseHeight +
-                    decalComponent.zOffset;
+                    decalComponent.verticalPos;
 
                 decalTop =
                     decalBottom +

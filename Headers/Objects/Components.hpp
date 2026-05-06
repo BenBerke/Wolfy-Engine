@@ -5,23 +5,31 @@
 #ifndef WOLFY_ENGINE_COMPONENTS_HPP
 #define WOLFY_ENGINE_COMPONENTS_HPP
 #include <algorithm>
-#include <cstdint>
 #include <vector>
 #include <unordered_map>
 
 #include "../Math/Vector/Vector2.hpp"
 #include "../Objects/Sector.hpp"
 #include "Headers/Map/MapQueries.hpp"
+#include "EntityTypes.hpp"
 
-using EntityID = uint32_t;
+enum ComponentType {
+    CMP_TRANSFORM,
+    CMP_SPRITE,
+    CMP_PLAYER_SPAWN,
+    CMP_DECAL,
+
+    CMP_COUNT,
+};
 
 struct ComponentTransform {
     EntityID ownerID = -1;
 
     Vector2 position = {.0f, .0f};
-    int sectorIndex = -1;
     int floor = 0;
     Vector2 scale = {32.0f, 32.0f};
+
+    int sectorIndex = -1;
 
     float GetObjectBottomHeight(const std::vector<Sector>& sectors) {
         if (this->sectorIndex < 0 ||
@@ -78,8 +86,8 @@ struct ComponentDecal {
 
     int wallIndex = -1;
 
-    float zOffset = 0; // Vertical Position
-    float wallOffset = -1.0f; // Horizontal position
+    float verticalPos = 0; // Vertical Position
+    float horizontalPos = -1.0f; // Horizontal position
     float wallNormalOffset = 0.0f;  // Distance away from the wall
 
     float wallT = 0.5f; // Horizontal percentage among the wall

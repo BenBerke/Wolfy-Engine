@@ -15,14 +15,13 @@
 #include "Headers/Objects/Sector.hpp"
 #include "config.h"
 
-#define INVALID_ENTITY_ID -1
+constexpr EntityID INVALID_ENTITY_ID = static_cast<EntityID>(-1);
 
 using json = nlohmann::json;
 
 namespace {
-
     //region backend
-    std::filesystem::path BuildLevelPath(const std::string& levelName) {
+    std::filesystem::path BuildLevelPath(const std::string &levelName) {
         std::string cleanName = levelName;
 
         if (cleanName.ends_with(".json")) {
@@ -32,7 +31,7 @@ namespace {
         return ProjectManager::GetLevelsPath() / (cleanName + ".json");
     }
 
-    std::string CleanLevelName(const std::string& levelName) {
+    std::string CleanLevelName(const std::string &levelName) {
         if (levelName.ends_with(".json")) {
             return levelName.substr(0, levelName.size() - 5);
         }
@@ -40,7 +39,7 @@ namespace {
         return levelName;
     }
 
-    Level& GetOrCreateCurrentLevel() {
+    Level &GetOrCreateCurrentLevel() {
         if (!LevelManager::HasCurrentLevel()) {
             LevelManager::loadedLevels.emplace_back();
             LevelManager::currentLevelIndex = 0;
@@ -49,11 +48,11 @@ namespace {
         return LevelManager::CurrentLevel();
     }
 
-    void RebuildNextEntityID(Level& level) {
+    void RebuildNextEntityID(Level &level) {
         EntityID highestID = 0;
 
-        for (const EntityID id : level.entities) {
-            highestID = std::max(highestID, id);
+        for (const Entity &entity: level.entities) {
+            highestID = std::max(highestID, entity.id);
         }
 
         level.nextEntityID = std::max(level.nextEntityID, highestID + 1);
@@ -61,7 +60,7 @@ namespace {
 
     //endregion
 
-    void SaveComponents(json& levelData, const Level& level) {
+    void SaveComponents(json &levelData, const Level &level) {
         json componentsJson;
 
         componentsJson["transforms"] = json::array();
@@ -69,7 +68,7 @@ namespace {
         componentsJson["decals"] = json::array();
         componentsJson["playerSpawns"] = json::array();
 
-        for (const ComponentTransform& t : level.transforms.components) {
+        for (const ComponentTransform &t: level.transforms.components) {
             componentsJson["transforms"].push_back({
                 {"ownerID", t.ownerID},
                 {"position", {t.position.x, t.position.y}},
@@ -79,27 +78,29 @@ namespace {
             });
         }
 
-        for (const ComponentSprite& s : level.sprites.components) {
+        for (const ComponentSprite &s: level.sprites.components) {
             componentsJson["sprites"].push_back({
                 {"ownerID", s.ownerID},
                 {"textureIndex", s.textureIndex}
             });
         }
 
-        for (const ComponentDecal& d : level.decals.components) {
+        for (const ComponentDecal &d: level.decals.components) {
             componentsJson["decals"].push_back({
                 {"ownerID", d.ownerID},
                 {"wallIndex", d.wallIndex},
-                {"zOffset", d.zOffset},
-                {"wallOffset", d.wallOffset},
+
+                {"verticalPos", d.verticalPos},
+                {"horizontalPos", d.horizontalPos},
                 {"wallNormalOffset", d.wallNormalOffset},
+
                 {"wallT", d.wallT},
                 {"baseHeight", d.baseHeight},
                 {"absHeight", d.absHeight}
             });
         }
 
-        for (const ComponentPlayerSpawn& p : level.playerSpawns.components) {
+        for (const ComponentPlayerSpawn &p: level.playerSpawns.components) {
             componentsJson["playerSpawns"].push_back({
                 {"ownerID", p.ownerID}
             });
@@ -108,19 +109,28 @@ namespace {
         levelData["components"] = componentsJson;
     }
 
-    void LoadComponents(const json& levelData, Level& level) {
+    void LoadComponents(const json &levelData, Level &level) {
         if (!levelData.contains("components")) {
             return;
         }
 
-        const json& componentsJson = levelData["components"];
+        const json &componentsJson = levelData["components"];
+
+        level.transforms.Clear();
+        level.sprites.Clear();
+        level.decals.Clear();
+        level.playerSpawns.Clear();
 
         if (componentsJson.contains("transforms")) {
-            for (const json& transformJson : componentsJson["transforms"]) {
+            for (const json &transformJson: componentsJson["transforms"]) {
                 const EntityID ownerID =
-                    transformJson.value("ownerID", INVALID_ENTITY_ID);
+                        transformJson.value("ownerID", INVALID_ENTITY_ID);
 
-                ComponentTransform& t = level.transforms.Add(ownerID);
+                if (ownerID == INVALID_ENTITY_ID) {
+                    continue;
+                }
+
+                ComponentTransform &t = level.transforms.Add(ownerID);
 
                 if (transformJson.contains("position")) {
                     t.position = {
@@ -142,26 +152,36 @@ namespace {
         }
 
         if (componentsJson.contains("sprites")) {
-            for (const json& spriteJson : componentsJson["sprites"]) {
+            for (const json &spriteJson: componentsJson["sprites"]) {
                 const EntityID ownerID =
-                    spriteJson.value("ownerID", INVALID_ENTITY_ID);
+                        spriteJson.value("ownerID", INVALID_ENTITY_ID);
 
-                ComponentSprite& s = level.sprites.Add(ownerID);
+                if (ownerID == INVALID_ENTITY_ID) {
+                    continue;
+                }
+
+                ComponentSprite &s = level.sprites.Add(ownerID);
                 s.textureIndex = spriteJson.value("textureIndex", -1);
             }
         }
 
         if (componentsJson.contains("decals")) {
-            for (const json& decalJson : componentsJson["decals"]) {
+            for (const json &decalJson: componentsJson["decals"]) {
                 const EntityID ownerID =
-                    decalJson.value("ownerID", INVALID_ENTITY_ID);
+                        decalJson.value("ownerID", INVALID_ENTITY_ID);
 
-                ComponentDecal& d = level.decals.Add(ownerID);
+                if (ownerID == INVALID_ENTITY_ID) {
+                    continue;
+                }
+
+                ComponentDecal &d = level.decals.Add(ownerID);
 
                 d.wallIndex = decalJson.value("wallIndex", -1);
-                d.zOffset = decalJson.value("zOffset", 0.0f);
-                d.wallOffset = decalJson.value("wallOffset", -1.0f);
+
+                d.verticalPos = decalJson.value("verticalPos", 0.0f);
+                d.horizontalPos = decalJson.value("horizontalPos", -1.0f);
                 d.wallNormalOffset = decalJson.value("wallNormalOffset", 0.0f);
+
                 d.wallT = decalJson.value("wallT", 0.5f);
                 d.baseHeight = decalJson.value("baseHeight", 0.0f);
                 d.absHeight = decalJson.value("absHeight", false);
@@ -169,20 +189,24 @@ namespace {
         }
 
         if (componentsJson.contains("playerSpawns")) {
-            for (const json& playerSpawnJson : componentsJson["playerSpawns"]) {
+            for (const json &playerSpawnJson: componentsJson["playerSpawns"]) {
                 const EntityID ownerID =
-                    playerSpawnJson.value("ownerID", INVALID_ENTITY_ID);
+                        playerSpawnJson.value("ownerID", INVALID_ENTITY_ID);
+
+                if (ownerID == INVALID_ENTITY_ID) {
+                    continue;
+                }
 
                 level.playerSpawns.Add(ownerID);
             }
         }
     }
 
-    void SaveWalls(json& levelData, const Level& level) {
+    void SaveWalls(json &levelData, const Level &level) {
         levelData["walls"] = json::array();
 
         for (int i = 0; i < static_cast<int>(level.walls.size()); ++i) {
-            const Wall& wall = level.walls[i];
+            const Wall &wall = level.walls[i];
 
             json wallJson = {
                 {"id", i},
@@ -199,14 +223,14 @@ namespace {
         }
     }
 
-    void LoadWalls(const json& levelData, Level& level) {
+    void LoadWalls(const json &levelData, Level &level) {
         using namespace MapEditorInternal;
 
         if (!levelData.contains("walls")) {
             return;
         }
 
-        for (const json& wallJson : levelData["walls"]) {
+        for (const json &wallJson: levelData["walls"]) {
             Vector2 start = {
                 wallJson["start"][0].get<float>(),
                 wallJson["start"][1].get<float>()
@@ -260,15 +284,15 @@ namespace {
         }
     }
 
-    void SaveSectors(json& levelData, const Level& level) {
+    void SaveSectors(json &levelData, const Level &level) {
         levelData["sectors"] = json::array();
 
         for (int i = 0; i < static_cast<int>(level.sectors.size()); ++i) {
-            const Sector& sector = level.sectors[i];
+            const Sector &sector = level.sectors[i];
 
             json cornerArray = json::array();
 
-            for (const Vector2& point : sector.vertices) {
+            for (const Vector2 &point: sector.vertices) {
                 cornerArray.push_back({
                     {"x", point.x},
                     {"y", point.y}
@@ -297,17 +321,17 @@ namespace {
         }
     }
 
-    void LoadSectors(const json& levelData, Level& level) {
+    void LoadSectors(const json &levelData, Level &level) {
         if (!levelData.contains("sectors")) {
             return;
         }
 
-        for (const json& sectorJson : levelData["sectors"]) {
+        for (const json &sectorJson: levelData["sectors"]) {
             Sector sector;
 
             std::vector<Vector2> corners;
 
-            for (const json& cornerJson : sectorJson["corners"]) {
+            for (const json &cornerJson: sectorJson["corners"]) {
                 corners.push_back({
                     cornerJson["x"].get<float>(),
                     cornerJson["y"].get<float>()
@@ -345,13 +369,13 @@ namespace {
             sector.floorTextureIndex = sectorJson.value("floorTextureIndex", -1);
 
             const int oldCeilingTexture =
-                sectorJson.value("ceilingTextureIndex", -1);
+                    sectorJson.value("ceilingTextureIndex", -1);
 
             sector.ceilingTextureIndices.fill(oldCeilingTexture);
 
             if (sectorJson.contains("ceilingTextureIndices")) {
-                const json& ceilingTextureArray =
-                    sectorJson["ceilingTextureIndices"];
+                const json &ceilingTextureArray =
+                        sectorJson["ceilingTextureIndices"];
 
                 for (int i = 0;
                      i < std::min<int>(
@@ -360,7 +384,7 @@ namespace {
                      );
                      ++i) {
                     sector.ceilingTextureIndices[i] =
-                        ceilingTextureArray[i].get<int>();
+                            ceilingTextureArray[i].get<int>();
                 }
             }
 
@@ -370,12 +394,12 @@ namespace {
         }
     }
 
-    void SaveTextures(json& levelData) {
+    void SaveTextures(json &levelData) {
         using namespace MapEditorInternal;
 
         levelData["textures"] = json::array();
 
-        for (const auto& pathInput : textureInputs) {
+        for (const auto &pathInput: textureInputs) {
             if (pathInput[0] == '\0') {
                 continue;
             }
@@ -384,7 +408,7 @@ namespace {
         }
     }
 
-    void LoadTextures(const json& levelData) {
+    void LoadTextures(const json &levelData) {
         using namespace MapEditorInternal;
 
         textureInputs.clear();
@@ -393,11 +417,11 @@ namespace {
             return;
         }
 
-        for (const json& textureJson : levelData["textures"]) {
-            std::array<char, 256> input {};
+        for (const json &textureJson: levelData["textures"]) {
+            std::array<char, 256> input{};
 
             const std::string path =
-                textureJson.get<std::string>();
+                    textureJson.get<std::string>();
 
             std::snprintf(
                 input.data(),
@@ -410,22 +434,41 @@ namespace {
         }
     }
 
-    void SaveEntities(json& levelData, const Level& level) {
+    void SaveEntities(json &levelData, const Level &level) {
         levelData["entities"] = json::array();
 
-        for (const EntityID entityID : level.entities) {
-            levelData["entities"].push_back(entityID);
+        for (const Entity &entity: level.entities) {
+            json entityJson;
+
+            entityJson["id"] = entity.id;
+            entityJson["name"] = entity.name;
+
+            levelData["entities"].push_back(entityJson);
         }
     }
 
-    void LoadEntities(const json& levelData, Level& level) {
+    void LoadEntities(const json &levelData, Level &level) {
         if (!levelData.contains("entities")) {
             return;
         }
 
-        for (const json& entityJson : levelData["entities"]) {
-            level.entities.push_back(entityJson.get<EntityID>());
+        level.entities.clear();
+
+        EntityID highestEntityID = 0;
+
+        for (const json &entityJson: levelData["entities"]) {
+            Entity entity;
+
+            entity.id = entityJson.at("id").get<EntityID>();
+            entity.name = entityJson.value("name", "Entity");
+            entity.attachedLevelId = level.id;
+
+            highestEntityID = std::max(highestEntityID, entity.id);
+
+            level.entities.push_back(entity);
         }
+
+        level.nextEntityID = highestEntityID + 1;
     }
 
     void UpdatePlayerSpawnFromLoadedLevel(Level& level) {
@@ -434,8 +477,7 @@ namespace {
         playerPlaced = false;
         MapEditor::playerStartPos = {0.0f, 0.0f};
 
-        for (const ComponentPlayerSpawn& spawn :
-             level.playerSpawns.components) {
+        for (const ComponentPlayerSpawn& spawn : level.playerSpawns.components) {
             ComponentTransform* transform =
                 level.transforms.Get(spawn.ownerID);
 
@@ -448,19 +490,23 @@ namespace {
             return;
         }
 
-        EntityID playerID = level.CreateEntity();
+        Entity& playerEntity = level.CreateEntity();
 
-        ComponentTransform& transform =
-            level.transforms.Add(playerID);
+        auto* transform =
+            playerEntity.GetComponent<ComponentTransform>();
 
-        transform.position = {0.0f, 0.0f};
-        transform.floor = 0;
-        transform.scale = {32.0f, 32.0f};
+        if (transform == nullptr) {
+            transform = playerEntity.AddComponent<ComponentTransform>();
+        }
 
-        level.playerSpawns.Add(playerID);
+        transform->position = {0.0f, 0.0f};
+        transform->floor = 0;
+        transform->scale = {32.0f, 32.0f};
+
+        level.playerSpawns.Add(playerEntity.id);
 
         playerPlaced = true;
-        MapEditor::playerStartPos = transform.position;
+        MapEditor::playerStartPos = transform->position;
     }
 }
 
@@ -475,9 +521,9 @@ namespace MapEditorInternal {
                 !std::filesystem::is_directory(levelsPath)) {
                 std::filesystem::create_directories(levelsPath);
                 return;
-                }
+            }
 
-            for (const auto& entry : std::filesystem::directory_iterator(levelsPath)) {
+            for (const auto &entry: std::filesystem::directory_iterator(levelsPath)) {
                 if (!std::filesystem::is_regular_file(entry)) {
                     continue;
                 }
@@ -488,14 +534,13 @@ namespace MapEditorInternal {
 
                 MapEditor::maps.push_back(entry.path().stem().string());
             }
-        }
-        catch (const std::filesystem::filesystem_error& e) {
+        } catch (const std::filesystem::filesystem_error &e) {
             SDL_Log("Error loading levels: %s", e.what());
         }
     }
 
-    bool Save(const std::string& saveTo) {
-        Level& level = GetOrCreateCurrentLevel();
+    bool Save(const std::string &saveTo) {
+        Level &level = GetOrCreateCurrentLevel();
 
         const std::string cleanName = CleanLevelName(saveTo);
 
@@ -536,7 +581,7 @@ namespace MapEditorInternal {
         file << levelData.dump(4);
         file.close();
 
-        SDL_Log("Level saved successfully: %s", path.c_str());
+        SDL_Log("Level saved successfully: %s", path.string().c_str());
 
         UpdateLevels();
 
@@ -545,7 +590,7 @@ namespace MapEditorInternal {
 }
 
 namespace MapEditor {
-    bool LoadLevel(const std::string& levelName) {
+    bool LoadLevel(const std::string &levelName) {
         using namespace MapEditorInternal;
 
         const std::string cleanName = CleanLevelName(levelName);
@@ -562,8 +607,7 @@ namespace MapEditor {
 
         try {
             file >> levelData;
-        }
-        catch (const std::exception& e) {
+        } catch (const std::exception &e) {
             SDL_Log("Failed to parse level JSON: %s", e.what());
             return false;
         }
@@ -579,7 +623,7 @@ namespace MapEditor {
         if (levelData.contains("levelVars") &&
             levelData["levelVars"].is_object()) {
             backgroundTextureIndex =
-                levelData["levelVars"].value("backgroundTextureIndex", -1);
+                    levelData["levelVars"].value("backgroundTextureIndex", -1);
         }
 
         currentMap = cleanName;
@@ -608,18 +652,16 @@ namespace MapEditor {
         if (LevelManager::loadedLevels.empty()) {
             LevelManager::loadedLevels.push_back(loadedLevel);
             LevelManager::currentLevelIndex = 0;
-        }
-        else if (!LevelManager::HasCurrentLevel()) {
+        } else if (!LevelManager::HasCurrentLevel()) {
             LevelManager::loadedLevels.push_back(loadedLevel);
             LevelManager::currentLevelIndex =
-                static_cast<int>(LevelManager::loadedLevels.size()) - 1;
-        }
-        else {
+                    static_cast<int>(LevelManager::loadedLevels.size()) - 1;
+        } else {
             LevelManager::loadedLevels[LevelManager::currentLevelIndex] =
-                loadedLevel;
+                    loadedLevel;
         }
 
-        SDL_Log("Level loaded successfully: %s", path.c_str());
+        SDL_Log("Level loaded successfully: %s", path.string().c_str());
 
         return true;
     }

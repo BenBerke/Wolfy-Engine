@@ -18,7 +18,7 @@
   "mode.dot": "Dot Mode",
   "mode.wall": "Wall Mode",
   "mode.sector": "Sector Mode",
-  "mode.object": "Object Mode",
+  "mode.entity": "Entity Mode",
   "mode.unknown": "Unknown Mode",
 
   "sector.title": "Sector",
@@ -37,6 +37,34 @@
   "wall.floor": "Floor",
   "wall.color": "Wall Color",
 
+  "entity.name" : "Name",
+  "entity.title": "Object",
+  "entity.add_component": "Add Component",
+  "entity.delete": "Remove",
+
+  "math.vector2.x" : "X",
+  "math.vector2.y" : "Y",
+
+  "component.modify" : "Modify",
+
+  "component.component": "Component",
+  "component.transform": "Transform",
+  "component.sprite": "Sprite",
+  "component.decal": "Decal",
+  "component.player_spawn": "Player Spawn",
+
+  "component.transform.position" : "Positon",
+  "component.transform.scale" : "Scale",
+  "component.transform.floor" : "Floor",
+
+  "component.sprite.texture_index" : "Texture Index",
+
+  "component.decal.attached_wall" : "Attached Wall",
+  "component.decal.z_offset" : "Vertical Position",
+  "component.decal.wall_0ffset" : "Horizontal Position",
+  "component.decal.wall_normal_offset" : "Distance from Wall",
+  "component.decal.abs_height" : "Absolute Height",
+
   "common.delete": "Delete",
   "common.close": "Close",
   "common.id": "ID",
@@ -44,6 +72,8 @@
   "log.deleted_level": "Deleted level:",
   "log.failed_delete_missing": "Failed to delete level, file may not exist:",
   "log.delete_level_failed": "Delete level failed:",
+
+  "bug.unknown" : "Unknown",
 
   "launcher.name": "Tilky Engine Launcher",
   "launcher.projects": "Projects",

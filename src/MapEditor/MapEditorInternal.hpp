@@ -23,7 +23,7 @@ namespace MapEditorInternal {
         MODE_DOT,
         MODE_SECTOR,
         MODE_WALL,
-        MODE_OBJECT,
+        MODE_ENTITY,
 
         MODE_COUNT
     };
@@ -56,8 +56,8 @@ namespace MapEditorInternal {
     extern bool editingWall;
     extern int selectedWall;
 
-    extern bool editingObject;
-    extern uint32_t selectedObject;
+    extern bool editingComponent;
+    extern Entity selectedEntity;
 
     extern std::string currentMap;
 
@@ -73,7 +73,7 @@ namespace MapEditorInternal {
 
     bool SamePoint(const Vector2& a, const Vector2& b);
     bool WithinRadius(const Vector2& a, const Vector2& b, const float radius);
-    uint32_t ObjectExistsAt(const Vector2& worldPos, const float radius);
+    Entity* EntityExistsAt(const Vector2& worldPos, const float radius);
     bool CornerExistsAt(const Vector2& point);
     bool IsCornerConnectedToLine(const Vector2& point);
     bool HasLineBetween(const Vector2& a, const Vector2& b);
@@ -88,6 +88,8 @@ namespace MapEditorInternal {
     Vector2 SnapToGrid(const Vector2& worldPos);
 
     bool IsPointInsidePolygon(const std::vector<Vector2>& polygon, const Vector2& point);
+
+    float GetActiveGridSize();
 
     void DrawThickLine(SDL_Renderer* renderer, Vector2 start, Vector2 end, float thickness);
     void DrawFilledTriangle(const Triangle& triangle, SDL_FColor color);

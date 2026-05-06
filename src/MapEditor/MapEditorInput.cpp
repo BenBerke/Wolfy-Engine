@@ -104,12 +104,19 @@ namespace MapEditorInternal {
                         actions.push_back(ACTION_CREATE_CORNER);
                     }
                 }
-                else if (currentMode == MODE_OBJECT) {
-                    const uint32_t sO = ObjectExistsAt(InputManager::GetMousePosition(), 15.0f);
-                    if (sO != -1) selectedObject = sO;
-                    else selectedObject = level.CreateEntity();
+                else if (currentMode == MODE_ENTITY) {
+                    Entity *en = EntityExistsAt(mouseWorld, 15.0f);
 
-                    editingObject = true;
+                    if (en != nullptr) selectedEntity = *en;
+                    else selectedEntity = level.CreateEntity(); // This gives the entity ComponentTransform
+
+                    auto* t = selectedEntity.GetComponent<ComponentTransform>();
+                    if (t != nullptr) {
+                        t->position = mouseWorld;
+                        t->floor = currentFloor;
+                    }
+
+                    editingComponent = true;
                 }
             }
             if (InputManager::GetMouseButton(SDL_BUTTON_LEFT) && drawingLine && currentMode == MODE_WALL) {
@@ -175,8 +182,8 @@ namespace MapEditorInternal {
                     break;
                 case ACTION_CREATE_OBJECT:
                     if (!level.entities.empty()) {
-                        const EntityID entityID = level.entities.back();
-                        level.DestroyEntity(entityID);
+                        const Entity entity = level.entities.back();
+                        level.DestroyEntity(entity.id);
                     }
                     break;
                 default: break;

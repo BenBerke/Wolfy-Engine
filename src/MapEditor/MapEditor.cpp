@@ -130,7 +130,7 @@ namespace MapEditor {
             t = std::clamp(t, 0.0f, 1.0f);
 
             decal.wallT = t;
-            decal.wallOffset = std::sqrt(wallLengthSq) * decal.wallT;
+            decal.horizontalPos = std::sqrt(wallLengthSq) * decal.wallT;
 
             auto lerp = [](const float a, const float b, const float t) -> float {
                 return (1.0f - t) * a + t * b;

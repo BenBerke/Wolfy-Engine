@@ -5,16 +5,16 @@
 #ifndef WOLFY_ENGINE_LEVEL_H
 #define WOLFY_ENGINE_LEVEL_H
 #include <vector>
+#include <string>
 
 #include "Components.hpp"
-
-using LevelID = EntityID;
+#include "Entity.hpp"
 
 struct Level {
     LevelID id = 0;
     std::string name;
 
-    std::vector<EntityID> entities;
+    std::vector<Entity> entities;
 
     EntityID nextEntityID = 1;
 
@@ -26,18 +26,32 @@ struct Level {
     ComponentStorage<ComponentDecal> decals;
     ComponentStorage<ComponentPlayerSpawn> playerSpawns;
 
-    EntityID CreateEntity() {
-        const EntityID eid = nextEntityID++;
-        entities.push_back(eid);
-        return eid;
+    Entity& CreateEntity() {
+        Entity entity;
+        entity.id = nextEntityID++;
+        entity.name = "Entity";
+        entity.attachedLevelId = id;
+
+        entities.push_back(entity);
+
+        Entity& createdEntity = entities.back();
+
+        transforms.Add(createdEntity.id);
+
+        return createdEntity;
     }
     void DestroyEntity(const EntityID id) {
-        std::erase(entities, id);
+        std::erase_if(entities, [id](const Entity& entity) {
+            return entity.id == id;
+        });
 
         transforms.Remove(id);
         sprites.Remove(id);
         decals.Remove(id);
         playerSpawns.Remove(id);
+    }
+    void DestroyEntity(const Entity& entity) {
+        DestroyEntity(entity.id);
     }
 };
 

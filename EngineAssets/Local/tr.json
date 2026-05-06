@@ -18,7 +18,7 @@
   "mode.dot": "Nokta Kipi",
   "mode.wall": "Duvar Kipi",
   "mode.sector": "Kesim Kipi",
-  "mode.object": "Nesne Kipi",
+  "mode.entity": "Nesne Kipi",
   "mode.unknown": "Bilinmeney Kip",
 
   "sector": "Kesim",

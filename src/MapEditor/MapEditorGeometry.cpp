@@ -9,6 +9,20 @@
 #include "Headers/Objects/Entity.hpp"
 
 namespace MapEditorInternal {
+    float GetActiveGridSize() {
+        constexpr float minPixelSpacing = 24.0f;
+
+        float activeGridSize = GRID_SIZE;
+
+        const float safeZoom = std::max(editorZoom, 0.0001f);
+
+        while (activeGridSize * safeZoom < minPixelSpacing) {
+            activeGridSize *= 2.0f;
+        }
+
+        return activeGridSize;
+    }
+
     bool SamePoint(const Vector2& a, const Vector2& b) {
         return a.x == b.x && a.y == b.y;
     }
@@ -17,13 +31,14 @@ namespace MapEditorInternal {
         return Vector2Math::DistanceSquared(a, b) < radius * radius;
     }
 
-    uint32_t ObjectExistsAt(const Vector2& mouseClick, const float radius) {
+    Entity* EntityExistsAt(const Vector2& mouseClick, const float radius) {
         Level& level = LevelManager::CurrentLevel();
-        for (const uint32_t entityID : LevelManager::CurrentLevel().entities) {
-            ComponentTransform* transform = level.transforms.Get(entityID);
-            if (WithinRadius(transform->position, mouseClick, radius)) return entityID;
+        for (Entity& entity : LevelManager::CurrentLevel().entities) {
+            auto* transform = entity.GetComponent<ComponentTransform>();
+            if (transform == nullptr) continue;
+            if (WithinRadius(transform->position, mouseClick, radius)) return &entity;
         }
-        return -1;
+        return nullptr;
     }
 
     bool CornerExistsAt(const Vector2& point) {
@@ -129,9 +144,11 @@ namespace MapEditorInternal {
     }
 
     Vector2 SnapToGrid(const Vector2& worldPos) {
+        const float activeGridSize = GetActiveGridSize();
+
         return {
-            std::round(worldPos.x / GRID_SIZE) * GRID_SIZE,
-            std::round(worldPos.y / GRID_SIZE) * GRID_SIZE
+            std::round(worldPos.x / activeGridSize) * activeGridSize,
+            std::round(worldPos.y / activeGridSize) * activeGridSize
         };
     }
 

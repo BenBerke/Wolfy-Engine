@@ -202,6 +202,8 @@ namespace MapEditorInternal {
 
         SDL_SetRenderDrawColor(renderer, 180, 180, 180, 255);
 
+        const float activeGridSize = GetActiveGridSize();
+
         const float visibleHalfWidthWorld = (SCREEN_WIDTH * 0.5f) / editorZoom;
         const float visibleHalfHeightWorld = (SCREEN_HEIGHT * 0.5f) / editorZoom;
 
@@ -210,11 +212,11 @@ namespace MapEditorInternal {
         const float bottomWorld = cameraPos.y - visibleHalfHeightWorld;
         const float topWorld = cameraPos.y + visibleHalfHeightWorld;
 
-        const float startX = std::floor(leftWorld / GRID_SIZE) * GRID_SIZE;
-        const float startY = std::floor(bottomWorld / GRID_SIZE) * GRID_SIZE;
+        const float startX = std::floor(leftWorld / activeGridSize) * activeGridSize;
+        const float startY = std::floor(bottomWorld / activeGridSize) * activeGridSize;
 
-        for (float worldX = startX; worldX <= rightWorld; worldX += GRID_SIZE) {
-            for (float worldY = startY; worldY <= topWorld; worldY += GRID_SIZE) {
+        for (float worldX = startX; worldX <= rightWorld; worldX += activeGridSize) {
+            for (float worldY = startY; worldY <= topWorld; worldY += activeGridSize) {
                 const Vector2 screenPos = WorldToScreen({worldX, worldY}, cameraPos);
 
                 SDL_FRect dotRect = {

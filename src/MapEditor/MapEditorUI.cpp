@@ -12,6 +12,14 @@
 
 #include "Headers/Map/LevelManager.hpp"
 #include "../../Headers/Engine/Local/Local.hpp"
+#include "Headers/Objects/Entity.hpp"
+#include "Headers/Project/ProjectManager.hpp"
+#include "misc/cpp/imgui_stdlib.h"
+
+namespace {
+    bool editingComponent;
+    int selectedComponent;
+}
 
 namespace MapEditorInternal {
     void MoveMode() {
@@ -56,8 +64,8 @@ namespace MapEditorInternal {
                 case MODE_SECTOR:
                     return Localisation::Get("mode.sector").c_str();
 
-                case MODE_OBJECT:
-                    return Localisation::Get("mode.object").c_str();
+                case MODE_ENTITY:
+                    return Localisation::Get("mode.entity").c_str();
 
                 default:
                     return Localisation::Get("mode.unknown").c_str();
@@ -74,7 +82,7 @@ namespace MapEditorInternal {
                 editingSector = false;
             }
             else {
-                ImGui::Begin(Get("sector").c_str(), &editingSector);
+                ImGui::Begin(Get("sector.title").c_str(), &editingSector);
 
                 auto& sector = level.sectors[selectedSector];
 
@@ -171,6 +179,154 @@ namespace MapEditorInternal {
                 ImGui::End();
             }
         }
+
+        if (editingComponent && currentMode == MODE_ENTITY) {
+            ImGui::Begin(Get("entity.title").c_str(), &editingWall);
+
+            std::array<char, 64> entityName{};
+
+            ImGui::Text("%u", selectedEntity.id);
+            ImGui::SameLine();
+            ImGui::InputText(Get("entity.name").c_str(), &selectedEntity.name);
+
+            if (ImGui::Button(Get("entity.add_component").c_str())) {
+                const char* components[CMP_COUNT] = { Get("component.transform").c_str(), Get("component.sprite").c_str(),
+                    Get("component.decal").c_str(), Get("component.player_spawn").c_str() };
+                int selected_index = 0;
+
+                if (ImGui::BeginCombo(Get("component.component").c_str(), components[selected_index]))
+                {
+                    for (int i = 0; i < IM_ARRAYSIZE(components); i++)
+                    {
+                        const bool is_selected = (selected_index == i);
+
+                        if (ImGui::Selectable(components[i], is_selected)) selected_index = i;
+
+                        if (is_selected) ImGui::SetItemDefaultFocus();
+                    }
+                    ImGui::EndCombo();
+                }
+
+
+                if (selectedComponent == CMP_TRANSFORM) selectedEntity.AddComponent<ComponentTransform>();
+                else if (selectedComponent == CMP_SPRITE) selectedEntity.AddComponent<ComponentSprite>();
+                else if (selectedComponent == CMP_DECAL) selectedEntity.AddComponent<ComponentDecal>();
+                else if (selectedComponent == CMP_PLAYER_SPAWN) selectedEntity.AddComponent<ComponentPlayerSpawn>();
+            }
+
+            if (editingComponent) {
+                std::string componentName;
+                switch (selectedComponent) {
+                    case CMP_TRANSFORM:
+                        componentName = Get("component.transform");
+                        break;
+                    case CMP_SPRITE:
+                        componentName = Get("component.sprite");
+                        break;
+                    case CMP_DECAL:
+                        componentName = Get("component.decal");
+                        break;
+                    case CMP_PLAYER_SPAWN:
+                        componentName = Get("component.player_spawn");
+                        break;
+                    default:
+                        componentName = Get("bug.unknown");
+                        break;
+                }
+                ImGui::Begin(componentName.c_str(), &editingComponent);
+                if (selectedComponent == CMP_TRANSFORM) {
+                    auto* c = selectedEntity.GetComponent<ComponentTransform>();
+                    Vector2 position = {.0f, .0f};
+                    int floor = 0;
+                    Vector2 scale = {32.0f, 32.0f};
+
+                    ImGui::Text(Get("component.transform.position").c_str());
+                    ImGui::InputFloat(Get("math.vector2.x").c_str(), &position.x);
+                    ImGui::SameLine();
+                    ImGui::InputFloat(Get("math.vector2.y").c_str(), &position.y);
+
+                    ImGui::Text(Get("component.transform.scale").c_str());
+                    ImGui::InputFloat(Get("math.vector2.x").c_str(), &scale.x);
+                    ImGui::SameLine();
+                    ImGui::InputFloat(Get("math.vector2.y").c_str(), &scale.y);
+
+                    ImGui::InputInt(Get("component.transform.floor").c_str(), &floor);
+
+                    c->position = position;
+                    c->floor = floor;
+                    c->scale = scale;
+
+                    if (ImGui::Button(Get("common.delete").c_str())) {
+                        selectedEntity.RemoveComponent<ComponentTransform>();
+                        editingComponent = false;
+                    }
+                    ImGui::SameLine();
+                    if (ImGui::Button(Get("common.close").c_str())) {
+                        editingComponent = false;
+                    }
+                }
+                else if (selectedComponent == CMP_SPRITE) {
+                    auto* c = selectedEntity.GetComponent<ComponentSprite>();
+                    int textureIndex;
+
+
+                    ImGui::Text(Get("component.sprite.texture_index").c_str());
+                    ImGui::InputInt(Get("math.vector2.x").c_str(), &textureIndex);;
+
+                    c->textureIndex = textureIndex;
+
+                    if (ImGui::Button(Get("common.delete").c_str())) {
+                        selectedEntity.RemoveComponent<ComponentSprite>();
+                        editingComponent = false;
+                    }
+                    ImGui::SameLine();
+                    if (ImGui::Button(Get("common.close").c_str())) {
+                        editingComponent = false;
+                    }
+                }
+                else if (selectedComponent == CMP_PLAYER_SPAWN) {
+                    if (ImGui::Button(Get("common.delete").c_str())) {
+                        selectedEntity.RemoveComponent<ComponentPlayerSpawn>();
+                        editingComponent = false;
+                    }
+                    ImGui::SameLine();
+                    if (ImGui::Button(Get("common.close").c_str())) {
+                        editingComponent = false;
+                    }
+                }
+                else if (selectedComponent == CMP_DECAL) {
+                    auto* c = selectedEntity.GetComponent<ComponentDecal>();
+                    int wallIndex;
+                    float zOffset, wallOffset, wallNormalOffset;
+                    bool absHeight;
+
+                    ImGui::InputInt(Get("component.decal.attached_wall").c_str(), &wallIndex);
+                    ImGui::InputFloat(Get("component.decal.wall_offset").c_str(), &wallOffset);
+                    ImGui::InputFloat(Get("component.decal.wall_normal_offset").c_str(), &wallNormalOffset);
+                    ImGui::InputFloat(Get("component.decal.z_offset").c_str(), &zOffset);
+                    ImGui::Checkbox("Enable System", &absHeight);
+
+                    c->wallIndex = wallIndex;
+                    c->verticalPos = zOffset;
+                    c->horizontalPos = wallOffset;
+                    c->wallNormalOffset = wallNormalOffset;
+
+                    if (ImGui::Button(Get("common.delete").c_str())) {
+                        selectedEntity.RemoveComponent<ComponentDecal>();
+                        editingComponent = false;
+                    }
+                    ImGui::SameLine();
+                    if (ImGui::Button(Get("common.close").c_str())) {
+                        editingComponent = false;
+                    }
+                }
+                ImGui::End();
+            }
+
+            strcpy(entityName.data(), selectedEntity.name.c_str());
+
+            ImGui::End();
+        }
         //endregion
 
         if (creatableSector) {
@@ -211,7 +367,7 @@ namespace MapEditorInternal {
         ImGui::InputInt(Get("editor.background_texture").c_str(), &bgTextureIndex);
         MapEditor::backgroundTextureIndex = bgTextureIndex;
 
-        if (currentMode == MODE_OBJECT) {
+        if (currentMode == MODE_ENTITY) {
 
         }
 
@@ -265,19 +421,19 @@ namespace MapEditorInternal {
             ImGui::SameLine();
 
             if (ImGui::Button(Get("levels.delete").c_str())) {
-                const std::string path = "../EngineAssets/Levels/" + cleanName + ".json";
+                const std::filesystem::path path =
+                    ProjectManager::GetLevelsPath() / (cleanName + ".json");
 
                 try {
                     if (std::filesystem::remove(path)) {
                         SDL_Log(
                             "%s %s",
                             Get("log.deleted_level").c_str(),
-                            path.c_str()
+                            path.string().c_str()
                         );
 
                         if (MapEditor::currentMap == cleanName) {
-                            MapEditor::currentMap = "test_level";
-                            MapEditor::LoadLevel(MapEditor::currentMap);
+                            MapEditor::currentMap = "";
                         }
 
                         UpdateLevels();
@@ -286,7 +442,7 @@ namespace MapEditorInternal {
                         SDL_Log(
                             "%s %s",
                             Get("log.failed_delete_missing").c_str(),
-                            path.c_str()
+                            path.string().c_str()
                         );
                     }
                 }

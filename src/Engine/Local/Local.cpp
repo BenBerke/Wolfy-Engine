@@ -88,6 +88,7 @@ namespace Localisation {
         return it->second;
     }
 
+
     const std::string& CurrentLanguage() {
         return currentLanguage;
     }

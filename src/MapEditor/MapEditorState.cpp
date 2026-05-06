@@ -32,8 +32,8 @@ namespace MapEditorInternal {
     bool editingWall = false;
     int selectedWall = -1;
 
-    bool editingObject = false;
-    uint32_t selectedObject = -1;
+    bool editingComponent = false;
+    Entity selectedEntity;
 
     std::string currentMap;
 

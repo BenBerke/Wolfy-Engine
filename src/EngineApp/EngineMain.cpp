@@ -46,7 +46,7 @@ int main(int argc, char** argv) {
 
     ProjectManager::LoadProjectMetaData("C:/Users/berke/Documents/Tilky Engine/Projects/test/project.tilky");
 
-    Localisation::LoadLanguage(ProjectManager::GetCurrentLanguageInLauncher());
+    Localisation::LoadLanguage("en");
 
     bool editorMode = true;
     if (editorMode) MapEditor::Start();

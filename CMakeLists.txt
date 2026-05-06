@@ -47,6 +47,8 @@ if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/External/imgui/imgui.h")
             External/imgui/imgui_widgets.cpp
             External/imgui/imgui_demo.cpp
 
+            External/imgui/misc/cpp/imgui_stdlib.cpp
+
             External/imgui/backends/imgui_impl_sdl3.cpp
             External/imgui/backends/imgui_impl_sdlrenderer3.cpp
             External/imgui/backends/imgui_impl_opengl3.cpp
@@ -167,6 +169,7 @@ add_library(Wolfy_EngineCore STATIC
         Headers/Map/MapQueries.hpp
         Headers/Map/LevelManager.hpp
         Headers/Math/Geometry/Geometry.hpp
+        Headers/Objects/EntityTypes.hpp
 )
 
 target_precompile_headers(Wolfy_EngineCore PRIVATE
@@ -219,6 +222,7 @@ endif()
 
 add_executable(Wolfy_Engine
         src/EngineApp/EngineMain.cpp
+        src/Objects/Entity.cpp
 )
 
 target_link_libraries(Wolfy_Engine PRIVATE
@@ -277,6 +281,8 @@ target_link_libraries(Wolfy_Launcher PRIVATE
 
 add_executable(Wolfy_All
         src/Launcher/LauncherMain.cpp
+        src/Objects/Entity.cpp
+        Headers/Objects/EntityTypes.hpp
 )
 
 target_link_libraries(Wolfy_All PRIVATE
