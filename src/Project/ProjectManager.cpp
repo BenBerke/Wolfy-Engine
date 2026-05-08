@@ -247,6 +247,34 @@ namespace ProjectManager {
         return currentLevelsPath;
     }
 
+    fs::path GetContentRootPath() {
+#ifdef WOLFY_CONTENT_ROOT
+        return fs::path(WOLFY_CONTENT_ROOT);
+#else
+        return fs::current_path();
+#endif
+    }
+
+    fs::path FindAssetPath(const fs::path& relativePath) {
+        const fs::path packagedPath = GetEngineBasePath() / relativePath;
+
+        if (fs::exists(packagedPath)) {
+            return packagedPath;
+        }
+
+        const fs::path sourcePath = GetContentRootPath() / relativePath;
+
+        if (fs::exists(sourcePath)) {
+            return sourcePath;
+        }
+
+        std::cout << "Asset not found. Tried:\n"
+                  << "Packaged: " << packagedPath << '\n'
+                  << "Source:   " << sourcePath << '\n';
+
+        return packagedPath;
+    }
+
     fs::path GetEngineBasePath() {
         const char *basePath = SDL_GetBasePath();
 

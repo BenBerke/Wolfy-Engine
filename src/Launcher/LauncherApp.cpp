@@ -63,9 +63,34 @@ namespace LauncherApp {
             return;
         }
 
-        SDL_Surface* windowIcon = IMG_Load("../LauncherAssets/Fox.png");
-        if (windowIcon == nullptr) std::cerr << "Failed to load image!" << SDL_GetError() << std::endl;
-        else if (!SDL_SetWindowIcon(window, windowIcon)) std::cerr << "Failed to set launcher image icon!" << SDL_GetError() << std::endl;
+        const fs::path basePath = ProjectManager::GetEngineBasePath();
+
+        // Window icon
+        const fs::path iconPath = basePath / "LauncherAssets" / "Fox.png";
+
+        std::cout << "Loading window icon from: " << iconPath << std::endl;
+
+        if (!fs::exists(iconPath)) {
+            std::cerr << "Icon file does not exist at: " << iconPath << std::endl;
+        }
+        else {
+            SDL_Surface* windowIcon = IMG_Load(iconPath.string().c_str());
+
+            if (windowIcon == nullptr) {
+                std::cerr << "Failed to load window icon: "
+                          << SDL_GetError()
+                          << std::endl;
+            }
+            else {
+                if (!SDL_SetWindowIcon(window, windowIcon)) {
+                    std::cerr << "Failed to set launcher window icon: "
+                              << SDL_GetError()
+                              << std::endl;
+                }
+
+                SDL_DestroySurface(windowIcon);
+            }
+        }
 
         IMGUI_CHECKVERSION();
         ImGui::CreateContext();
@@ -73,8 +98,12 @@ namespace LauncherApp {
         ImGuiIO& io = ImGui::GetIO();
         io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
 
+        const fs::path fontPath = ProjectManager::FindAssetPath("EngineAssets/Fonts/Notosans.ttf");
+
+        std::cout << "Loading ImGui font from: " << fontPath << std::endl;
+
         io.Fonts->AddFontFromFileTTF(
-            "../EngineAssets/Fonts/Notosans.ttf",
+            fontPath.string().c_str(),
             18.0f
         );
 
@@ -85,13 +114,26 @@ namespace LauncherApp {
 
         Localisation::LoadLanguage(langCode);
 
-        logo = IMG_LoadTexture(renderer, "../LauncherAssets/LogoWithWhiteText.png");
-        if (logo == nullptr) {
-            std::cerr << "Failed to load logo!" << std::endl;
+        // Background/logo texture
+        const fs::path logoPath = basePath / "LauncherAssets" / "LogoWithWhiteText.png";
+
+        std::cout << "Loading launcher logo from: " << logoPath << std::endl;
+
+        if (!fs::exists(logoPath)) {
+            std::cerr << "Logo file does not exist at: " << logoPath << std::endl;
         }
         else {
-            SDL_SetTextureBlendMode(logo, SDL_BLENDMODE_BLEND);
-            SDL_SetTextureAlphaMod(logo, 145);
+            logo = IMG_LoadTexture(renderer, logoPath.string().c_str());
+
+            if (logo == nullptr) {
+                std::cerr << "Failed to load logo: "
+                          << SDL_GetError()
+                          << std::endl;
+            }
+            else {
+                SDL_SetTextureBlendMode(logo, SDL_BLENDMODE_BLEND);
+                SDL_SetTextureAlphaMod(logo, 145);
+            }
         }
     }
 

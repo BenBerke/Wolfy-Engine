@@ -14,8 +14,7 @@ namespace RendererInternal {
             return false;
         }
 
-        const std::filesystem::path fontPath =
-        ProjectManager::GetEngineBasePath() / "../EngineAssets/Fonts/arial.ttf";
+        const fs::path fontPath = ProjectManager::FindAssetPath("EngineAssets/Fonts/Notosans.ttf");
 
         if (FT_New_Face(ft, fontPath.string().c_str(), 0, &face)) {
             SDL_Log("FT_New_Face Error. Tried path: %s", fontPath.string().c_str());

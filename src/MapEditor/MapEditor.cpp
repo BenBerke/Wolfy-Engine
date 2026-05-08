@@ -11,6 +11,7 @@
 #include "Headers/Objects/Entity.hpp"
 #include "Headers/Objects/Level.hpp"
 #include "Headers/Map/LevelManager.hpp"
+#include "Headers/Project/ProjectManager.hpp"
 
 
 namespace MapEditor {
@@ -38,17 +39,28 @@ namespace MapEditor {
             return;
         }
 
-        SDL_Surface* windowIcon = IMG_Load("../LauncherAssets/Fox.png");
-        if (windowIcon == nullptr) SDL_Log("IMG_Load Error: MapEditor.cpp: %s\n", SDL_GetError());
-        else if (!SDL_SetWindowIcon(window, windowIcon)) SDL_Log("SDL_SetWindowIcon Error on Map Editor: %s\n", SDL_GetError());
+        const fs::path iconPath = ProjectManager::GetEngineBasePath() / "LauncherAssets" / "Fox.png";
+        SDL_Surface* windowIcon = IMG_Load(iconPath.string().c_str());
+
+        if (windowIcon == nullptr)
+            SDL_Log("Mapeditor.cpp failed to load window icon: %s", SDL_GetError());
+        else {
+            if (!SDL_SetWindowIcon(window, windowIcon)) {
+                SDL_Log("Mapeditor.cpp failed to set window icon: %s", SDL_GetError());
+            }
+            SDL_DestroySurface(windowIcon);
+        }
 
         if (!TTF_Init()) {
             SDL_Log("TTF_INIT failed: %s\n", SDL_GetError());
             SDL_Quit();
             return;
         }
+        ;
 
-        font = TTF_OpenFont("../EngineAssets/Fonts/Notosans.ttf", FONT_SIZE);
+        const fs::path fontPath = ProjectManager::FindAssetPath("EngineAssets/Fonts/Notosans.ttf");
+
+        font = TTF_OpenFont(fontPath.string().c_str(), FONT_SIZE);
 
         if (!font) {
             SDL_Log("TTF_OpenFont failed: %s\n", SDL_GetError());
@@ -66,7 +78,7 @@ namespace MapEditor {
         io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
 
         io.Fonts->AddFontFromFileTTF(
-            "../EngineAssets/Fonts/Notosans.ttf",
+            fontPath.string().c_str(),
             18.0f
         );
 

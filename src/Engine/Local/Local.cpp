@@ -13,6 +13,8 @@
 
 #include "../../../Headers/Engine/Local/Local.hpp"
 
+#include "Headers/Project/ProjectManager.hpp"
+
 using json = nlohmann::json;
 namespace fs = std::filesystem;
 
@@ -35,14 +37,24 @@ namespace {
     }
 
     fs::path BuildLanguagePath(const std::string& languageCode) {
-        return GetEngineAssetsPath() / "Local" / (languageCode + ".json");
+        return ProjectManager::FindAssetPath(
+            fs::path("EngineAssets") / "Local" / (languageCode + ".json")
+        );
     }
 }
+
+//todo: Localisation doesn't work in the editor for the first time (It gets fixed after a restart)
 
 // Refer to Local.hpp for comments
 namespace Localisation {
     bool LoadLanguage(const std::string& languageCode) {
         const fs::path path = BuildLanguagePath(languageCode);
+
+        SDL_Log("Requested language: %s", languageCode.c_str());
+        SDL_Log("Current working directory: %s", fs::current_path().string().c_str());
+        SDL_Log("Engine base path: %s", ProjectManager::GetEngineBasePath().string().c_str());
+        SDL_Log("Trying localisation file: %s", path.string().c_str());
+        SDL_Log("Localisation file exists: %s", fs::exists(path) ? "true" : "false");
 
         std::ifstream file(path.string());
 

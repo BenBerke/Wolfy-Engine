@@ -1,5 +1,6 @@
 #include "../../Headers/Renderer/Renderer/Renderer.hpp"
 #include "RendererInternal.hpp"
+#include "Headers/Project/ProjectManager.hpp"
 
 #include "Headers/Math/Matrix/Matrix4.hpp"
 #include "imgui.h"
@@ -74,9 +75,18 @@ namespace Renderer {
             SDL_Log("SDL_CreateWindow Error: %s\n", SDL_GetError());
             return false;
         }
-        SDL_Surface* windowIcon = IMG_Load("../LauncherAssets/Fox.png");
-        if (windowIcon == nullptr) SDL_Log("IMG_Load Error: RendererInit.cpp: %s\n", SDL_GetError());
-        else if (!SDL_SetWindowIcon(window, windowIcon)) SDL_Log("SDL_SetWindowIcon Error on RendererInit.cpp: %s\n", SDL_GetError());
+
+        const fs::path iconPath = ProjectManager::GetEngineBasePath() / "LauncherAssets" / "Fox.png";
+        SDL_Surface* windowIcon = IMG_Load(iconPath.string().c_str());
+
+        if (windowIcon == nullptr)
+            SDL_Log("RendererInit.cpp failed to load window icon: %s", SDL_GetError());
+        else {
+            if (!SDL_SetWindowIcon(window, windowIcon)) {
+                SDL_Log("RendeerInit.cpp failed to set window icon: %s", SDL_GetError());
+            }
+            SDL_DestroySurface(windowIcon);
+        }
 
         if (!InitializeOpenGL()) {
             SDL_Log("Initialize OpenGL Error: %s\n", SDL_GetError());
@@ -100,9 +110,10 @@ namespace Renderer {
     }
 
     bool InitProjection() {
+        const fs::path shaderPath = ProjectManager::GetEngineBasePath() / "Shaders";
         projectionShader = std::make_unique<Shader>(
-            "../Shaders/Rendering/Rendering.vs.glsl",
-            "../Shaders/Rendering/Rendering.fs.glsl"
+    (shaderPath / "Rendering" / "Rendering.vs.glsl").string().c_str(),
+    (shaderPath / "Rendering" / "Rendering.fs.glsl").string().c_str()
         );
 
         if (projectionShader->ID == 0) {
@@ -111,8 +122,8 @@ namespace Renderer {
         }
 
         backgroundShader = std::make_unique<Shader>(
-            "../Shaders/Background/Background.vs.glsl",
-            "../Shaders/Background/Background.fs.glsl"
+    (shaderPath / "Background" / "Background.vs.glsl").string().c_str(),
+    (shaderPath / "Background" / "Background.fs.glsl").string().c_str()
         );
 
         if (backgroundShader->ID == 0) {
@@ -145,11 +156,12 @@ namespace Renderer {
             0, 1, 3,
             1, 2, 3
         };
-
+        const fs::path shaderPath = ProjectManager::GetEngineBasePath() / "Shaders";
         uiShader = std::make_unique<Shader>(
-            "../Shaders/UI/UI.vs.glsl",
-            "../Shaders/UI/UI.fs.glsl"
+    (shaderPath / "UI" / "UI.vs.glsl").string().c_str(),
+    (shaderPath / "UI" / "UI.fs.glsl").string().c_str()
         );
+
 
         if (uiShader->ID == 0) {
             SDL_Log("UI Shader creation failed");
@@ -209,10 +221,12 @@ namespace Renderer {
     }
 
     bool InitDebug() {
+
+        const fs::path shaderPath = ProjectManager::GetEngineBasePath() / "Shaders";
         debugShader = std::make_unique<Shader>(
-                "../Shaders/Debug/debug.vs.glsl",
-                "../Shaders/Debug/debug.fs.glsl"
-            );
+    (shaderPath / "Debug" / "debug.vs.glsl").string().c_str(),
+    (shaderPath / "Debug" / "debug.fs.glsl").string().c_str()
+        );
 
         if (debugShader->ID == 0) {
             SDL_Log("Debug Shader creation failed");
@@ -239,9 +253,10 @@ namespace Renderer {
     }
 
     bool InitText() {
+        const fs::path shaderPath = ProjectManager::GetEngineBasePath() / "Shaders";
         textShader = std::make_unique<Shader>(
-            "../Shaders/Glyph/glyph.vs.glsl",
-            "../Shaders/Glyph/glyph.fs.glsl"
+    (shaderPath / "Glyph" / "glyph.vs.glsl").string().c_str(),
+    (shaderPath / "Glyph" / "glyph.fs.glsl").string().c_str()
         );
 
         if (textShader->ID == 0) {

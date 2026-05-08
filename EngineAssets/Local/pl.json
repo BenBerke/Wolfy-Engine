@@ -18,7 +18,7 @@
   "mode.dot": "Tryb Kropek",
   "mode.wall": "Tryb Ścian",
   "mode.sector": "Tryb Sektorów",
-  "mode.entity": "Tryb Objektów/Postaci",
+  "mode.entity": "Tryb Objektów",
   "mode.unknown": "Nieznany Tryb",
 
   "sector.title": "Sektor",
@@ -41,7 +41,7 @@
   "math.vector2.y" : "Y",
 
   "entity.name" : "Nazwa",
-  "entity.title": "Postać",
+  "entity.title": "Objekt",
   "entity.add_component": "Dodaj Komponent",
   "entity.delete": "Usuń",
   "entity.components" : "Komponenty",

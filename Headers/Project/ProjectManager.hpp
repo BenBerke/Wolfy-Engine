@@ -155,6 +155,10 @@ namespace ProjectManager {
     // TestProject
     std::string GetProjectName();
 
+    std::filesystem::path GetContentRootPath();
+
+    std::filesystem::path FindAssetPath(const std::filesystem::path& relativePath);
+
 }
 
 #endif //WOLFY_ENGINE_PROJECTMANAGER_H
