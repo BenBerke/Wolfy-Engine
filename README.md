@@ -187,8 +187,6 @@ Audio system with OpenAL
         |
 Visual UI Editor
         |
-Runtime scripting with C++
-        |
 Packaged builds -> Beta release on itch.io
         |
 Improved editor workflow
