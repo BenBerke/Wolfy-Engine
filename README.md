@@ -18,13 +18,15 @@ Launches the engine with the selected project file.
 ## Project System
 Each project contains its own metadata and assets:
 
-Tilky Engine/
-└── Projects/
-    └── MyProject/
-        ├── project.tilky
-        └── Assets/
-            ├── Levels/
+```
+Tilky Engine/  
+└── Projects/  
+    └── MyProject/  
+        ├── project.tilky  
+        └── Assets/  
+            ├── Levels/  
             └── Textures/
+```
 The engine loads project-specific levels, textures, and metadata through the project manager.
 
 ## Level Editor
@@ -47,10 +49,12 @@ Tilky Engine uses a data-oriented ECS structure where entities own IDs and compo
 
 Current component types include:
 
+```
 ComponentTransform
 ComponentSprite
 ComponentDecal
 ComponentPlayerSpawn
+```
 
 This allows editor-side entity editing while keeping runtime systems cache-friendly by iterating over component storage.
 
@@ -75,6 +79,7 @@ The launcher and editor use JSON-based localisation files stored in:
 EngineAssets/Local/ 
 
 ## Tech Stack
+```
 C++20
 CMake
 SDL3
@@ -85,12 +90,13 @@ SDL3_image
 SDL3_ttf
 FreeType
 nlohmann/json
+```
 
 ## Building
 Requirements
 
 You need:
-
+```
 A C++20-compatible compiler
 CMake
 SDL3
@@ -101,6 +107,7 @@ nlohmann/json
 OpenGL
 GLAD
 Dear ImGui
+```
 
 The project is currently developed on Windows using CLion and vcpkg.
 
@@ -108,13 +115,13 @@ The project is currently developed on Windows using CLion and vcpkg.
 
 The project has three main runnable targets:
 
-Wolfy_Launcher
+**Wolfy_Launcher**
 Builds and runs only the launcher.
 
-Wolfy_Engine
+**Wolfy_Engine**
 Builds and runs only the engine/editor/runtime.
 
-Wolfy_All
+**Wolfy_All**
 Builds the launcher and engine code together for development convenience.
 
 ## Basic Usage
@@ -132,6 +139,7 @@ Wall Mode
 Sector Mode
 Entity Mode
 
+```
 General controls:
 Q               Change editor mode
 Left Mouse      Place/select/edit depending on mode
@@ -139,16 +147,18 @@ Middle Mouse    Pan editor camera
 Mouse Wheel     Zoom editor view
 Ctrl + Z        Undo recent editor action
 Escape          Quit
+```
 
 ## File Formats
 Project File
 
 Each project has a project.tilky file:
-
+```
 {
     "name": "MyProject",
     "assetsFolder": "Assets"
 }
+```
 
 ## Level File
 
@@ -172,7 +182,7 @@ The project is still in development, so internal APIs and file formats may chang
 
 ## Roadmap
 Roadmap:
-
+```
 Audio system with OpenAL
         |
 Visual UI Editor
@@ -188,10 +198,11 @@ Runtime scripting with LUA
 Better documentation for engine architecture -> Release on Steam
         |
 Networking Support
+```
 
 ## License
 
-This project is licensed under the Apache License 2.0.
+This project is licensed under the **Apache License 2.0**.
 See the LICENSE file for details.
 
 Games made with Tilky Engine may be sold commercially. You do not need to open-source your game code just because you used the engine.
