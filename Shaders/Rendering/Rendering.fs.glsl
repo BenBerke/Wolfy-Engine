@@ -64,6 +64,8 @@ flat in vec4 vSpriteColor;
 // Selects whether this fragment is being drawn as a wall, flat, sprite, or decal.
 uniform int renderMode;
 
+flat in float fDecalTextureWidth;
+
 out vec4 FragColor;
 
 const float nearPlane = 0.1;
@@ -192,8 +194,8 @@ void main() {
         across
         ) / invZ;
 
-        float decalWidth = max(abs(fSEnd - fSStart), 0.0001);
-        float u = s / decalWidth;
+        float u = s / max(fDecalTextureWidth, 0.0001);
+        u = clamp(u, 0.0, 1.0);
 
         vec2 uv = vec2(u, v);
 

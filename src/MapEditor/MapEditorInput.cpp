@@ -156,7 +156,7 @@ namespace MapEditorInternal {
                         const Wall newWall(
                             lineStartWorld,
                             snappedWorld,
-                            {0, 0, 0, 255},
+                            {255, 255, 255, 255},
                             -1,
                             -1,
                             0,

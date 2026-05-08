@@ -32,7 +32,7 @@
 
   "wall.title": "Duvar",
   "wall.front_sector": "Ön Kesim",
-  "wall.back_sector": "Back Sector",
+  "wall.back_sector": "Arka Kesim",
   "wall.texture_index": "Doku Dizini",
   "wall.floor": "Kat",
   "wall.color": "Duvar Rengi",

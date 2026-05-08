@@ -158,6 +158,8 @@ float horizonY = SCREEN_HEIGHT * playerCamZ;
 const float wallHeight = 32.0;
 const float nearPlane = 0.1;
 
+flat out float fDecalTextureWidth;
+
 float degToRad(float angle) {
     return angle * (PI / 180.0);
 }
@@ -231,6 +233,8 @@ void outputDummyWallData() {
 
     fWallTextureAnchorHeight = 0.0;
     fWallTextureDirection = -1.0;
+
+    fDecalTextureWidth = 1.0;
 }
 
 void renderFlat() {
@@ -410,6 +414,9 @@ void renderWall() {
     vec2 viewEnd = rotate(relativeEnd, playerAngleInRad);
 
     float wallLength = length(wallEnd - wallStart);
+
+    fDecalTextureWidth = 1.0;
+
     float sStart = 0.0;
     float sEnd = wallLength;
 
@@ -504,9 +511,12 @@ void renderDecal() {
     vec2 viewStart = rotate(relativeStart, playerAngleInRad);
     vec2 viewEnd = rotate(relativeEnd, playerAngleInRad);
 
-    float wallLength = length(wallEnd - wallStart);
+    float decalWidth = length(wallEnd - wallStart);
+
+    fDecalTextureWidth = max(decalWidth, 0.0001);
+
     float sStart = 0.0;
-    float sEnd = wallLength;
+    float sEnd = decalWidth;
 
     if (viewStart.y <= nearPlane && viewEnd.y <= nearPlane) {
         gl_Position = vec4(2.0, 2.0, 0.0, 1.0);
