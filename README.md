@@ -34,7 +34,6 @@ The engine loads project-specific levels, textures, and metadata through the pro
 ## Level Editor
 The editor is built using DearImGui and supports:
 ```
-Dot placement
 Wall creation
 Sector creation
 Floor/ceiling editing
