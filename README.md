@@ -223,3 +223,6 @@ ThatGuyMiki (Polish)
 Myself (English & Turkish)
 ```
 for helping to translate the Tilky Engine
+
+## Disclaimer
+Parts of this codebase were developed with the assistance of AI coding tools. All AI-generated contributions have been manually reviewed, tested, and verified for performance and security by the maintainers.
