@@ -215,14 +215,12 @@ Assets, fonts, textures, and example project files may have separate licences wh
 
 Created by Berke Memioğlu as a custom C++ game engine and editor project.
 
-## Translations
-Special thanks to:
-   ```
-Ilya Brezhnev (Russian & Kazakh)
-ThatGuyMiki (Polish)
-Myself (English & Turkish)
-```
-for helping to translate the Tilky Engine
-
+## Credits
+* **Logo** Sourced from public web assets. If you are the original creator of this logo, please reach out or open an issue so I can provide proper credit or replace it.
+* **Translations:** Russian & Kazakh: Ilya Brezhnev
+    * Polish: ThatGuyMiki
+    * English & Turkish: Berke Memioğlu
+      
 ## Disclaimer
 Parts of this codebase were developed with the assistance of AI coding tools. All AI-generated contributions have been manually reviewed, tested, and verified for performance and security by the maintainers.
+
