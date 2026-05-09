@@ -54,7 +54,7 @@
   "component.decal": "Decal",
   "component.player_spawn": "Player Spawn",
 
-  "component.transform.position" : "Positon",
+  "component.transform.position" : "Position",
   "component.transform.scale" : "Scale",
   "component.transform.floor" : "Floor",
 

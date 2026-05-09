@@ -269,6 +269,7 @@ target_compile_definitions(Wolfy_LauncherCore PUBLIC
 
 add_executable(Wolfy_Launcher
         src/Launcher/LauncherMain.cpp
+        resources/WolfyIcon.rc
 )
 
 target_link_libraries(Wolfy_Launcher PRIVATE
@@ -284,6 +285,7 @@ target_link_libraries(Wolfy_Launcher PRIVATE
 
 add_executable(Wolfy_Engine
         src/EngineApp/EngineMain.cpp
+        resources/WolfyIcon.rc
 )
 
 target_link_libraries(Wolfy_Engine PRIVATE
@@ -298,6 +300,7 @@ target_link_libraries(Wolfy_Engine PRIVATE
 
 add_executable(Wolfy_All
         src/Launcher/LauncherMain.cpp
+        resources/WolfyIcon.rc
 )
 
 target_link_libraries(Wolfy_All PRIVATE
@@ -309,3 +312,72 @@ add_dependencies(Wolfy_All
         Wolfy_Launcher
         Wolfy_Engine
 )
+
+# ============================================================
+# Runtime assets
+# Copy folders needed by the .exe into the build output folder.
+# ============================================================
+
+set(WOLFY_RUNTIME_ASSET_DIRS
+        EngineAssets
+        LauncherAssets
+        Shaders
+        Fonts
+        Textures
+)
+
+function(copy_runtime_assets target_name)
+    foreach(asset_dir IN LISTS WOLFY_RUNTIME_ASSET_DIRS)
+        if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${asset_dir}")
+            add_custom_command(TARGET ${target_name} POST_BUILD
+                    COMMAND ${CMAKE_COMMAND} -E copy_directory
+                    "${CMAKE_CURRENT_SOURCE_DIR}/${asset_dir}"
+                    "$<TARGET_FILE_DIR:${target_name}>/${asset_dir}"
+                    COMMENT "Copying ${asset_dir} to $<TARGET_FILE_DIR:${target_name}>"
+            )
+        else()
+            message(STATUS "Skipping missing runtime asset folder: ${asset_dir}")
+        endif()
+    endforeach()
+endfunction()
+
+copy_runtime_assets(Wolfy_Launcher)
+copy_runtime_assets(Wolfy_Engine)
+copy_runtime_assets(Wolfy_All)
+
+# ============================================================
+# Runtime DLLs
+# Copy SDL/vcpkg DLLs beside the .exe on Windows.
+# ============================================================
+
+function(copy_runtime_dlls target_name)
+    if(WIN32)
+        add_custom_command(TARGET ${target_name} POST_BUILD
+                COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                $<TARGET_RUNTIME_DLLS:${target_name}>
+                $<TARGET_FILE_DIR:${target_name}>
+                COMMAND_EXPAND_LISTS
+                COMMENT "Copying runtime DLLs for ${target_name}"
+        )
+    endif()
+endfunction()
+
+# ============================================================
+# Hide console window in Release builds on Windows
+# ============================================================
+
+function(make_gui_in_release target_name)
+    if(WIN32)
+        set_target_properties(${target_name} PROPERTIES
+                WIN32_EXECUTABLE "$<CONFIG:Release>"
+        )
+    endif()
+endfunction()
+
+make_gui_in_release(Wolfy_Launcher)
+make_gui_in_release(Wolfy_Engine)
+make_gui_in_release(Wolfy_All)
+
+copy_runtime_dlls(Wolfy_Launcher)
+copy_runtime_dlls(Wolfy_Engine)
+copy_runtime_dlls(Wolfy_All)

@@ -167,7 +167,7 @@ namespace LauncherApp {
         }
         if (creatingProject) {
             ImGui::SetNextWindowSize(ImVec2(static_cast<float>(windowWidth) * 0.5f, 100.0f), ImGuiCond_Always);
-            ImGui::SetNextWindowPos(ImVec2(static_cast<float>(windowWidth) * .25f, static_cast<float>(windowHeight) * .5f), ImGuiCond_Always);
+            ImGui::SetNextWindowPos(ImVec2(static_cast<float>(windowWidth) * .25f, static_cast<float>(windowHeight) * .8f), ImGuiCond_Always);
             ImGui::Begin(Localisation::Get("launcher.create_project").c_str(), nullptr, ImGuiWindowFlags_NoCollapse);
 
             ImGui::InputText(Localisation::Get("launcher.input_name").c_str(), projectName.data(), projectName.size());
