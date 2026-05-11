@@ -8,7 +8,7 @@ You can use any script you want (Arabic, Cyrillic, Latin etc.)
 
 If your language is not supported by Noto Sans please inform a contributor. (But you can write to the translation file as norma)
 
-To check if your language is supported by Noto Sans: [https://fonts.google.com/noto/specimen/Noto+Sans](Click Here)
+To check if your language is supported by Noto Sans: https://fonts.google.com/noto/specimen/Noto+Sans
 
 #### Do not forget to add commas after each line, except for the last line
 
