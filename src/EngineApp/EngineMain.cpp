@@ -166,8 +166,9 @@ static void TempOpenAL() {
     spdlog::info("OpenAL initialized");
 
     ALuint buffer = 0;
+    const fs::path shootPath = ProjectManager::FindAssetPath(fs::path("EngineAssets") / "Shoot.wav");
 
-    if (!LoadWAVToOpenALBuffer("C:/Users/berke/Desktop/CLion Projects/Wolfy Engine/Shoot.wav", buffer)) {
+    if (!LoadWAVToOpenALBuffer(shootPath.string().c_str(), buffer)) {
         alcMakeContextCurrent(nullptr);
         alcDestroyContext(context);
         alcCloseDevice(device);
