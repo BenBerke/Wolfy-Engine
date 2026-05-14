@@ -3,9 +3,13 @@
 
   "editor.title": "Editor",
   "editor.mode": "Mode",
+
   "editor.create_sector": "Create Sector",
-  "editor.create_texture": "Create Texture",
+
   "editor.texture": "Texture",
+  "editor.sound": "Sound",
+
+  "editor.refresh_textures": "Refresh Texture",
   "editor.background_texture": "Background Texture",
   "editor.floor": "Floor",
   "editor.save": "Save",
@@ -55,6 +59,7 @@
   "component.sprite": "Sprite",
   "component.decal": "Decal",
   "component.player_spawn": "Player Spawn",
+  "component.audio_source": "Audio Source",
 
   "component.transform.position" : "Position",
   "component.transform.scale" : "Scale",
@@ -67,6 +72,11 @@
   "component.decal.wall_offset" : "Horizontal Position",
   "component.decal.wall_normal_offset" : "Distance from Wall",
   "component.decal.abs_height" : "Absolute Height",
+
+  "component.audio_source.pitch" : "Pitch",
+  "component.audio_source.gain" : "Gain",
+  "component.audio_source.looping" : "Looping",
+  "component.audio_source.file_name" : "File Name",
 
   "common.delete": "Delete",
   "common.close": "Close",

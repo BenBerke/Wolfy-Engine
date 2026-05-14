@@ -1,17 +1,18 @@
-#include "../../Headers/Renderer/TextureManager.hpp"
+#include "../../Headers/Runtime/Renderer/TextureManager.hpp"
 #include "Headers/Project/ProjectManager.hpp"
 
-#include <SDL3/SDL_log.h>
 #include <SDL3/SDL_surface.h>
 #include <SDL3_image/SDL_image.h>
 #include <spdlog/spdlog.h>
 
+#include "Headers/Map/LevelManager.hpp"
+#include "Headers/Objects/Loadables.hpp"
+
 namespace {
-    std::vector<Texture> textures;
+    std::vector<GPUTexture> textures;
 }
 
 namespace TextureManager {
-
     int CreateTexture(const std::string& _path) {
         const std::string path = ProjectManager::GetTexturesPath().string() + "/" + _path + ".png";
         SDL_Surface* loadedSurface = IMG_Load(path.c_str());
@@ -90,7 +91,7 @@ namespace TextureManager {
         //
         // glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_LOD_BIAS, -0.25f);
 
-        Texture texture;
+        GPUTexture texture;
         texture.id = textureID;
         texture.width = convertedSurface->w;
         texture.height = convertedSurface->h;
@@ -102,7 +103,31 @@ namespace TextureManager {
         return static_cast<int>(textures.size()) - 1;
     }
 
-    const Texture& GetTexture(const int index) {
+    void RefreshTexturesFromLevel() {
+        DestroyAll();
+        const Level& level = LevelManager::CurrentLevel();
+
+        for (const Texture& texture : level.textures) {
+            if (texture.fileName.empty()) {
+                continue;
+            }
+
+            const int textureIndex = CreateTexture(texture.fileName);
+
+            if (textureIndex == -1) {
+                spdlog::error("Failed to create renderer texture: {}", texture.fileName);
+                continue;
+            }
+
+            spdlog::info("Created renderer texture '{}' at index {}",
+                         texture.fileName,
+                         textureIndex);
+        }
+
+        spdlog::info("Created {} renderer texture(s) from level texture list", textures.size());
+    }
+
+    const GPUTexture& GetTexture(const int index) {
         return textures[index];
     }
 
@@ -118,7 +143,7 @@ namespace TextureManager {
     }
 
     void DestroyAll() {
-        for (Texture& texture : textures) {
+        for (GPUTexture& texture : textures) {
             if (texture.id != 0) {
                 glDeleteTextures(1, &texture.id);
                 texture.id = 0;

@@ -44,11 +44,10 @@ namespace MapEditorInternal {
 
     bool playerPlaced = false;
 
-    std::vector<std::array<char, 256>> textureInputs;
-
     std::vector<Action> actions;
 
     int currentFloor;
 
     bool quit = false;
+    bool shutdown = false;
 }

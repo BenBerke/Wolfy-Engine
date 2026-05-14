@@ -7,19 +7,52 @@
 #include <algorithm>
 #include <vector>
 #include <unordered_map>
+#include <AL/al.h>
 
 #include "../Math/Vector/Vector2.hpp"
 #include "../Objects/Sector.hpp"
 #include "Headers/Map/MapQueries.hpp"
 #include "EntityTypes.hpp"
+#include "Headers/Project/ProjectManager.hpp"
+#include "Headers/Runtime/Sound/SoundManager.hpp"
 
 enum ComponentType {
     CMP_TRANSFORM,
     CMP_SPRITE,
     CMP_PLAYER_SPAWN,
     CMP_DECAL,
+    CMP_AUDIO_SOURCE,
 
     CMP_COUNT,
+};
+
+struct ComponentAudioSource {
+    EntityID ownerID = -1;
+    std::string name;
+
+    float pitch, gain;
+    bool looping;
+
+    void PlaySound(const std::string& soundName) const {
+        SoundManager::PlaySoundOnSource(name, soundName);
+    }
+
+    void SetSourcePitch(const float pitch) const {
+        SoundManager::SetSourcePitch(name, pitch);
+    }
+
+    void SetSourceGain(const float gain) const {
+        SoundManager::SetSourceGain(name, gain);
+    }
+
+    void SetSourceLooping(const bool looping) const {
+        SoundManager::SetSourceLooping(name, looping);
+    }
+
+    void SetSourcePosition(const Vector3& position) const {
+        SoundManager::SetSourcePosition(name, position);
+    }
+
 };
 
 // Stores things related to the entity's whereabouts

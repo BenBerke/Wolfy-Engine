@@ -131,6 +131,12 @@ namespace ProjectManager {
     // C:\Users\x\Documents\Tilky Engine\Projects\TestProject\Assets\Levels
     fs::path GetLevelsPath();
 
+    // Returns the Sounds folder of the currently loaded project.
+    // This is where project-specific sound files should be saved and loaded from.
+    // Example:
+    // C:\Users\x\Documents\Tilky Engine\Projects\TestProject\Assets\Sounds
+    fs::path GetSoundsPath();
+
     // Returns the folder where the currently running executable is located.
     // This comes from SDL_GetBasePath(), so in CLion it usually points to the build folder.
     // This is NOT the same as the user's Documents\Tilky Engine folder.

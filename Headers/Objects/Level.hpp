@@ -6,9 +6,12 @@
 #define TILKY_ENGINE_LEVEL_H
 #include <vector>
 #include <string>
+#include <spdlog/spdlog.h>
 
 #include "Components.hpp"
 #include "Entity.hpp"
+#include "Loadables.hpp"
+#include "Headers/Runtime/Renderer/TextureManager.hpp"
 
 struct Level {
     LevelID id = 0;
@@ -21,10 +24,14 @@ struct Level {
     std::vector<Wall> walls;
     std::vector<Sector> sectors;
 
+    std::vector<Texture> textures;
+    std::vector<Sound> sounds;
+
     ComponentStorage<ComponentTransform> transforms;
     ComponentStorage<ComponentSprite> sprites;
     ComponentStorage<ComponentDecal> decals;
     ComponentStorage<ComponentPlayerSpawn> playerSpawns;
+    ComponentStorage<ComponentAudioSource> audioSources;
 
     Entity& CreateEntity() {
         Entity entity;
@@ -52,6 +59,13 @@ struct Level {
     }
     void DestroyEntity(const Entity& entity) {
         DestroyEntity(entity.id);
+    }
+
+    void Start() {
+    }
+
+    void Update() {
+        for (Entity& entity : entities) entity.Update();
     }
 };
 

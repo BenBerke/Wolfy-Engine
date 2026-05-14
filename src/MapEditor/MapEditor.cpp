@@ -86,6 +86,13 @@ namespace MapEditor {
         ImGui_ImplSDLRenderer3_Init(renderer);
 
         UpdateLevels();
+
+        if (!LevelManager::HasCurrentLevel()) {
+            LevelManager::loadedLevels.emplace_back();
+            LevelManager::currentLevelIndex = 0;
+        }
+
+        RefreshLevelTexturesFromFolder();
     }
 
     void Update() {
@@ -184,6 +191,10 @@ namespace MapEditor {
 
     bool QuitRequested() {
         return MapEditorInternal::quit;
+    }
+
+    bool ShutdownRequested() {
+        return MapEditorInternal::shutdown;
     }
 
     void Destroy() {

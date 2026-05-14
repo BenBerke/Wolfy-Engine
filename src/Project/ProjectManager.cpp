@@ -27,6 +27,7 @@ namespace {
     fs::path currentAssetsPath;
     fs::path currentLevelsPath;
     fs::path currentTexturesPath;
+    fs::path currentSoundsPath;
 
     std::string currentProjectName;
 }
@@ -151,38 +152,41 @@ namespace ProjectManager {
         const fs::path assetsPath = directory / "Assets";
         const fs::path levelsPath = assetsPath / "Levels";
         const fs::path texturesPath = assetsPath / "Textures";
+        const fs::path soundsPath = assetsPath / "Sounds";
 
         bool openProject = true;
 
         try {
             if (!fs::exists(assetsPath)) {
                 if (!fs::create_directories(assetsPath)) {
-                    spdlog::error("Could not create project assets folder: {}", assetsPath.string());
+                    spdlog::critical("Could not create project assets folder: {}", assetsPath.string());
                     openProject = false;
                 }
-                else {
-                    spdlog::info("Created project assets folder: {}", assetsPath.string());
-                }
+                else spdlog::info("Created project assets folder: {}", assetsPath.string());
             }
 
             if (!fs::exists(levelsPath)) {
                 if (!fs::create_directories(levelsPath)) {
-                    spdlog::error("Could not create project levels folder: {}", levelsPath.string());
+                    spdlog::critical("Could not create project levels folder: {}", levelsPath.string());
                     openProject = false;
                 }
-                else {
-                    spdlog::info("Created project levels folder: {}", levelsPath.string());
-                }
+                else spdlog::info("Created project levels folder: {}", levelsPath.string());
             }
 
             if (!fs::exists(texturesPath)) {
                 if (!fs::create_directories(texturesPath)) {
-                    spdlog::error("Could not create project textures folder: {}", texturesPath.string());
+                    spdlog::critical("Could not create project textures folder: {}", texturesPath.string());
                     openProject = false;
                 }
-                else {
-                    spdlog::info("Created project textures folder: {}", texturesPath.string());
+                else spdlog::info("Created project textures folder: {}", texturesPath.string());
+            }
+
+            if (!fs::exists(soundsPath)) {
+                if (!fs::create_directories(soundsPath)) {
+                    spdlog::critical("Could not create project sounds folder: {}", soundsPath.string());
+                    openProject = false;
                 }
+                else spdlog::info("Created sounds path folder: {}", soundsPath.string());
             }
 
             const fs::path dataPath = directory / "project.tilky";
@@ -272,20 +276,25 @@ namespace ProjectManager {
         currentAssetsPath = currentProjectFolder / assetsFolder;
         currentLevelsPath = currentAssetsPath / "Levels";
         currentTexturesPath = currentAssetsPath / "Textures";
+        currentSoundsPath = currentAssetsPath / "Sounds";
 
         if (!fs::exists(currentAssetsPath)) {
-            spdlog::error("Project is missing Assets folder: {}", currentAssetsPath.string());
+            spdlog::critical("Project is missing Assets folder: {}", currentAssetsPath.string());
             return false;
         }
 
         if (!fs::exists(currentLevelsPath)) {
-            spdlog::error("Project is missing Levels folder: {}", currentLevelsPath.string());
+            spdlog::critical("Project is missing Levels folder: {}", currentLevelsPath.string());
             return false;
         }
 
         if (!fs::exists(currentTexturesPath)) {
-            spdlog::error("Project is missing Textures folder: {}", currentTexturesPath.string());
+            spdlog::critical("Project is missing Textures folder: {}", currentTexturesPath.string());
             return false;
+        }
+
+        if (!fs::exists(currentSoundsPath)) {
+            spdlog::critical("Project is missing Sounds folder: {}", currentSoundsPath.string());
         }
 
         projectLoaded = true;
@@ -319,6 +328,10 @@ namespace ProjectManager {
 
     fs::path GetLevelsPath() {
         return currentLevelsPath;
+    }
+
+    fs::path GetSoundsPath() {
+        return currentSoundsPath;
     }
 
     fs::path GetContentRootPath() {

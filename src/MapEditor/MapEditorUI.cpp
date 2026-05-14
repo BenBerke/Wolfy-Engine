@@ -25,8 +25,58 @@ namespace {
     std::optional<std::string> pendingLevelToLoad;
 }
 
+namespace MapEditor {
+    void RefreshLevelTexturesFromFolder() {
+        Level& level = LevelManager::CurrentLevel();
+        level.textures.clear();
+
+        const std::filesystem::path texturesPath = ProjectManager::GetTexturesPath();
+
+        if (!std::filesystem::exists(texturesPath)) {
+            std::filesystem::create_directories(texturesPath);
+            spdlog::warn("Created missing Textures folder: {}", texturesPath.string());
+            return;
+        }
+
+        if (!std::filesystem::is_directory(texturesPath)) {
+            spdlog::error("Textures path is not a directory: {}", texturesPath.string());
+            return;
+        }
+
+        for (const auto& entry : std::filesystem::directory_iterator(texturesPath)) {
+            if (!entry.is_regular_file()) {
+                continue;
+            }
+
+            const std::filesystem::path& path = entry.path();
+
+            std::string extension = path.extension().string();
+
+            std::ranges::transform(extension, extension.begin(), [](const unsigned char c) {
+                return static_cast<char>(std::tolower(c));
+            });
+
+            if (extension != ".png") {
+                continue;
+            }
+
+            Texture texture;
+            texture.fileName = path.stem().string(); // "Brick.png" -> "Brick"
+
+            level.textures.push_back(texture);
+        }
+
+        std::ranges::sort(level.textures, [](const Texture& a, const Texture& b) {
+            return a.fileName < b.fileName;
+        });
+
+        spdlog::info("Refreshed {} level texture(s)", level.textures.size());
+    }
+}
 
 namespace MapEditorInternal {
+    using namespace Localisation;
+
     void ChangeMode() {
         currentMode = static_cast<Mode>((currentMode + 1) % MODE_COUNT);
     }
@@ -67,16 +117,49 @@ namespace MapEditorInternal {
         return true;
     }
 
-    void DrawEditorUI() {
-        using namespace Localisation;
+    void PutSpace(const int n) {
+        for (int i = 0; i < n; i++) ImGui::Spacing();
+    }
 
+    void DrawTextureCategory() {
+        Level& level = LevelManager::CurrentLevel();
+
+        if (ImGui::Button(Get("editor.refresh_textures").c_str())) {
+            MapEditor::RefreshLevelTexturesFromFolder();
+        }
+
+        for (int i = 0; i < static_cast<int>(level.textures.size()); i++) {
+            ImGui::PushID(i);
+
+            ImGui::Text("%d: %s", i, level.textures[i].fileName.c_str());
+
+            ImGui::PopID();
+        }
+
+        PutSpace(5);
+
+        int bgTextureIndex = MapEditor::backgroundTextureIndex;
+        ImGui::InputInt(Get("editor.background_texture").c_str(), &bgTextureIndex);
+        MapEditor::backgroundTextureIndex = bgTextureIndex;
+
+        PutSpace(2);
+    }
+
+    void DrawSoundCategory() {
+        const Level& level = LevelManager::CurrentLevel();
+        for (int i = 0; i < level.sounds.size(); i++) {
+            ImGui::PushID(i);
+
+            ImGui::Text(level.sounds[i].fileName.c_str());
+
+            ImGui::PopID();
+        }
+    }
+
+    void DrawEditorUI() {
         Level& level = LevelManager::CurrentLevel();
 
         ImGui::Begin(Get("editor.title").c_str());
-
-        auto PutSpace = [](const int amount) {
-            for (int i = 0; i < amount; i++) ImGui::Spacing();
-        };
 
         if (ImGui::Button(Get("editor.mode").c_str())) {
             const Mode previousMode = currentMode;
@@ -260,6 +343,7 @@ namespace MapEditorInternal {
                     componentNames[CMP_SPRITE] = Get("component.sprite");
                     componentNames[CMP_DECAL] = Get("component.decal");
                     componentNames[CMP_PLAYER_SPAWN] = Get("component.player_spawn");
+                    componentNames[CMP_AUDIO_SOURCE] = Get("component.audio_source");
 
                     if (ImGui::BeginCombo(Get("component.component").c_str(),componentNames[componentToAdd].c_str())) {
                         for (int i = 0; i < CMP_COUNT; i++) {
@@ -282,16 +366,10 @@ namespace MapEditorInternal {
                     }
 
                     if (ImGui::Button(Get("common.add").c_str())) {
-                        if (componentToAdd == CMP_SPRITE &&
-                            !entity.HasComponent<ComponentSprite>()) {
-                            entity.AddComponent<ComponentSprite>();
-                        } else if (componentToAdd == CMP_DECAL &&
-                                   !entity.HasComponent<ComponentDecal>()) {
-                            entity.AddComponent<ComponentDecal>();
-                        } else if (componentToAdd == CMP_PLAYER_SPAWN &&
-                                   !entity.HasComponent<ComponentPlayerSpawn>()) {
-                            entity.AddComponent<ComponentPlayerSpawn>();
-                        }
+                        if (componentToAdd == CMP_SPRITE && !entity.HasComponent<ComponentSprite>()) entity.AddComponent<ComponentSprite>();
+                        else if (componentToAdd == CMP_DECAL && !entity.HasComponent<ComponentDecal>()) entity.AddComponent<ComponentDecal>();
+                        else if (componentToAdd == CMP_PLAYER_SPAWN && !entity.HasComponent<ComponentPlayerSpawn>()) entity.AddComponent<ComponentPlayerSpawn>();
+                        else if (componentToAdd == CMP_AUDIO_SOURCE && !entity.HasComponent<ComponentAudioSource>()) entity.AddComponent<ComponentAudioSource>();
 
                         addingComponent = false;
                         componentToAdd = CMP_SPRITE;
@@ -335,6 +413,9 @@ namespace MapEditorInternal {
 
                 if (entity.HasComponent<ComponentPlayerSpawn>())
                     DrawComponentRow(Get("component.player_spawn").c_str(), CMP_PLAYER_SPAWN);
+
+                if (entity.HasComponent<ComponentAudioSource>())
+                    DrawComponentRow(Get("component.audio_source").c_str(), CMP_AUDIO_SOURCE);
 
                 PutSpace(2);
 
@@ -395,6 +476,9 @@ namespace MapEditorInternal {
                     case CMP_PLAYER_SPAWN:
                         componentName = Get("component.player_spawn");
                         break;
+                    case CMP_AUDIO_SOURCE:
+                        componentName = Get("component.audio_source");
+                        break;
                     default:
                         componentName = Get("bug.unknown");
                         break;
@@ -406,7 +490,7 @@ namespace MapEditorInternal {
                 ImGui::PushID(selectedComponent);
 
                 if (selectedComponent == CMP_TRANSFORM) {
-                    ComponentTransform *c = entity.GetComponent<ComponentTransform>();
+                    auto *c = entity.GetComponent<ComponentTransform>();
 
                     if (c == nullptr) {
                         ImGui::Text("Transform component missing");
@@ -444,8 +528,9 @@ namespace MapEditorInternal {
                             selectedComponent = -1;
                         }
                     }
-                } else if (selectedComponent == CMP_SPRITE) {
-                    ComponentSprite *c = entity.GetComponent<ComponentSprite>();
+                }
+                else if (selectedComponent == CMP_SPRITE) {
+                    auto *c = entity.GetComponent<ComponentSprite>();
 
                     if (c == nullptr) {
                         ImGui::Text("Sprite component missing");
@@ -463,7 +548,8 @@ namespace MapEditorInternal {
                             selectedComponent = -1;
                         }
                     }
-                } else if (selectedComponent == CMP_PLAYER_SPAWN) {
+                }
+                else if (selectedComponent == CMP_PLAYER_SPAWN) {
                     ImGui::Text("%s", Get("component.player_spawn").c_str());
 
                     if (ImGui::Button(Get("common.delete").c_str())) {
@@ -471,8 +557,9 @@ namespace MapEditorInternal {
                         editingComponent = false;
                         selectedComponent = -1;
                     }
-                } else if (selectedComponent == CMP_DECAL) {
-                    ComponentDecal *c = entity.GetComponent<ComponentDecal>();
+                }
+                else if (selectedComponent == CMP_DECAL) {
+                    auto *c = entity.GetComponent<ComponentDecal>();
 
                     if (c == nullptr) {
                         ImGui::Text("Decal component missing");
@@ -503,6 +590,35 @@ namespace MapEditorInternal {
 
                         if (ImGui::Button(Get("common.delete").c_str())) {
                             entity.RemoveComponent<ComponentDecal>();
+                            editingComponent = false;
+                            selectedComponent = -1;
+                        }
+                    }
+                }
+                else if (selectedComponent == CMP_AUDIO_SOURCE) {
+                    auto* c = entity.GetComponent<ComponentAudioSource>();
+
+                    if (c == nullptr) {
+                        ImGui::Text("Audio component missing");
+                    }
+                    else {
+                        std::string fileName = c->name;
+                        float pitch = c->pitch;
+                        float gain = c->gain;
+                        bool looping = c->looping;
+
+                        ImGui::InputText(Get("component.audio_source.file_name").c_str(), &fileName);
+                        ImGui::InputFloat(Get("component.audio_source.pitch").c_str(), &pitch);
+                        ImGui::InputFloat(Get("component.audio_source.gain").c_str(), &gain);
+                        ImGui::Checkbox(Get("component.audio_source.looping").c_str(), &looping);
+
+                        c->pitch = pitch;
+                        c->gain = gain;
+                        c->looping = looping;
+                        c->name = fileName;
+
+                        if (ImGui::Button(Get("common.delete").c_str())) {
+                            entity.RemoveComponent<ComponentAudioSource>();
                             editingComponent = false;
                             selectedComponent = -1;
                         }
@@ -539,26 +655,11 @@ namespace MapEditorInternal {
 
         PutSpace(2);
 
-        if (ImGui::Button(Get("editor.create_texture").c_str())) {
-            textureInputs.push_back({});
-        }
+        DrawTextureCategory();
 
-        for (int i = 0; i < static_cast<int>(textureInputs.size()); ++i) {
-            ImGui::PushID(i);
+        PutSpace(2);
 
-            std::string label =
-                Get("editor.texture") + " " + std::to_string(i);
-
-            ImGui::InputText(label.c_str(), textureInputs[i].data(), textureInputs[i].size());
-
-            ImGui::PopID();
-        }
-
-        PutSpace(5);
-
-        int bgTextureIndex = MapEditor::backgroundTextureIndex;
-        ImGui::InputInt(Get("editor.background_texture").c_str(), &bgTextureIndex);
-        MapEditor::backgroundTextureIndex = bgTextureIndex;
+        DrawSoundCategory();
 
         if (currentMode == MODE_ENTITY) {
 
@@ -582,6 +683,7 @@ namespace MapEditorInternal {
         PutSpace(3);
 
         if (ImGui::Button(Get("editor.shutdown").c_str())) {
+            shutdown = true;
             quit = true;
         }
 

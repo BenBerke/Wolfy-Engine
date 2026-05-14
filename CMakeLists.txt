@@ -128,7 +128,7 @@ target_compile_definitions(Tilky_Local PUBLIC
 # ============================================================
 
 set(TILKY_ENGINE_SOURCES
-        src/Renderer/TextureManager.cpp
+        src/Runtime/Renderer/TextureManager.cpp
 
         src/MapEditor/MapEditor.cpp
         src/MapEditor/MapEditorState.cpp
@@ -144,19 +144,19 @@ set(TILKY_ENGINE_SOURCES
         src/Objects/Entity.cpp
         src/Objects/Player.cpp
 
-        src/Renderer/Renderer/RendererState.cpp
-        src/Renderer/Renderer/RendererMath.cpp
-        src/Renderer/Renderer/RendererInit.cpp
-        src/Renderer/Renderer/RendererText.cpp
-        src/Renderer/Renderer/RendererMapBuild.cpp
-        src/Renderer/Renderer/RendererSprites.cpp
-        src/Renderer/Renderer/RendererDebug.cpp
-        src/Renderer/Renderer/RendererUpdate.cpp
-        src/Renderer/Renderer/RendererDestroy.cpp
-        src/Renderer/Renderer/RendererDecals.cpp
-        src/Renderer/Renderer/RendererSectors.cpp
-        src/Renderer/Renderer/RenderBackground.cpp
-        src/Renderer/Renderer/RendererUI.cpp
+        src/Runtime/Renderer/Renderer/RendererState.cpp
+        src/Runtime/Renderer/Renderer/RendererMath.cpp
+        src/Runtime/Renderer/Renderer/RendererInit.cpp
+        src/Runtime/Renderer/Renderer/RendererText.cpp
+        src/Runtime/Renderer/Renderer/RendererMapBuild.cpp
+        src/Runtime/Renderer/Renderer/RendererSprites.cpp
+        src/Runtime/Renderer/Renderer/RendererDebug.cpp
+        src/Runtime/Renderer/Renderer/RendererUpdate.cpp
+        src/Runtime/Renderer/Renderer/RendererDestroy.cpp
+        src/Runtime/Renderer/Renderer/RendererDecals.cpp
+        src/Runtime/Renderer/Renderer/RendererSectors.cpp
+        src/Runtime/Renderer/Renderer/RenderBackground.cpp
+        src/Runtime/Renderer/Renderer/RendererUI.cpp
 
         src/Math/Geometry/Geometry.cpp
 
@@ -173,6 +173,11 @@ set(TILKY_ENGINE_SOURCES
         Headers/Map/MapQueries.hpp
         Headers/Map/LevelManager.hpp
         Headers/Math/Geometry/Geometry.hpp
+        src/Runtime/Sound/SoundManager.cpp
+        Headers/Runtime/Sound/SoundManager.hpp
+        Headers/Objects/Loadables.hpp
+        src/Runtime/RuntimeSession.cpp
+        Headers/Runtime/RuntimeSession.hpp
 )
 
 # ============================================================
@@ -297,7 +302,6 @@ add_executable(Tilky_Engine
 
 target_link_libraries(Tilky_Engine PRIVATE
         Tilky_EngineCore
-        OpenAL::OpenAL
 )
 
 # ============================================================
@@ -314,7 +318,6 @@ add_executable(Tilky_All
 target_link_libraries(Tilky_All PRIVATE
         Tilky_LauncherCore
         Tilky_EngineCore
-        OpenAL::OpenAL
 )
 
 add_dependencies(Tilky_All

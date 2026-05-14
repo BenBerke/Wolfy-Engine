@@ -1,10 +1,10 @@
-#include "../../Headers/Renderer/Renderer/Renderer.hpp"
+#include "Headers/Runtime/Renderer/Renderer/Renderer.hpp"
 #include "RendererInternal.hpp"
 
 #include "Headers/Objects/Wall.hpp"
 #include "Headers/Objects/Sector.hpp"
 #include "Headers/Map/LevelManager.hpp"
-#include "../../../Headers/MapEditor/MapEditor.hpp"
+#include "Headers/MapEditor/MapEditor.hpp"
 
 #include <algorithm>
 #include <spdlog/spdlog.h>

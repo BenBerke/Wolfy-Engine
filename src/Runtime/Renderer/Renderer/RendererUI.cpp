@@ -3,11 +3,11 @@
 //
 
 #include "RendererInternal.hpp"
-#include "../../Headers/Renderer/Renderer/Renderer.hpp"
+#include "Headers/Runtime/Renderer/Renderer/Renderer.hpp"
 
-#include "../../Headers/Math/Vector/Vector2.hpp"
+#include "Headers/Math/Vector/Vector2.hpp"
 
-#include "Headers/Renderer/TextureManager.hpp"
+#include "Headers/Runtime/Renderer/TextureManager.hpp"
 
 namespace Renderer {
     using namespace RendererInternal;

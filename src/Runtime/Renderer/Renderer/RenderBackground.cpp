@@ -1,7 +1,7 @@
 #include "RendererInternal.hpp"
-#include "Headers/Renderer/TextureManager.hpp"
+#include "Headers/Runtime/Renderer/TextureManager.hpp"
 #include "Headers/Objects/Player.hpp"
-#include "Headers/Renderer/Renderer/Renderer.hpp"
+#include "Headers/Runtime/Renderer/Renderer/Renderer.hpp"
 
 namespace RendererInternal {
     void DrawBackground(const float playerAngle) {

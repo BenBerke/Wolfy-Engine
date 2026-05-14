@@ -8,9 +8,9 @@
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
-#include "../../../Headers/Renderer/Shader.hpp"
-#include "../../../Headers/Math/Vector/Vector2.hpp"
-#include "../../../Headers/Math/Vector/Vector4.hpp"
+#include "Headers/Runtime/Renderer/Shader.hpp"
+#include "Headers/Math/Vector/Vector2.hpp"
+#include "Headers/Math/Vector/Vector4.hpp"
 
 namespace RendererInternal {
     inline constexpr int SCREEN_WIDTH = 1680;

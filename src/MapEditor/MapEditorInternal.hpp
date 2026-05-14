@@ -75,6 +75,7 @@ namespace MapEditorInternal {
     extern int currentFloor;
 
     extern bool quit;
+    extern bool shutdown;
 
     bool SamePoint(const Vector2& a, const Vector2& b);
     bool WithinRadius(const Vector2& a, const Vector2& b, const float radius);
@@ -112,8 +113,6 @@ namespace MapEditorInternal {
     void ChangeMode();
 
     bool Save(const std::string& saveTo);
-
-    extern std::vector<std::array<char, 256>> textureInputs;
 
     float DistancePointToSegmentSq(const Vector2& point, const Vector2& a, const Vector2& b);
     int GetWallAtPoint(const Vector2& worldPoint);

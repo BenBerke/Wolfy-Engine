@@ -1,8 +1,8 @@
-#include "../../Headers/Renderer/Renderer/Renderer.hpp"
+#include "Headers/Runtime/Renderer/Renderer/Renderer.hpp"
 #include "Headers/Project/ProjectManager.hpp"
 #include "RendererInternal.hpp"
 
-#include "../../Headers/Math/Vector/Vector3.hpp"
+#include "Headers/Math/Vector/Vector3.hpp"
 
 #include <spdlog/spdlog.h>
 

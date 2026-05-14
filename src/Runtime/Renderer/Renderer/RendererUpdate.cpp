@@ -1,4 +1,4 @@
-#include "../../Headers/Renderer/Renderer/Renderer.hpp"
+#include "Headers/Runtime/Renderer/Renderer/Renderer.hpp"
 #include "RendererInternal.hpp"
 
 #include "Headers/Engine/InputManager.hpp"
@@ -7,7 +7,7 @@
 #include "Headers/Objects/Wall.hpp"
 
 #include "Headers/Map/LevelManager.hpp"
-#include "Headers/Renderer/TextureManager.hpp"
+#include "Headers/Runtime/Renderer/TextureManager.hpp"
 
 namespace Renderer {
 

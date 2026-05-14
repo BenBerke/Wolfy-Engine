@@ -1,7 +1,7 @@
-#include "../../Headers/Renderer/Renderer/Renderer.hpp"
+#include "Headers/Runtime/Renderer/Renderer/Renderer.hpp"
 #include "RendererInternal.hpp"
 
-#include "Headers/Renderer/TextureManager.hpp"
+#include "Headers/Runtime/Renderer/TextureManager.hpp"
 
 #include <SDL3/SDL_init.h>
 

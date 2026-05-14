@@ -1,4 +1,4 @@
-#include "../../Headers/Renderer/Renderer/Renderer.hpp"
+#include "Headers/Runtime/Renderer/Renderer/Renderer.hpp"
 #include "RendererInternal.hpp"
 #include "Headers/Project/ProjectManager.hpp"
 
@@ -13,6 +13,8 @@
 #include <SDL3_image/SDL_image.h>
 
 #include <spdlog/spdlog.h>
+
+#include "Headers/Runtime/Renderer/TextureManager.hpp"
 
 namespace fs = std::filesystem;
 
@@ -227,7 +229,7 @@ namespace Renderer {
     }
 
     bool InitUI() {
-        const float vertices[] = {
+        constexpr float vertices[] = {
             // x, y,      u, v
              0.5f,  0.5f, 1.0f, 0.0f,
              0.5f, -0.5f, 1.0f, 1.0f,
@@ -410,6 +412,8 @@ namespace Renderer {
             spdlog::critical("Renderer initialization stopped at InitSDL");
             return false;
         }
+
+        TextureManager::RefreshTexturesFromLevel();
 
         if (!InitImGui()) {
             spdlog::critical("Renderer initialization stopped at InitImGui");

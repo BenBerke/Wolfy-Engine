@@ -11,6 +11,9 @@ struct Entity {
     EntityID id = static_cast<EntityID>(-1);
     EntityID attachedLevelId = static_cast<EntityID>(-1);
 
+    void Start();
+    void Update();
+
     template<typename T>
     T* GetComponent();
 
