@@ -26,7 +26,8 @@ Unlike modern triangle-mesh engines, Tilky defines the world through sectors. Th
 ### **Integrated Toolchain**
 * **Tilky Launcher:** A centralized hub to manage `.tilky` project manifests, assets, and localized settings.
 * **Visual Editor:** A Dear ImGui-powered workspace with dedicated modes for Dot, Wall, Sector, and Entity manipulation.
-* **ECS (Entity Component System):** A data-oriented backend designed for cache-friendly performance, featuring components like `Transform`, `Sprite`, and `Decal`.
+* **ECS (Entity Component System):** A data-oriented backend designed for cache-friendly performance, featuring components like `Transform`, `Sprite`, and `Decal`
+* **Lua Scripting:** Make custom scripts with Lua, easy-to-use and powerful at the same time!
 
 ---
 
