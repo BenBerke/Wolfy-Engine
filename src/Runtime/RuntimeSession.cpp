@@ -118,6 +118,7 @@ namespace RuntimeSession {
 
         Renderer::Update();
         AudioSystem::Update(level);
+        ScriptSystem::Update(level);
 
         RenderDebugText();
 

@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "Headers/Engine/GameTime.hpp"
 #include "Headers/Project/ProjectManager.hpp"
 #include "Headers/Objects/Wrappers.hpp"
 #include "Headers/Objects/Components.hpp"
@@ -51,19 +52,19 @@ namespace {
             "HasTransform", &ScriptEntity::HasTransform
         );
 
-        lua.set_function("Log", [](const std::string& message) {
+        lua.set_function("Log", [](const std::string &message) {
             spdlog::info("[Lua] {}", message);
         });
     }
 
-    std::filesystem::path GetScriptPath(const std::string& scriptFile) {
+    std::filesystem::path GetScriptPath(const std::string &scriptFile) {
         return ProjectManager::GetProjectFolder() / "Assets" / "Scripts" / scriptFile;
     }
 
     namespace fs = std::filesystem;
 
     namespace {
-        std::string CleanScriptFileName(const std::string& fileName) {
+        std::string CleanScriptFileName(const std::string &fileName) {
             if (fileName.empty()) {
                 return "";
             }
@@ -71,7 +72,7 @@ namespace {
             return fs::path(fileName).stem().string();
         }
 
-        fs::path GetScriptPathFromFileName(const std::string& fileName) {
+        fs::path GetScriptPathFromFileName(const std::string &fileName) {
             const std::string cleanName = CleanScriptFileName(fileName);
 
             return ProjectManager::GetScriptsPath() / (cleanName + ".lua");
@@ -87,17 +88,16 @@ namespace ScriptSystem {
 
             spdlog::info("Lua scripting initialized");
             return true;
-        }
-        catch (std::exception& e) {
+        } catch (std::exception &e) {
             spdlog::critical("Failed to initialize Lua scripting {}", e.what());
             return false;
         }
     }
 
-    void Start(Level& level) {
+    void Start(Level &level) {
         scriptInstances.clear();
 
-        for (const ComponentScript& script : level.scripts.components) {
+        for (const ComponentScript &script: level.scripts.components) {
             if (!script.enabled) {
                 continue;
             }
@@ -105,7 +105,10 @@ namespace ScriptSystem {
             const std::string cleanFileName = CleanScriptFileName(script.fileName);
 
             if (cleanFileName.empty()) {
-                spdlog::warn("Skipping script component with empty file name on entity {}", script.ownerID);
+                spdlog::warn(
+                    "Skipping script component with empty file name on entity {}",
+                    script.ownerID
+                );
                 continue;
             }
 
@@ -119,9 +122,14 @@ namespace ScriptSystem {
             ScriptInstance instance;
             instance.ownerID = script.ownerID;
             instance.scriptFile = cleanFileName;
-            instance.environment = sol::environment(lua, sol::create, lua.globals());
 
-            instance.environment["owner"] = ScriptEntity {
+            instance.environment = sol::environment(
+                lua,
+                sol::create,
+                lua.globals()
+            );
+
+            instance.environment["owner"] = ScriptEntity{
                 &level,
                 script.ownerID
             };
@@ -130,16 +138,30 @@ namespace ScriptSystem {
 
             if (!loadedScript.valid()) {
                 sol::error error = loadedScript;
-                spdlog::error("Failed to load Lua script '{}': {}", path.string(), error.what());
+                spdlog::error(
+                    "Failed to load Lua script '{}': {}",
+                    path.string(),
+                    error.what()
+                );
                 continue;
             }
 
             sol::protected_function scriptFunction = loadedScript;
-            sol::protected_function_result result = scriptFunction(instance.environment);
+
+            // IMPORTANT:
+            // This makes the Lua file use instance.environment as its _ENV.
+            // Without this, owner is nil inside Start/Update.
+            sol::set_environment(instance.environment, scriptFunction);
+
+            sol::protected_function_result result = scriptFunction();
 
             if (!result.valid()) {
                 sol::error error = result;
-                spdlog::error("Failed to run Lua script '{}': {}", path.string(), error.what());
+                spdlog::error(
+                    "Failed to run Lua script '{}': {}",
+                    path.string(),
+                    error.what()
+                );
                 continue;
             }
 
@@ -147,11 +169,16 @@ namespace ScriptSystem {
             instance.updateFunction = instance.environment["Update"];
 
             if (instance.startFunction.valid()) {
-                sol::protected_function_result startResult = instance.startFunction();
+                sol::protected_function_result startResult =
+                        instance.startFunction();
 
                 if (!startResult.valid()) {
                     sol::error error = startResult;
-                    spdlog::error("Lua Start error in '{}': {}", path.string(), error.what());
+                    spdlog::error(
+                        "Lua Start error in '{}': {}",
+                        path.string(),
+                        error.what()
+                    );
                 }
             }
 
@@ -161,13 +188,13 @@ namespace ScriptSystem {
         }
     }
 
-    void Update(Level& level, const float deltaTime) {
-        for (ScriptInstance& instance : scriptInstances) {
-            ComponentScript* script = level.scripts.Get(instance.ownerID);
+    void Update(Level &level) {
+        for (ScriptInstance &instance: scriptInstances) {
+            ComponentScript *script = level.scripts.Get(instance.ownerID);
 
             if (script == nullptr || !script->enabled || !instance.updateFunction.valid()) continue;
 
-            sol::protected_function_result result = instance.updateFunction(script);
+            sol::protected_function_result result = instance.updateFunction(GameTime::deltaTime);
 
             if (!result.valid()) {
                 sol::error error = result;

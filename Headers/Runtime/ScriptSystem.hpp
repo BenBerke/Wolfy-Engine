@@ -10,7 +10,7 @@
 namespace ScriptSystem {
     bool Initialize();
     void Start(Level& level);
-    void Update(Level& level, float deltaTime);
+    void Update(Level& level);
     void Shutdown();
 }
 

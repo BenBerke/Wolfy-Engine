@@ -192,7 +192,7 @@ namespace ProjectManager {
             }
 
             if (!fs::exists(scriptsPath)) {
-                if (!fs::create_directories(soundsPath)) {
+                if (!fs::create_directories(scriptsPath)) {
                     spdlog::critical("Could not create project scripts folder: {}", scriptsPath.string());
                     openProject = false;
                 }
