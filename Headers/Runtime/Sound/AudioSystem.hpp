@@ -11,6 +11,8 @@ namespace AudioSystem {
     void Start(Level& level);
     void Update(Level& level);
     void Shutdown(Level& level);
+
+    void ApplyListenerSettings(const Level& level);
 }
 
 #endif //TILKY_ENGINE_AUDIOSYSTEM_H

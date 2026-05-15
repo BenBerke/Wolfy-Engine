@@ -78,4 +78,13 @@ namespace AudioSystem {
             }
         }
     }
+
+    void ApplyListenerSettings(const Level& level) {
+        const ListenerSettings& settings = level.listenerSettings;
+
+        SoundManager::SetListenerGain(settings.masterGain);
+        SoundManager::SetListenerDopplerFactor(settings.dopplerFactor);
+        SoundManager::SetListenerSpeedOfSound(settings.speedOfSound);
+        SoundManager::SetListenerDistanceModel(settings.distanceModel);
+    }
 }

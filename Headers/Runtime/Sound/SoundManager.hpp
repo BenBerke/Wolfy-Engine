@@ -91,16 +91,16 @@ namespace SoundManager {
     /**
      * Sets the global distance attenuation model (e.g., AL_INVERSE_DISTANCE_CLAMPED).
      */
-    void SetDistanceModel(ALenum model);
+    void SetListenerDistanceModel(ALenum model);
 
     /**
      * Sets the global Doppler effect intensity. 1.0 is normal, 0.0 is off.
      */
-    void SetDopplerFactor(float factor);
+    void SetListenerDopplerFactor(float factor);
 
     /**
      * Sets the speed of sound for Doppler calculations. Default is 343.3.
      */
-    void SetSpeedOfSound(float speed);
+    void SetListenerSpeedOfSound(float speed);
 }
 #endif //TILKY_ENGINE_SOUNDMANAGER_H

@@ -13,6 +13,13 @@
 #include "Loadables.hpp"
 #include "Headers/Runtime/Renderer/TextureManager.hpp"
 
+struct ListenerSettings {
+    float masterGain = 1.0f;
+    float dopplerFactor = 1.0f;
+    float speedOfSound = 343.3f;
+    ALenum distanceModel = AL_INVERSE_DISTANCE_CLAMPED;
+};
+
 struct Level {
     LevelID id = 0;
     std::string name;
@@ -26,6 +33,8 @@ struct Level {
 
     std::vector<Texture> textures;
     std::vector<Sound> sounds;
+
+    ListenerSettings listenerSettings;
 
     ComponentStorage<ComponentTransform> transforms;
     ComponentStorage<ComponentSprite> sprites;
@@ -56,6 +65,7 @@ struct Level {
         sprites.Remove(id);
         decals.Remove(id);
         playerSpawns.Remove(id);
+        audioSources.Remove(id);
     }
     void DestroyEntity(const Entity& entity) {
         DestroyEntity(entity.id);

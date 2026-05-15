@@ -82,6 +82,7 @@ namespace RuntimeSession {
         }
 
         AudioSystem::Start(level);
+        AudioSystem::ApplyListenerSettings(level);
 
         InputManager::SetRelativeMouseMode(Renderer::window, true);
 

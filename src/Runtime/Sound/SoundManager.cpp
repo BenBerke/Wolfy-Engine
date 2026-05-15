@@ -477,28 +477,20 @@ namespace SoundManager {
         CheckALErrors("Failed to set listener gain");
     }
 
-    void SetDistanceModel(const ALenum model) {
+    void SetListenerDistanceModel(const ALenum model) {
         alDistanceModel(model);
         CheckALErrors("Failed to set distance model");
     }
 
-    void SetDopplerFactor(const float factor) {
+    void SetListenerDopplerFactor(const float factor) {
         alDopplerFactor(factor);
         CheckALErrors("Failed to set Doppler factor");
     }
 
-    void SetSpeedOfSound(const float speed) {
+    void SetListenerSpeedOfSound(const float speed) {
         alSpeedOfSound(speed);
         CheckALErrors("Failed to set speed of sound");
     }
-
-    void SetListenerOrientation(const Vector3 forward, const Vector3 up) {
-        const ALfloat orientation[] = {
-            forward.x, forward.y, forward.z,
-            up.x,      up.y,      up.z
-        };
-        alListenerfv(AL_ORIENTATION, orientation);
-        CheckALErrors("Failed to set listener orientation vectors");
-    }
+    
     //endregion
 }

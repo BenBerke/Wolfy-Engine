@@ -211,39 +211,94 @@ namespace MapEditorInternal {
     }
 
     void DrawWorldSettings() {
+        Level &level = LevelManager::CurrentLevel();
+        ListenerSettings &settings = level.listenerSettings;
+
         ImGui::Begin(Get("editor.world_settings").c_str());
 
-        // Local static state to hold values between frames
-        // In a real app, these should ideally be fetched from your SoundSystem state
-        static float masterGain = 1.0f;
-        static float dopplerFactor = 1.0f;
-        static float speedOfSound = 343.3f;
-        static int currentModel = 0; // Index for the distance model combo
-
-        // 1. Master Gain
-        if (ImGui::SliderFloat(Get("settings.audio.master_gain").c_str(), &masterGain, 0.0f, 2.0f)) {
-            SoundManager::SetListenerGain(masterGain);
+        if (ImGui::SliderFloat(
+            Get("settings.audio.master_gain").c_str(),
+            &settings.masterGain,
+            0.0f,
+            2.0f
+        )) {
+            // Only call this in runtime if OpenAL is active.
+            // In the editor, just changing the level value is enough.
+            // SoundManager::SetListenerGain(settings.masterGain);
         }
 
         ImGui::Separator();
         ImGui::TextDisabled("%s", Get("settings.audio.global_physics_header").c_str());
 
-        // 2. Doppler Factor
-        if (ImGui::DragFloat(Get("settings.audio.doppler_factor").c_str(), &dopplerFactor, 0.01f, 0.0f, 10.0f)) {
-            SoundManager::SetDopplerFactor(dopplerFactor);
+        if (ImGui::DragFloat(
+            Get("settings.audio.doppler_factor").c_str(),
+            &settings.dopplerFactor,
+            0.01f,
+            0.0f,
+            10.0f
+        )) {
+            // SoundManager::SetListenerDopplerFactor(settings.dopplerFactor);
         }
 
-        // 3. Speed of Sound
-        if (ImGui::InputFloat(Get("settings.audio.speed_of_sound").c_str(), &speedOfSound)) {
-            SoundManager::SetSpeedOfSound(speedOfSound);
+        if (ImGui::InputFloat(
+            Get("settings.audio.speed_of_sound").c_str(),
+            &settings.speedOfSound
+        )) {
+            settings.speedOfSound = std::max(1.0f, settings.speedOfSound);
+            // SoundManager::SetListenerSpeedOfSound(settings.speedOfSound);
         }
 
-        // 4. Distance Model
-        const char* models[] = { "Inverse Distance", "Inverse Distance Clamped", "Linear Distance", "Linear Distance Clamped", "None" };
-        const ALenum alModels[] = { AL_INVERSE_DISTANCE, AL_INVERSE_DISTANCE_CLAMPED, AL_LINEAR_DISTANCE, AL_LINEAR_DISTANCE_CLAMPED, AL_NONE };
+        const std::array<std::string, 5> modelLabels = {
+            Get("settings.audio.distance_model.inverse"),
+            Get("settings.audio.distance_model.inverse_clamped"),
+            Get("settings.audio.distance_model.linear"),
+            Get("settings.audio.distance_model.linear_clamped"),
+            Get("settings.audio.distance_model.none")
+        };
 
-        if (ImGui::Combo(Get("settings.audio.distance_model").c_str(), &currentModel, models, IM_ARRAYSIZE(models))) {
-            SoundManager::SetDistanceModel(alModels[currentModel]);
+        const char* models[] = {
+            modelLabels[0].c_str(),
+            modelLabels[1].c_str(),
+            modelLabels[2].c_str(),
+            modelLabels[3].c_str(),
+            modelLabels[4].c_str()
+        };
+
+        const ALenum alModels[] = {
+            AL_INVERSE_DISTANCE,
+            AL_INVERSE_DISTANCE_CLAMPED,
+            AL_LINEAR_DISTANCE,
+            AL_LINEAR_DISTANCE_CLAMPED,
+            AL_NONE
+        };
+
+        auto DistanceModelToIndex = [](const ALenum model) -> int {
+            switch (model) {
+                case AL_INVERSE_DISTANCE:
+                    return 0;
+                case AL_INVERSE_DISTANCE_CLAMPED:
+                    return 1;
+                case AL_LINEAR_DISTANCE:
+                    return 2;
+                case AL_LINEAR_DISTANCE_CLAMPED:
+                    return 3;
+                case AL_NONE:
+                    return 4;
+                default:
+                    return 1;
+            }
+        };
+
+        int currentModel = DistanceModelToIndex(settings.distanceModel);
+
+        if (ImGui::Combo(
+            Get("settings.audio.distance_model").c_str(),
+            &currentModel,
+            models,
+            IM_ARRAYSIZE(models)
+        )) {
+            settings.distanceModel = alModels[currentModel];
+            // SoundManager::SetListenerDistanceModel(settings.distanceModel);
         }
 
         ImGui::End();

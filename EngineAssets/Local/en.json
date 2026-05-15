@@ -25,6 +25,12 @@
   "settings.audio.speed_of_sound" : "Speed of Sound",
   "settings.audio.distance_model" : "Distance Model",
 
+  "settings.audio.distance_model.inverse": "Inverse Distance",
+  "settings.audio.distance_model.inverse_clamped": "Inverse Distance Clamped",
+  "settings.audio.distance_model.linear": "Linear Distance",
+  "settings.audio.distance_model.linear_clamped": "Linear Distance Clamped",
+  "settings.audio.distance_model.none": "None",
+
   "levels.title": "Levels",
   "levels.load": "Load Level",
   "levels.delete": "Delete Level",
