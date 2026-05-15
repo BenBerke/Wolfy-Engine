@@ -81,8 +81,6 @@ cmake --build . --config Release
 # 🗺 Roadmap
 [ ] Visual UI Editor: In-engine tools for creating HUDs and menus.
 
-[ ] LUA Scripting: Runtime logic for gameplay events and triggers.
-
 [ ] Standalone Export: Capability to package projects into a single executable.
 
 [ ] Networking: Initial support for multiplayer sector synchronization.
