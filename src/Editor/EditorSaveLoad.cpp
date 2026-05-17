@@ -1,10 +1,11 @@
 #include "EditorInternal.hpp"
 
+#include <vector>
+#include <cstdint>
 #include <algorithm>
 #include <filesystem>
 #include <fstream>
 #include <nlohmann/json.hpp>
-#include <SDL3/SDL_log.h>
 #include <spdlog/spdlog.h>
 
 #include "Headers/Project/ProjectManager.hpp"
@@ -98,18 +99,26 @@ namespace {
         }
     }
 
-    std::filesystem::path BuildLevelPath(const std::string &levelName) {
+    std::filesystem::path BuildLevelPath(const std::string& levelName) {
         std::string cleanName = levelName;
 
         if (cleanName.ends_with(".json")) {
             cleanName = cleanName.substr(0, cleanName.size() - 5);
         }
 
-        return ProjectManager::GetLevelsPath() / (cleanName + ".json");
+        if (cleanName.ends_with(".bson")) {
+            cleanName = cleanName.substr(0, cleanName.size() - 5);
+        }
+
+        return ProjectManager::GetLevelsPath() / (cleanName + ".bson");
     }
 
-    std::string CleanLevelName(const std::string &levelName) {
+    std::string CleanLevelName(const std::string& levelName) {
         if (levelName.ends_with(".json")) {
+            return levelName.substr(0, levelName.size() - 5);
+        }
+
+        if (levelName.ends_with(".bson")) {
             return levelName.substr(0, levelName.size() - 5);
         }
 
@@ -825,7 +834,7 @@ namespace MapEditorInternal {
                     continue;
                 }
 
-                if (entry.path().extension() != ".json") {
+                if (entry.path().extension() != ".bson") {
                     continue;
                 }
 
@@ -873,14 +882,20 @@ namespace MapEditorInternal {
 
         std::filesystem::create_directories(ProjectManager::GetLevelsPath());
 
-        std::ofstream file(path);
+        const std::vector<std::uint8_t> bsonData = json::to_bson(levelData);
+
+        std::ofstream file(path, std::ios::binary);
 
         if (!file.is_open()) {
-            spdlog::critical("Failed to open level for saving: {}", path.string().c_str());
+            spdlog::critical("Failed to open BSON level for saving: {}", path.string());
             return false;
         }
 
-        file << levelData.dump(4);
+        file.write(
+            reinterpret_cast<const char*>(bsonData.data()),
+            static_cast<std::streamsize>(bsonData.size())
+        );
+
         file.close();
 
         spdlog::info("Level saved successfully {}", path.string());
@@ -898,23 +913,29 @@ namespace Editor {
         const std::string cleanName = CleanLevelName(levelName);
         const std::filesystem::path path = BuildLevelPath(cleanName);
 
-        std::ifstream file(path);
+        std::ifstream file(path, std::ios::binary);
 
         if (!file.is_open()) {
-            spdlog::critical("Could not open level file {}", path.string());
+            spdlog::critical("Could not open BSON level file {}", path.string());
             return false;
         }
+
+        std::vector<std::uint8_t> bsonData{
+                std::istreambuf_iterator<char>(file),
+            std::istreambuf_iterator<char>()
+        };
+
+        file.close();
 
         json levelData;
 
         try {
-            file >> levelData;
-        } catch (const std::exception &e) {
-            spdlog::critical("Failed to parse level JSON: {}", e.what());
+            levelData = json::from_bson(bsonData);
+        }
+        catch (const std::exception& e) {
+            spdlog::critical("Failed to parse level BSON: {}", e.what());
             return false;
         }
-
-        file.close();
 
         Level loadedLevel;
 
